@@ -3,6 +3,7 @@ import shutil
 import requests
 from urllib.parse import unquote
 from .magic_table import __magic_tablify
+
 def __build_headers(url: str, custom_headers: dict = None, as_list: bool = False):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
