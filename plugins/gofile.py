@@ -34,7 +34,7 @@ class GoFile:
         return api_token
 
     def export(self):
-        url = "https://api.gofile.io/getContent?contentId={}&token={}&websiteToken=12345&cache=true"
+        url = "https://api.gofile.io/getContent?contentId={}&token={}&websiteToken=7fd94ds12fds4"
         url = url.format(self.content_id, self.api_key)
 
         if self.password:
