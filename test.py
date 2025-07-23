@@ -7,7 +7,7 @@ from plugins import Bunkr
 
 def main():
     output = "downloads"
-    url = "https://bunkrr.su/d/megaloader-main-RKEICuly.zip"
+    url = "https://bunkrr.su/a/pSbD1FmM"
     api = Bunkr(url)
     for u in api.export():
         api.download_file(u, output)
