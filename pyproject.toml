@@ -1,0 +1,9 @@
+[project]
+name = "megaloader"
+version = "0.1.0"
+description = "This project will make you smile. It allows you to use some download plugins for many websites such as Cyberdrop, Fanbox, GoFile, Pixiv, Rule34, Thotslife, and so on..."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.32.4",
+]
