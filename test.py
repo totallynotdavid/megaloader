@@ -2,7 +2,7 @@ from plugins import Bunkr
 
 # Album URL:    https://bunkrr.su/a/pSbD1FmM
 # Single File:  https://bunkrr.su/d/megaloader-main-RKEICuly.zip
-#               https://bunkrr.su/v/video-01-tuoa3g95.mkv
+#               https://bunkr.si/f/StoRbcXsF0Yje
 
 
 def main():
