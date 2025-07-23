@@ -2,11 +2,11 @@ import hashlib
 import requests
 from megaloader.http import http_download
 
-class GoFile:
 
+class GoFile:
     def __init__(self, url: str, password: str = None):
         self.__password = None
-        self.__content_id = url[len("https://gofile.io/d/"):]
+        self.__content_id = url[len("https://gofile.io/d/") :]
         self.__api_key = self.__get_api_key()
 
         if password:
@@ -28,8 +28,10 @@ class GoFile:
     def __get_api_key():
         data = requests.get("https://api.gofile.io/createAccount").json()
         api_token = data["data"]["token"]
-        data = requests.get("https://api.gofile.io/getAccountDetails?token=" + api_token).json()
-        if data["status"] != 'ok':
+        data = requests.get(
+            "https://api.gofile.io/getAccountDetails?token=" + api_token
+        ).json()
+        if data["status"] != "ok":
             raise Exception("The account was not successfully activated.")
         return api_token
 
@@ -46,7 +48,11 @@ class GoFile:
                 yield content["link"]
 
     def download_file(self, url: str, output: str):
-        http_download(url, output, custom_headers={
-            "Cookie": "accountToken=" + self.api_key,
-            "Accept-Encoding": "gzip, deflate, br"
-        })
+        http_download(
+            url,
+            output,
+            custom_headers={
+                "Cookie": "accountToken=" + self.api_key,
+                "Accept-Encoding": "gzip, deflate, br",
+            },
+        )

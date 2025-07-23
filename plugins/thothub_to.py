@@ -2,6 +2,7 @@ import re
 import time
 import requests
 
+
 class ThothubTO:
     def __get_video_page(self, page_url: str):
         page = requests.get(page_url)
@@ -16,7 +17,7 @@ class ThothubTO:
             "function": "get_block",
             "block_id": "list_videos_common_videos_list",
             "sort_by": "post_date",
-            "_": str(int(time.time()))
+            "_": str(int(time.time())),
         }
         for k, v in params.items():
             url += k + "=" + v + "&"
@@ -34,7 +35,10 @@ class ThothubTO:
             i += 1
 
     def get_video_from_page(self, page_url: str):
-        match = re.search(r"https:\/\/thothub.to\/get_file\/\d+\/[a-f0-9]+\/\d+\/\d+\/\d+.mp4", requests.get(page_url).text)
+        match = re.search(
+            r"https:\/\/thothub.to\/get_file\/\d+\/[a-f0-9]+\/\d+\/\d+\/\d+.mp4",
+            requests.get(page_url).text,
+        )
         return None if match is None else match[0]
 
     def export(self, model: str):

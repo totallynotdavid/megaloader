@@ -5,6 +5,7 @@ from megaloader.http import http_download
 REGEX_VIDEO = r"^\s+<video.*src=\"(https:\/\/cdn.fapello.com\/content.+)\".*<\/video>$"
 REGEX_IMAGE = r"^\s+<img src=\"(https:\/\/fapello.com\/content\/.+)\" alt=\".+\">$"
 
+
 class Fapello:
     def __init__(self, url: str):
         self.model = None
@@ -46,6 +47,4 @@ class Fapello:
         http_download(url, output)
 
     def download_file(self, url: str, output: str):
-        http_download(url, output, custom_headers={
-            "Accept": "gzip, deflate, br"
-        })
+        http_download(url, output, custom_headers={"Accept": "gzip, deflate, br"})

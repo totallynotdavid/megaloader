@@ -4,6 +4,7 @@ from megaloader.http import http_download
 
 BASE_API_URL = "https://api.fanbox.cc"
 
+
 class Fanbox:
     def __init__(self, url: str):
         self.__creator = None
@@ -36,12 +37,14 @@ class Fanbox:
         for url in self.paginate_creator:
             response = self.execute_api(url)
             for post in response["items"]:
-                response = self.execute_api(
-                    "/post.info?postId=" + post["id"], False)
-                if "body" in response.keys() and response["body"] is not None \
-                    and "images" in response["body"].keys():
-                        for image in response["body"]["images"]:
-                            yield image["originalUrl"]
+                response = self.execute_api("/post.info?postId=" + post["id"], False)
+                if (
+                    "body" in response.keys()
+                    and response["body"] is not None
+                    and "images" in response["body"].keys()
+                ):
+                    for image in response["body"]["images"]:
+                        yield image["originalUrl"]
                 else:
                     yield response["coverImageUrl"]
 
@@ -62,14 +65,20 @@ class Fanbox:
         endpoint = endpoint.replace(BASE_API_URL, "")
         url = BASE_API_URL + endpoint
         if required_creator_id and "creatorId" not in url:
-            url += ("&" if endpoint.startswith("?") else "?") + \
-                "creatorId=" + self.creator_id
-        response = requests.get(url, headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
-            "Accept": "application/json, text/plain, */*",
-            "Referer": "https://" + self.creator_id + ".fanbox.cc/",
-            "Origin": "https://" + self.creator_id + ".fanbox.cc"
-        }).json()
+            url += (
+                ("&" if endpoint.startswith("?") else "?")
+                + "creatorId="
+                + self.creator_id
+            )
+        response = requests.get(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
+                "Accept": "application/json, text/plain, */*",
+                "Referer": "https://" + self.creator_id + ".fanbox.cc/",
+                "Origin": "https://" + self.creator_id + ".fanbox.cc",
+            },
+        ).json()
         if "body" in response:
             return response["body"]
         if "items" in response:
@@ -86,6 +95,4 @@ class Fanbox:
             yield e
 
     def download_file(self, url: str, output: str):
-        http_download(url, output, custom_headers={
-            "Accept": "gzip, deflate, br"
-        })
+        http_download(url, output, custom_headers={"Accept": "gzip, deflate, br"})

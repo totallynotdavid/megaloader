@@ -7,10 +7,12 @@ ALBUM_REGEX = r"https?:\/\/cdn\d*\.bunkr\.ru\/[a-zA-Z0-9\-\.\_]+"
 SINGLE_FILE_REGEX = r"https?:\/\/media-files\d*\.bunkr\.ru\/[a-zA-Z0-9\-\.\_]+"
 FILE_IN_ALBUM_REGEX = r'<a href="(/d/[a-zA-Z0-9\-\.\_]+)"'
 
+
 class Bunkr:
     """
     A class used to download files from Bunkr
     """
+
     def __init__(self, url: str):
         self.__url = url
 
@@ -22,17 +24,17 @@ class Bunkr:
         """
         Returns the direct URL for downloading the file based on media type
         """
-        image_exts = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
-        video_exts = ['.mp4', '.mkv', '.wmv', '.webm']
+        image_exts = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+        video_exts = [".mp4", ".mkv", ".wmv", ".webm"]
 
         if any(ext in url for ext in image_exts):
-            final_url = re.sub(r'cdn(\d*)\.bunkr', r'i\1.bunkr', url)
+            final_url = re.sub(r"cdn(\d*)\.bunkr", r"i\1.bunkr", url)
         elif any(ext in url for ext in video_exts):
-            final_url = re.sub(r'cdn\d*\.bunkr', 'media-files.bunkr', url)
+            final_url = re.sub(r"cdn\d*\.bunkr", "media-files.bunkr", url)
         elif url.startswith("/d/"):
             final_url = f"https://media-files.bunkr.ru/{url[3:]}"
-        elif 'bunkrr.su/d/' in url:
-            final_url = re.sub(r'bunkr\.su\/d\/', 'media-files11.bunkr.ru/', url)
+        elif "bunkrr.su/d/" in url:
+            final_url = re.sub(r"bunkr\.su\/d\/", "media-files11.bunkr.ru/", url)
         else:
             final_url = url
 
