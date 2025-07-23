@@ -1,5 +1,5 @@
 def is_video(url: str):
-    if type(url) != str:
+    if not isinstance(url, str):
         raise ValueError("URL must be a string.")
     if len(url) < 1:
         raise ValueError("URL can't be empty.")
@@ -23,7 +23,7 @@ def is_video(url: str):
 
 
 def unentitify(string: str):
-    if type(string) != str:
+    if not isinstance(string, str):
         raise ValueError("String must be a string.")
     if len(string) < 1:
         raise ValueError("String can't be empty.")

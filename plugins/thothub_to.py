@@ -30,8 +30,8 @@ class ThothubTO:
             captured_video_links = self.__get_video_page(url)
             if len(captured_video_links) == 0:
                 break
-            for l in captured_video_links:
-                yield l
+            for link in captured_video_links:
+                yield link
             i += 1
 
     def get_video_from_page(self, page_url: str):

@@ -38,8 +38,8 @@ class Fapello:
 
     def export(self):
         for page in self.__get_all_ajax_pages():
-            for l in self.__get_hyper_text_links(page):
-                for e in self.__get_medias_from_page(l):
+            for link in self.__get_hyper_text_links(page):
+                for e in self.__get_medias_from_page(link):
                     yield e
 
     @staticmethod

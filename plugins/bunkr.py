@@ -1,4 +1,3 @@
-import os
 import re
 import requests
 from megaloader.http import http_download
