@@ -23,25 +23,25 @@ Advanced usage with specific plugin:
     ```
 """
 
-import urllib.parse
 import logging
-from typing import Optional, Type
+import urllib.parse
+from typing import Optional
 
 from .plugin import BasePlugin, Item
-from .plugins import get_plugin_class, Bunkr, PixelDrain
+from .plugins import Bunkr, PixelDrain, get_plugin_class
 
 # Suppress default logging unless explicitly configured
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __version__ = "0.1.0"
-__all__ = ["download", "BasePlugin", "Item", "Bunkr", "PixelDrain"]
+__all__ = ["BasePlugin", "Bunkr", "Item", "PixelDrain", "download"]
 
 
 def download(
     url: str,
     output_dir: str,
     *,
-    plugin_class: Optional[Type[BasePlugin]] = None,
+    plugin_class: Optional[type[BasePlugin]] = None,
     **kwargs,
 ) -> bool:
     """

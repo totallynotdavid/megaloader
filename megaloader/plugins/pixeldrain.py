@@ -1,13 +1,14 @@
-import re
-import os
 import json
-import math
 import logging
-from typing import Generator
+import math
+import os
+import re
+from collections.abc import Generator
+from typing import ClassVar
 
 import requests
 
-from ..plugin import BasePlugin, Item
+from megaloader.plugin import BasePlugin, Item
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 class PixelDrain(BasePlugin):
     # Proxy servers for rate limit bypassing
     # Thanks to https://github.com/sh13y/ - to be used only with user permission.
-    PROXIES = [
+    PROXIES: ClassVar[list[str]] = [
         "pd1.sriflix.my",
         "pd2.sriflix.my",
         "pd3.sriflix.my",
@@ -124,7 +125,7 @@ class PixelDrain(BasePlugin):
         if size_bytes <= 0:
             return "0B"
         size_names = ("B", "KB", "MB", "GB", "TB")
-        i = int(math.floor(math.log(size_bytes, 1024)))
+        i = math.floor(math.log(size_bytes, 1024))
         p = math.pow(1024, i)
         s = round(size_bytes / p, 2)
         return f"{s} {size_names[i]}"

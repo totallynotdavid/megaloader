@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Generator
 from dataclasses import dataclass
-from typing import Generator, Optional
+from typing import Optional
 
 
 @dataclass
@@ -35,7 +36,6 @@ class BasePlugin(ABC):
         Yields:
             Item: Each downloadable file found at the URL
         """
-        pass
 
     @abstractmethod
     def download_file(self, item: Item, output_dir: str) -> bool:
@@ -49,4 +49,3 @@ class BasePlugin(ABC):
         Returns:
             True if download succeeded, False otherwise
         """
-        pass

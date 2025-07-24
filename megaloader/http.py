@@ -1,8 +1,10 @@
-import os
+import contextlib
 import logging
-import requests
+import os
+from typing import Optional
 from urllib.parse import unquote, urlparse
-from typing import Optional, Dict
+
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +18,8 @@ DEFAULT_HEADERS = {
 def download_file(
     url: str,
     output_dir: str,
-    filename: str = None,
-    headers: Dict[str, str] = None,
+    filename: Optional[str] = None,
+    headers: Optional[dict[str, str]] = None,
     timeout: int = 30,
 ) -> Optional[str]:
     """
@@ -71,8 +73,6 @@ def download_file(
     except requests.RequestException as e:
         logger.error(f"Download failed for {filename}: {e}")
         if os.path.exists(output_path):
-            try:
+            with contextlib.suppress(OSError):
                 os.remove(output_path)
-            except OSError:
-                pass
         return None

@@ -22,7 +22,7 @@ dependencies = [
 
 [tool.ruff]
 extend-exclude = [
-    "docs/*",
+    "megaloader/old_plugins*",
 ]
 fix = true
 line-length = 88

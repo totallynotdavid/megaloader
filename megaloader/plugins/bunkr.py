@@ -1,15 +1,15 @@
-import re
-import os
 import base64
-import math
-import logging
 import html
-from urllib.parse import urljoin, urlparse, quote
-from typing import Generator
+import logging
+import math
+import os
+import re
+from collections.abc import Generator
+from urllib.parse import quote, urljoin, urlparse
 
 import requests
 
-from ..plugin import BasePlugin, Item
+from megaloader.plugin import BasePlugin, Item
 
 logger = logging.getLogger(__name__)
 
