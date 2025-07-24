@@ -1,5 +1,3 @@
-# plugins/pixeldrain.py
-
 import requests
 import re
 import os
