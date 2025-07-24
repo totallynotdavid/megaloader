@@ -1,51 +1,78 @@
 import os
-import shutil
+import logging
 import requests
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
+from typing import Optional, Dict
+
+logger = logging.getLogger(__name__)
+
+DEFAULT_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "*/*",
+    "Connection": "keep-alive",
+}
 
 
-def __build_headers(url: str, custom_headers: dict = None, as_list: bool = False):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
-        "Accept": "*/*",
-        "Referer": url + ("/" if not url.endswith("/") else ""),
-        "Origin": url,
-        "Connection": "keep-alive",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-site",
-        "Pragma": "no-cache",
-        "Cache-Control": "no-cache",
-    }
-    if custom_headers is not None:
-        for k, v in custom_headers.items():
-            headers[str(k)] = str(v)
-    if not as_list:
-        return headers
-    headers_list = [None] * len(headers.keys())
-    i = 0
-    for k, v in headers.items():
-        headers_list[i] = (str(k), str(v))
-        i += 1
-    return headers_list
+def download_file(
+    url: str,
+    output_dir: str,
+    filename: str = None,
+    headers: Dict[str, str] = None,
+    timeout: int = 30,
+) -> Optional[str]:
+    """
+    Download a file from URL to output directory.
 
+    Args:
+        url: Direct download URL
+        output_dir: Directory to save file to
+        filename: Custom filename (extracted from URL if None)
+        headers: Additional HTTP headers
+        timeout: Request timeout in seconds
 
-def http_download(
-    url: str, output_folder: str, custom_headers: dict = None, headers_required=True
-):
-    url = unquote(url)
-    filename = url.split("/")[-1].split("?")[0]
-    filename = filename.replace("%20", " ")
-    output = os.path.join(output_folder, filename)
-    if os.path.exists(output):
-        return
-    headers = None
-    if headers_required:
-        headers = __build_headers(url, custom_headers)
-    with requests.get(url, headers=headers, stream=True) as response_stream:
-        if response_stream.status_code in (403, 404, 405, 500):
-            return
-        with open(output, "wb+") as stream:
-            shutil.copyfileobj(response_stream.raw, stream)
-        stream.close()
-    response_stream.close()
+    Returns:
+        Path to downloaded file, or None if failed
+    """
+    if filename is None:
+        filename = os.path.basename(unquote(urlparse(url).path))
+        if not filename:
+            logger.error(f"Could not determine filename from URL: {url}")
+            return None
+
+    # Sanitize filename
+    filename = filename.strip().replace("/", "_").replace("\\", "_")
+    output_path = os.path.join(os.path.abspath(output_dir), filename)
+
+    if os.path.exists(output_path):
+        logger.info(f"File already exists: {filename}")
+        return output_path
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    req_headers = DEFAULT_HEADERS.copy()
+    if headers:
+        req_headers.update(headers)
+
+    try:
+        logger.debug(f"Downloading: {url}")
+        with requests.get(
+            url, headers=req_headers, stream=True, timeout=timeout
+        ) as response:
+            response.raise_for_status()
+
+            with open(output_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+
+        logger.debug(f"Downloaded: {filename}")
+        return output_path
+
+    except requests.RequestException as e:
+        logger.error(f"Download failed for {filename}: {e}")
+        if os.path.exists(output_path):
+            try:
+                os.remove(output_path)
+            except OSError:
+                pass
+        return None
