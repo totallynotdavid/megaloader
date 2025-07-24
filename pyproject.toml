@@ -20,6 +20,9 @@ dependencies = [
     "requests>=2.32.4",
 ]
 
+[tool.setuptools]
+packages = ["megaloader"]
+
 [tool.ruff]
 extend-exclude = [
     "megaloader/old_plugins*",
@@ -59,7 +62,6 @@ lines-after-imports = 2
 
 [tool.mypy]
 files = "megaloader"
-mypy_path = "megaloader"
 namespace_packages = true
 explicit_package_bases = true
 strict = true
@@ -71,3 +73,7 @@ enable_error_code = [
 exclude = [
     "megaloader/old_plugins*",
 ]
+
+[[tool.mypy.overrides]]
+module = ["requests.*"]
+ignore_missing_imports = true

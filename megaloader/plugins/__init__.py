@@ -1,9 +1,10 @@
+from megaloader.plugin import BasePlugin
 from megaloader.plugins.bunkr import Bunkr
 from megaloader.plugins.pixeldrain import PixelDrain
 
 
 # Domain to plugin mapping
-PLUGIN_REGISTRY = {
+PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     # Bunkr domains
     "bunkr.si": Bunkr,
     "bunkr.la": Bunkr,
@@ -17,7 +18,7 @@ PLUGIN_REGISTRY = {
 }
 
 
-def get_plugin_class(domain: str):
+def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     """
     Get plugin class for a domain.
 

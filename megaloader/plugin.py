@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -11,7 +11,7 @@ class Item:
     url: str
     filename: str
     file_id: Optional[str] = None
-    metadata: Optional[dict] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class BasePlugin(ABC):
@@ -22,8 +22,8 @@ class BasePlugin(ABC):
     Each plugin is responsible for parsing the service's pages and generating download URLs.
     """
 
-    def __init__(self, url: str, **kwargs):
-        if not isinstance(url, str) or not url.strip():
+    def __init__(self, url: str, **kwargs: Any) -> None:
+        if not url.strip():
             raise ValueError("URL must be a non-empty string")
         self.url = url.strip()
         self._config = kwargs

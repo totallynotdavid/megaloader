@@ -26,7 +26,7 @@ Advanced usage with specific plugin:
 import logging
 import urllib.parse
 
-from typing import Optional
+from typing import Any, Optional
 
 from megaloader.plugin import BasePlugin, Item
 from megaloader.plugins import Bunkr, PixelDrain, get_plugin_class
@@ -44,7 +44,7 @@ def download(
     output_dir: str,
     *,
     plugin_class: Optional[type[BasePlugin]] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> bool:
     """
     Download files from a URL using appropriate plugin.

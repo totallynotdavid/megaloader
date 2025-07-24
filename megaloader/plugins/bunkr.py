@@ -6,6 +6,7 @@ import os
 import re
 
 from collections.abc import Generator
+from typing import Any
 from urllib.parse import quote, urljoin, urlparse
 
 import requests
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 class Bunkr(BasePlugin):
     API_URL = "https://apidl.bunkr.ru/api/_001_v2"
 
-    def __init__(self, url: str, **kwargs):
+    def __init__(self, url: str, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
         self.session = requests.Session()
         self.session.headers.update(
@@ -98,7 +99,7 @@ class Bunkr(BasePlugin):
 
         yield Item(url=download_url, filename=filename)
 
-    def _extract_filename(self, content: str) -> str:
+    def _extract_filename(self, content: str) -> str | None:
         """Extract original filename from page content."""
         # Try og:title first
         og_match = re.search(r'<meta property="og:title" content="([^"]+)"', content)
@@ -146,7 +147,7 @@ class Bunkr(BasePlugin):
             logger.error(f"Failed to download {item.filename}: {e}")
             return False
 
-    def _extract_file_id(self, content: str, url: str) -> str:
+    def _extract_file_id(self, content: str, url: str) -> str | None:
         """Extract file ID from download page."""
         # Try data-id attribute first
         id_match = re.search(r'data-id="([^"]+)"', content)
@@ -160,7 +161,7 @@ class Bunkr(BasePlugin):
 
         return None
 
-    def _decrypt_url(self, api_data: dict, filename: str) -> str:
+    def _decrypt_url(self, api_data: dict[str, Any], filename: str) -> str | None:
         """Decrypt the download URL from API response."""
         try:
             timestamp = api_data["timestamp"]

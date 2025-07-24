@@ -5,7 +5,7 @@ import os
 import re
 
 from collections.abc import Generator
-from typing import ClassVar
+from typing import Any, ClassVar
 
 import requests
 
@@ -31,7 +31,7 @@ class PixelDrain(BasePlugin):
         "pd10.sriflix.my",
     ]
 
-    def __init__(self, url: str, use_proxy: bool = False, **kwargs):
+    def __init__(self, url: str, use_proxy: bool = False, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
         self.use_proxy = use_proxy
         self.proxy_index = 0
@@ -85,6 +85,8 @@ class PixelDrain(BasePlugin):
 
     def download_file(self, item: Item, output_dir: str) -> bool:
         """Download file from PixelDrain."""
+        if not item.file_id:
+            return False
         download_url = self._get_download_url(item.file_id)
 
         os.makedirs(output_dir, exist_ok=True)
