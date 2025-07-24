@@ -1,5 +1,6 @@
-from .bunkr import Bunkr
-from .pixeldrain import PixelDrain
+from megaloader.plugins.bunkr import Bunkr
+from megaloader.plugins.pixeldrain import PixelDrain
+
 
 # Domain to plugin mapping
 PLUGIN_REGISTRY = {

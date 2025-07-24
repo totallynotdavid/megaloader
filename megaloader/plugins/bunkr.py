@@ -4,12 +4,14 @@ import logging
 import math
 import os
 import re
+
 from collections.abc import Generator
 from urllib.parse import quote, urljoin, urlparse
 
 import requests
 
 from megaloader.plugin import BasePlugin, Item
+
 
 logger = logging.getLogger(__name__)
 

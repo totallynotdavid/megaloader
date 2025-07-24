@@ -25,10 +25,12 @@ Advanced usage with specific plugin:
 
 import logging
 import urllib.parse
+
 from typing import Optional
 
-from .plugin import BasePlugin, Item
-from .plugins import Bunkr, PixelDrain, get_plugin_class
+from megaloader.plugin import BasePlugin, Item
+from megaloader.plugins import Bunkr, PixelDrain, get_plugin_class
+
 
 # Suppress default logging unless explicitly configured
 logging.getLogger(__name__).addHandler(logging.NullHandler())

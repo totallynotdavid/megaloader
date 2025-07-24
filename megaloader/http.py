@@ -1,10 +1,12 @@
 import contextlib
 import logging
 import os
+
 from typing import Optional
 from urllib.parse import unquote, urlparse
 
 import requests
+
 
 logger = logging.getLogger(__name__)
 

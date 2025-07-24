@@ -3,12 +3,14 @@ import logging
 import math
 import os
 import re
+
 from collections.abc import Generator
 from typing import ClassVar
 
 import requests
 
 from megaloader.plugin import BasePlugin, Item
+
 
 logger = logging.getLogger(__name__)
 

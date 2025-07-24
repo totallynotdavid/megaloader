@@ -44,3 +44,30 @@ extend-select = [
     "TID", # flake8-tidy-imports
     "UP",  # pyupgrade
 ]
+
+extend-safe-fixes = [
+    "TC",  # move import from and to TYPE_CHECKING blocks
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+force-single-line = false
+lines-between-types = 1
+lines-after-imports = 2
+
+[tool.mypy]
+files = "megaloader"
+mypy_path = "megaloader"
+namespace_packages = true
+explicit_package_bases = true
+strict = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+exclude = [
+    "megaloader/old_plugins*",
+]

@@ -4,6 +4,7 @@ import requests
 
 from megaloader import Bunkr, PixelDrain, download
 
+
 # Internal logging: Enable debug logging from the megaloader package itself.
 # Levels available: DEBUG, INFO, WARNING, ERROR, CRITICAL.
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(name)s: %(message)s")
