@@ -1,16 +1,16 @@
 class MegaloaderError(Exception):
-    """Base exception for errors originating within the megaloader package."""
+    """Base exception for all megaloader errors."""
 
     pass
 
 
-class PluginNotFoundError(MegaloaderError):
-    """Raised when a suitable plugin cannot be found for a given URL."""
+class PluginError(MegaloaderError):
+    """Plugin-related errors."""
 
     pass
 
 
 class DownloadError(MegaloaderError):
-    """Raised for errors specifically related to the download process."""
+    """Download-related errors."""
 
     pass

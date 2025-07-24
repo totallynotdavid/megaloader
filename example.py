@@ -1,12 +1,14 @@
 import logging
 import requests
-from megaloader import download, Bunkr
+from megaloader import download, Bunkr, PixelDrain
 
 # Internal logging: Enable debug logging from the megaloader package itself.
 logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(name)s: %(message)s")
 
 # Automatic plugin detection.
 download("https://pixeldrain.com/u/95u1wnsd", "./downloads")
+print("Download complete.")
+print(" ")
 
 # Inject a session with, e.g., retry logic.
 session = requests.Session()
@@ -18,8 +20,9 @@ download(
     session=session,
     plugin_class=Bunkr,
 )
+print("Download complete.")
+print(" ")
 
-"""
 # Enable proxy usage for PixelDrain.
 download(
     "https://pixeldrain.com/l/nH4ZKt3b",
@@ -27,6 +30,7 @@ download(
     plugin_class=PixelDrain,
     use_proxies=True,
 )
+print("Download complete.")
+print(" ")
 
 download("https://bunkr.si/f/StoRbcXsF0Yje", "./downloads")
-"""

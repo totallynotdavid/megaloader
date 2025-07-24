@@ -1,17 +1,40 @@
+"""
+Megaloader - This project will make you smile. It allows you to use
+some download plugins for many websites. Check the README for a full
+list of supported sites.
+
+Basic usage:
+    ```python
+    from megaloader import download
+
+    success = download("https://bunkr.si/a/example", "./downloads/")
+    if success:
+        print("Download completed")
+    ```
+
+Advanced usage with specific plugin:
+    ```python
+    from megaloader import Bunkr
+
+    plugin = Bunkr("https://bunkr.si/a/example")
+    items = list(plugin.export())
+    for item in items:
+        plugin.download_file(item, "./downloads/")
+    ```
+"""
+
 import urllib.parse
 import logging
 from typing import Optional, Type
-from .plugin import BasePlugin
-from .plugins import (
-    get_plugin_class,
-    Bunkr,
-    PixelDrain,
-)
 
+from .plugin import BasePlugin, Item
+from .plugins import get_plugin_class, Bunkr, PixelDrain
+
+# Suppress default logging unless explicitly configured
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-# This allows users to do `from megaloader import Bunkr, download`
-__all__ = ["download", "BasePlugin", "Bunkr", "PixelDrain"]
+__version__ = "0.1.0"
+__all__ = ["download", "BasePlugin", "Item", "Bunkr", "PixelDrain"]
 
 
 def download(
@@ -19,66 +42,67 @@ def download(
     output_dir: str,
     *,
     plugin_class: Optional[Type[BasePlugin]] = None,
-    **plugin_kwargs,
+    **kwargs,
 ) -> bool:
     """
-    Main download function. Automatically detects the service/plugin based on URL
-    or uses a specified plugin class.
+    Download files from a URL using appropriate plugin.
 
     Args:
-        url (str): The main URL to download from (album, post, etc.).
-        output_dir (str): The local directory to save files.
-        plugin_class (type[BasePlugin], optional): Force the use of a specific plugin class.
-                                                   If None, it's auto-detected.
-        **plugin_kwargs: Additional keyword arguments passed to the plugin's constructor.
+        url: The URL to download from
+        output_dir: Directory to save files to
+        plugin_class: Specific plugin to use (auto-detected if None)
+        **kwargs: Additional options passed to the plugin
 
     Returns:
-        bool: True if the process completed without raising an unhandled exception,
-              False if an error occurred.
+        True if at least one file was successfully downloaded, False otherwise
+
+    Raises:
+        ValueError: If URL is invalid or no plugin found for domain
+        TypeError: If plugin_class is not a BasePlugin subclass
     """
     logger = logging.getLogger(__name__)
+
     try:
-        plugin_instance = None
         if plugin_class is not None:
             if not issubclass(plugin_class, BasePlugin):
-                raise TypeError(
-                    "Provided plugin_class must be a subclass of BasePlugin."
-                )
-            plugin_instance = plugin_class(url, **plugin_kwargs)
+                raise TypeError("plugin_class must be a BasePlugin subclass")
+            plugin = plugin_class(url, **kwargs)
         else:
             parsed_url = urllib.parse.urlparse(url)
-            domain = parsed_url.netloc
-            if not domain:
-                raise ValueError("Invalid URL: Could not parse domain.")
-            detected_plugin_class = get_plugin_class(domain)
-            if detected_plugin_class is None:
-                raise ValueError(f"No plugin found for domain: {domain}")
-            plugin_instance = detected_plugin_class(url, **plugin_kwargs)
+            if not parsed_url.netloc:
+                raise ValueError("Invalid URL: Could not parse domain")
 
-        logger.info(
-            f"Using plugin: {plugin_instance.__class__.__name__} for URL: {url}"
-        )
+            plugin_cls = get_plugin_class(parsed_url.netloc)
+            if plugin_cls is None:
+                raise ValueError(f"No plugin found for domain: {parsed_url.netloc}")
+            plugin = plugin_cls(url, **kwargs)
 
-        exported_items = list(plugin_instance.export())
-        if not exported_items:
-            logger.warning("No items found to export.")
+        logger.info(f"Using {plugin.__class__.__name__} for {url}")
+
+        items = list(plugin.export())
+        if not items:
+            logger.info("No items found to download")
             return True
-        logger.info(f"Found {len(exported_items)} items to process.")
+
+        logger.info(f"Processing {len(items)} items")
         success_count = 0
-        for i, item in enumerate(exported_items, 1):
-            logger.info(f"Processing item {i}/{len(exported_items)}")
+
+        for i, item in enumerate(items, 1):
             try:
-                result = plugin_instance.download_file(item, output_dir)
+                result = plugin.download_file(item, output_dir)
                 if result:
                     success_count += 1
+                    logger.debug(f"Downloaded {i}/{len(items)}: {item.filename}")
                 else:
-                    logger.warning("Item processing reported failure or skipped.")
+                    logger.warning(
+                        f"Failed to download {i}/{len(items)}: {item.filename}"
+                    )
             except Exception as e:
-                logger.error(f"Error during processing of item {i}: {e}", exc_info=True)
-        logger.info(
-            f"Download process finished. Successful items: {success_count}/{len(exported_items)}"
-        )
-        return success_count > 0 or len(exported_items) == 0
+                logger.error(f"Error downloading item {i}: {e}")
+
+        logger.info(f"Completed: {success_count}/{len(items)} successful")
+        return success_count > 0
+
     except Exception as e:
-        logger.critical(f"Critical error in main download function: {e}", exc_info=True)
+        logger.error(f"Download failed: {e}")
         return False
