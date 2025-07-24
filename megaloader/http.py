@@ -2,7 +2,6 @@ import os
 import shutil
 import requests
 from urllib.parse import unquote
-from .magic_table import __magic_tablify
 
 
 def __build_headers(url: str, custom_headers: dict = None, as_list: bool = False):
@@ -40,7 +39,6 @@ def http_download(
     output = os.path.join(output_folder, filename)
     if os.path.exists(output):
         return
-    url = __magic_tablify(url)
     headers = None
     if headers_required:
         headers = __build_headers(url, custom_headers)
