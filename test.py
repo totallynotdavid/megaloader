@@ -1,8 +1,13 @@
 from plugins import Bunkr
 
-# Album URL:    https://bunkrr.su/a/pSbD1FmM
-# Single File:  https://bunkrr.su/d/megaloader-main-RKEICuly.zip
-#               https://bunkr.si/f/StoRbcXsF0Yje
+# Bunkr URLs:
+# - Album URL:    https://bunkrr.su/a/pSbD1FmM
+# - Single File:  https://bunkrr.su/d/megaloader-main-RKEICuly.zip
+#                 https://bunkr.si/f/StoRbcXsF0Yje
+
+# Pixeldrain URLs:
+# - Single File:  https://pixeldrain.com/u/95u1wnsd
+# - List:         https://pixeldrain.com/l/nH4ZKt3b
 
 
 def main():
