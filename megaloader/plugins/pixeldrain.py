@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class PixelDrain(BasePlugin):
     # Proxy servers for rate limit bypassing
+    # Thanks to https://github.com/sh13y/ - to be used only with user permission.
     PROXIES = [
         "pd1.sriflix.my",
         "pd2.sriflix.my",
