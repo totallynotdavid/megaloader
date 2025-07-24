@@ -2,10 +2,45 @@
 name = "megaloader"
 version = "0.1.0"
 description = "This project will make you smile. It allows you to use some download plugins for many websites such as Cyberdrop, Fanbox, GoFile, Pixiv, Rule34, Thotslife, and so on..."
+
+license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.13"
+
+authors = [
+    { name = "DURAND Malo", email = "malo.durand@epitech.eu" },
+]
+maintainers = [
+    { name = "David Duran", email = "dadch1404@gmail.com" },
+]
+
 dependencies = [
     "bs4>=0.0.2",
     "lxml>=6.0.0",
     "requests>=2.32.4",
+]
+
+[tool.ruff]
+extend-exclude = [
+    "docs/*",
+]
+fix = true
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+extend-select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "ERA", # flake8-eradicate/eradicate
+    "I",   # isort
+    "N",   # pep8-naming
+    "PIE", # flake8-pie
+    "PGH", # pygrep
+    "RUF", # ruff checks
+    "SIM", # flake8-simplify
+    "T20", # flake8-print
+    "TC",  # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "UP",  # pyupgrade
 ]
