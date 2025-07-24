@@ -1,12 +1,14 @@
 import urllib.parse
+import logging
 from typing import Optional, Type
-
 from .plugin import BasePlugin
 from .plugins import (
     get_plugin_class,
     Bunkr,
     PixelDrain,
 )
+
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 # This allows users to do `from megaloader import Bunkr, download`
 __all__ = ["download", "BasePlugin", "Bunkr", "PixelDrain"]
@@ -34,6 +36,7 @@ def download(
         bool: True if the process completed without raising an unhandled exception,
               False if an error occurred.
     """
+    logger = logging.getLogger(__name__)
     try:
         plugin_instance = None
         if plugin_class is not None:
@@ -52,34 +55,30 @@ def download(
                 raise ValueError(f"No plugin found for domain: {domain}")
             plugin_instance = detected_plugin_class(url, **plugin_kwargs)
 
-        print(
-            f"[INFO] Using plugin: {plugin_instance.__class__.__name__} for URL: {url}"
+        logger.info(
+            f"Using plugin: {plugin_instance.__class__.__name__} for URL: {url}"
         )
 
         exported_items = list(plugin_instance.export())
         if not exported_items:
-            print("[WARNING] No items found to export.")
+            logger.warning("No items found to export.")
             return True
-
-        print(f"[INFO] Found {len(exported_items)} items to process.")
-
+        logger.info(f"Found {len(exported_items)} items to process.")
         success_count = 0
         for i, item in enumerate(exported_items, 1):
-            print(f"[INFO] Processing item {i}/{len(exported_items)}")
+            logger.info(f"Processing item {i}/{len(exported_items)}")
             try:
                 result = plugin_instance.download_file(item, output_dir)
                 if result:
                     success_count += 1
                 else:
-                    print("[WARNING] Item processing reported failure or skipped.")
+                    logger.warning("Item processing reported failure or skipped.")
             except Exception as e:
-                print(f"[ERROR] Error during processing of item {i}: {e}")
-
-        print(
-            f"[INFO] Download process finished. Successful items: {success_count}/{len(exported_items)}"
+                logger.error(f"Error during processing of item {i}: {e}", exc_info=True)
+        logger.info(
+            f"Download process finished. Successful items: {success_count}/{len(exported_items)}"
         )
-        return True
-
+        return success_count > 0 or len(exported_items) == 0
     except Exception as e:
-        print(f"[ERROR] Critical error in main download function: {e}")
+        logger.critical(f"Critical error in main download function: {e}", exc_info=True)
         return False

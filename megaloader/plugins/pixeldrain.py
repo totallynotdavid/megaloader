@@ -3,9 +3,16 @@ import re
 import os
 import json
 import math
+import logging
 from urllib.parse import urlparse
-from typing import Generator, Tuple, Optional
+from typing import (
+    Generator,
+    Tuple,
+    Optional,
+)
 from ..plugin import BasePlugin
+
+logger = logging.getLogger(__name__)
 
 
 class PixelDrain(BasePlugin):
@@ -23,7 +30,7 @@ class PixelDrain(BasePlugin):
         "pd10.sriflix.my",
     ]
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, **kwargs):
         super().__init__(url)
         self.session = requests.Session()
         self.session.headers.update(
@@ -54,58 +61,46 @@ class PixelDrain(BasePlugin):
         s = round(size_bytes / p, 2)
         return f"{s} {size_name[i]}"
 
-    def export(self) -> Generator[Tuple[str, str], None, None]:
+    def export(
+        self,
+    ) -> Generator[Tuple[str, str], None, None]:
         """
         Yields a tuple of (filename, file_id) for each file found.
         Handles both single file pages (/u/) and lists (/l/).
         """
-        print(f"[INFO] PixelDrain: Fetching page: {self.url}")
-        try:
-            res = self.session.get(self.url, timeout=30)
-            res.raise_for_status()
-            match = re.search(r"window\.viewer_data\s*=\s*({.*?});", res.text)
-            if not match:
-                raise ValueError("Could not find viewer_data JSON on page.")
-            data = json.loads(match.group(1))
-            api_response = data.get("api_response", {})
-            files_to_process = []
-
-            # Case 1: It's a list of files (/l/...)
-            if data.get("type") == "list" and "files" in api_response:
-                files_to_process = api_response["files"]
-                total_size = sum(file.get("size", 0) for file in files_to_process)
-                print(
-                    f"[INFO] PixelDrain: Found list '{api_response.get('title')}' with {len(files_to_process)} files. "
-                    f"Total size: {self._format_size(total_size)}"
-                )
-
-            # Case 2: It's a single file (/u/...)
-            elif "name" in api_response:
-                files_to_process = [api_response]
-                print(
-                    f"[INFO] PixelDrain: Found single file: '{api_response['name']}' "
-                    f"({self._format_size(api_response.get('size', 0))})"
-                )
-
-            for file in files_to_process:
-                # Yield filename and file_id for each file found
-                yield (file["name"], file["id"])
-        except (requests.RequestException, ValueError, KeyError) as e:
-            print(f"[ERROR] PixelDrain: Error exporting from {self.url}: {e}")
+        logger.info(f"PixelDrain: Fetching page: {self.url}")
+        res = self.session.get(self.url, timeout=30)
+        res.raise_for_status()
+        match = re.search(r"window\.viewer_data\s*=\s*({.*?});", res.text)
+        if not match:
+            raise ValueError("Could not find viewer_data JSON on page.")
+        data = json.loads(match.group(1))
+        api_response = data.get("api_response", {})
+        files_to_process = []
+        if data.get("type") == "list" and "files" in api_response:
+            files_to_process = api_response["files"]
+            total_size = sum(file.get("size", 0) for file in files_to_process)
+            logger.info(
+                f"PixelDrain: Found list '{api_response.get('title')}' with {len(files_to_process)} files. "
+                f"Total size: {self._format_size(total_size)}"
+            )
+        elif "name" in api_response:
+            files_to_process = [api_response]
+            logger.info(
+                f"PixelDrain: Found single file: '{api_response['name']}' "
+                f"({self._format_size(api_response.get('size', 0))})"
+            )
+        for file in files_to_process:
+            yield (file["name"], file["id"])
 
     def download_file(self, item: Tuple[str, str], output_dir: str) -> Optional[bool]:
-        """
-        Downloads a single file using its filename and file_id.
-        The `item` is expected to be a tuple (filename, file_id).
-        """
         # Unpack the item yielded by export
         if not isinstance(item, tuple) or len(item) != 2:
-            print(f"[ERROR] PixelDrain: Invalid item format for download_file: {item}")
+            logger.error(f"PixelDrain: Invalid item format for download_file: {item}")
             return False
         filename, file_id = item
 
-        # Default to direct download
-        # TODO: Allow proxy usage via plugin_kwargs
+        # TODO: Allow proxy usage via plugin_kwargs (future improvement for consistency)
         use_proxy = False
 
         if use_proxy:
@@ -115,7 +110,7 @@ class PixelDrain(BasePlugin):
             download_url = self._get_direct_api_url(file_id)
             source_msg = "directly from pixeldrain.com"
 
-        print(f"[INFO] PixelDrain: Downloading '{filename}' {source_msg}...")
+        logger.info(f"PixelDrain: Downloading '{filename}' {source_msg}...")
         try:
             os.makedirs(output_dir, exist_ok=True)
             save_path = os.path.join(output_dir, filename)
@@ -130,10 +125,12 @@ class PixelDrain(BasePlugin):
                 r.raise_for_status()
                 with open(save_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):
-                        if chunk:  # Filter out keep-alive chunks
+                        if chunk:
                             f.write(chunk)
-            print(f"[SUCCESS] PixelDrain: Downloaded '{filename}'")
+            logger.info(f"PixelDrain: Downloaded '{filename}' -> {save_path}")
             return True
         except Exception as e:
-            print(f"[ERROR] PixelDrain: Download failed for '{filename}': {e}")
+            logger.error(
+                f"PixelDrain: Download failed for '{filename}': {e}", exc_info=True
+            )
             return False

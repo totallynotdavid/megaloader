@@ -1,5 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Generator, Any, Optional
+from dataclasses import dataclass
+from typing import Generator, Optional
+
+
+@dataclass
+class Item:
+    """Represents a downloadable item exported by a plugin."""
+
+    url: str
+    filename: Optional[str] = None
+    id: Optional[str] = None
+    metadata: Optional[dict] = None
 
 
 class BasePlugin(ABC):
@@ -8,47 +19,40 @@ class BasePlugin(ABC):
     inherit from this class and implement the abstract methods.
     """
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, **kwargs):
         """
         Initializes the plugin with the main URL (e.g., album, post, list).
+
+        Args:
+            url (str): The URL to process.
+            **kwargs: Additional configuration options for the plugin.
+                      Subclasses should define and document their specific kwargs.
         """
         if not isinstance(url, str) or not url.strip():
             raise ValueError("URL must be a non-empty string.")
         self.url = url.strip()
+        self._config = kwargs
 
     @abstractmethod
-    def export(self) -> Generator[Any, None, None]:
+    def export(self) -> Generator[Item, None, None]:
         """
-        Abstract method to export downloadable item identifiers.
-
-        This method should yield items that can be passed to `download_file`.
-        The specific type yielded (e.g., str, tuple) depends on the plugin's
-        `download_file` implementation.
+        Exports items (files) from the URL.
 
         Yields:
-            Generator[Any, None, None]: An iterable of items representing
-                                        downloadable resources. Often strings (URLs),
-                                        but can be tuples or other data structures
-                                        needed by `download_file`.
+            Item: An Item object representing a downloadable file.
         """
         pass
 
     @abstractmethod
-    def download_file(self, item: Any, output_dir: str) -> Optional[Any]:
+    def download_file(self, item: Item, output_dir: str) -> Optional[str]:
         """
-        Abstract method to download a single file.
-
-        The `item` argument is what `export` yields for this specific plugin.
-        For simple URL exports, it's often `download_file(self, file_url: str, output_dir: str)`.
-        For more complex exports (like Pixeldrain), it might be
-        `download_file(self, item: Tuple[str, str], output_dir: str)`.
+        Downloads a single item to the specified output directory.
 
         Args:
-            item (Any): The item representing the resource to download, as yielded by `export`.
-            output_dir (str): The directory where the file should be saved.
+            item (Item): The Item object representing the file to download.
+            output_dir (str): The directory to save the file.
 
         Returns:
-            Optional[Any]: Plugin-specific indicator of success/failure.
-                           Often the path to the downloaded file on success, None/False otherwise.
+            The path to the downloaded file if successful, None otherwise.
         """
         pass

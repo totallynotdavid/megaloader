@@ -2,28 +2,21 @@ from .bunkr import Bunkr
 from .pixeldrain import PixelDrain
 
 # This allows for automatic plugin selection based on the URL domain.
+# Identifiers without a specific domain (like 'bunkr') will match any URL containing that term.
 _PLUGIN_REGISTRY = {
     "bunkr.si": Bunkr,
     "bunkr.la": Bunkr,
     "bunkr.is": Bunkr,
     "bunkr.ru": Bunkr,
     "bunkr.su": Bunkr,
-    "bunkr": Bunkr,  # Fallback for any other Bunkr-related URLs
+    "bunkr": Bunkr,
     "pixeldrain.com": PixelDrain,
     "pixeldrain": PixelDrain,
 }
 
 
 def get_plugin_class(identifier: str):
-    """
-    Retrieves the plugin class associated with an identifier (e.g., domain name).
-
-    Args:
-        identifier (str): The identifier (usually derived from the URL) to look up.
-
-    Returns:
-        type[BasePlugin] | None: The corresponding plugin class, or None if not found.
-    """
+    """Gets the plugin class for a given domain identifier."""
     identifier = identifier.lower().strip()
     if not identifier:
         return None
