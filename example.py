@@ -28,7 +28,7 @@ download(
     "https://pixeldrain.com/l/nH4ZKt3b",
     "./downloads",
     plugin_class=PixelDrain,
-    use_proxies=True,
+    use_proxy=True,
 )
 print("Download complete.")
 print(" ")
