@@ -1,0 +1,34 @@
+name: CodeQL
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+    schedule:
+        - cron: "32 16 * * 3"
+    workflow_dispatch:
+
+jobs:
+    analyze:
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            packages: read
+            security-events: write
+
+        strategy:
+            fail-fast: false
+            matrix:
+                language: ["python", "actions"]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: github/codeql-action/init@v3
+              with:
+                  languages: ${{ matrix.language }}
+                  queries: security-extended
+
+            - uses: github/codeql-action/analyze@v3
+              with:
+                  category: "/language:${{matrix.language}}"

@@ -1,0 +1,21 @@
+name: "Pre-commit"
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+
+jobs:
+    main-linux:
+        uses: asottile/workflows/.github/workflows/tox.yml@v1.8.1
+        with:
+            env: '["py311", "py312", "py313"]'
+            os: ubuntu-latest
