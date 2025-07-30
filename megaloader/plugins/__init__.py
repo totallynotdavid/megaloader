@@ -1,5 +1,6 @@
 from megaloader.plugin import BasePlugin
 from megaloader.plugins.bunkr import Bunkr
+from megaloader.plugins.cyberdrop import Cyberdrop
 from megaloader.plugins.pixeldrain import PixelDrain
 
 
@@ -15,6 +16,10 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     # PixelDrain domains
     "pixeldrain.com": PixelDrain,
     "pixeldrain": PixelDrain,
+    # Cyberdrop domains
+    "cyberdrop.me": Cyberdrop,
+    "cyberdrop.to": Cyberdrop,
+    "cyberdrop": Cyberdrop,
 }
 
 
@@ -42,4 +47,4 @@ def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     return None
 
 
-__all__ = ["Bunkr", "PixelDrain", "get_plugin_class"]
+__all__ = ["Bunkr", "Cyberdrop", "PixelDrain", "get_plugin_class"]

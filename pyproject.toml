@@ -75,5 +75,5 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = ["requests.*"]
+module = ["requests.*", "bs4.*"]
 ignore_missing_imports = true
