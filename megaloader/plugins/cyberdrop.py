@@ -161,10 +161,14 @@ class Cyberdrop(BasePlugin):
         try:
             auth_response = self.session.get(item.url, timeout=30)
             auth_response.raise_for_status()
-            direct_url = auth_response.json().get("url")
+            response_json = auth_response.json()
+            direct_url = response_json.get("url")
 
             if not direct_url:
-                logger.error(f"Could not get direct download URL for {item.filename}")
+                logger.error(
+                    f"Could not get direct download URL for {item.filename}. "
+                    f"API response: {response_json}"
+                )
                 return False
 
             logger.debug(f"Downloading {item.filename} from direct URL")
