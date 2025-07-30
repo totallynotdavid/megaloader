@@ -41,19 +41,23 @@ class Cyberdrop(BasePlugin):
             }
         )
 
-    def _sanitize_filename(self, filename: str) -> str:
-        """Removes illegal characters from a filename."""
-        return re.sub(INVALID_FILENAME_CHARS, "_", filename).strip()
+    def _sanitize_name(self, name: str) -> str:
+        """Removes illegal characters from a filename or directory name."""
+        return re.sub(INVALID_FILENAME_CHARS, "_", name).strip()
 
     def _get_file_info(self, file_id: str) -> dict[str, Any] | None:
         """Fetches file metadata from the Cyberdrop API, respecting rate limits."""
         api_url = f"{self.API_BASE_URL}/info/{file_id}"
         try:
-            # Delay before each API call to avoid being blocked.
             time.sleep(self.rate_limit_seconds)
             response = self.session.get(api_url, timeout=30)
             response.raise_for_status()
+
             data = response.json()
+            if not isinstance(data, dict):
+                logger.error(f"API response for {file_id} is not a valid JSON object.")
+                return None
+
             if not data.get("name") or not data.get("auth_url"):
                 logger.error(f"Invalid metadata for file ID {file_id}: {data}")
                 return None
@@ -89,13 +93,11 @@ class Cyberdrop(BasePlugin):
 
         title_el = soup.find("h1", id="title")
         album_title = (
-            self._sanitize_filename(title_el.text) if title_el else "cyberdrop_album"
+            self._sanitize_name(title_el.text) if title_el else "cyberdrop_album"
         )
         logger.info(f"Found album: {album_title}")
 
-        file_links = soup.find_all("a", class_="file", href=True) or soup.find_all(
-            "a", id="file", href=True
-        )
+        file_links = soup.select("a.file[href], a#file[href]")
         if not file_links:
             logger.warning("No file links found on album page.")
             return
@@ -112,9 +114,9 @@ class Cyberdrop(BasePlugin):
             if info:
                 yield Item(
                     url=info["auth_url"],
-                    filename=self._sanitize_filename(info["name"]),
+                    filename=self._sanitize_name(info["name"]),
+                    album_title=album_title,
                     file_id=file_id,
-                    metadata={"album_title": album_title},
                 )
 
     def _export_single_file(self) -> Generator[Item, None, None]:
@@ -129,18 +131,14 @@ class Cyberdrop(BasePlugin):
         if info:
             yield Item(
                 url=info["auth_url"],
-                filename=self._sanitize_filename(info["name"]),
+                filename=self._sanitize_name(info["name"]),
                 file_id=file_id,
             )
 
     def download_file(self, item: Item, output_dir: str) -> bool:
         """Downloads a single file from Cyberdrop."""
-        final_dir = output_dir
-        if item.metadata and "album_title" in item.metadata:
-            final_dir = os.path.join(output_dir, item.metadata["album_title"])
-
-        os.makedirs(final_dir, exist_ok=True)
-        output_path = os.path.join(final_dir, item.filename)
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, item.filename)
 
         if os.path.exists(output_path):
             logger.info(f"File already exists: {item.filename}")
@@ -160,8 +158,7 @@ class Cyberdrop(BasePlugin):
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
-                        if chunk:
-                            f.write(chunk)
+                        f.write(chunk)
 
             logger.info(f"Downloaded: {item.filename}")
             return True

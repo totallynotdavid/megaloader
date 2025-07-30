@@ -24,6 +24,8 @@ Advanced usage with specific plugin:
 """
 
 import logging
+import os
+import re
 import urllib.parse
 
 from typing import Any, Optional
@@ -38,12 +40,15 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 __version__ = "0.1.0"
 __all__ = ["BasePlugin", "Bunkr", "Item", "PixelDrain", "download"]
 
+INVALID_DIR_CHARS = r'[<>:"/\\|?*]'
+
 
 def download(
     url: str,
     output_dir: str,
     *,
     plugin_class: Optional[type[BasePlugin]] = None,
+    create_album_subdirs: bool = True,
     **kwargs: Any,
 ) -> bool:
     """
@@ -53,6 +58,7 @@ def download(
         url: The URL to download from
         output_dir: Directory to save files to
         plugin_class: Specific plugin to use (auto-detected if None)
+        create_album_subdirs: If True, create a sub-directory for albums
         **kwargs: Additional options passed to the plugin
 
     Returns:
@@ -91,7 +97,15 @@ def download(
 
         for i, item in enumerate(items, 1):
             try:
-                result = plugin.download_file(item, output_dir)
+                item_output_dir = output_dir
+                if create_album_subdirs and item.album_title:
+                    sane_album_title = re.sub(
+                        INVALID_DIR_CHARS, "_", item.album_title
+                    ).strip()
+                    if sane_album_title:
+                        item_output_dir = os.path.join(output_dir, sane_album_title)
+
+                result = plugin.download_file(item, item_output_dir)
                 if result:
                     success_count += 1
                     logger.debug(f"Downloaded {i}/{len(items)}: {item.filename}")
