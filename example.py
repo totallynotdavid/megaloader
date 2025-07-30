@@ -30,4 +30,4 @@ download(
     use_proxy=True,
 )
 
-download("https://bunkr.si/f/StoRbcXsF0Yje", "./downloads")
+download("https://cyberdrop.me/a/0OpiyaOV", "./downloads")

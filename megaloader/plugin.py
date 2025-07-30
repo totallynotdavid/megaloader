@@ -10,6 +10,7 @@ class Item:
 
     url: str
     filename: str
+    album_title: Optional[str] = None
     file_id: Optional[str] = None
     metadata: Optional[dict[str, Any]] = None
 
