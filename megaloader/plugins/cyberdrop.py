@@ -29,7 +29,7 @@ class Cyberdrop(BasePlugin):
     BASE_URL = "https://cyberdrop.me"
 
     def __init__(
-        self, url: str, rate_limit_seconds: float = 2.0, **kwargs: Any
+        self, url: str, rate_limit_seconds: float = 1.0, **kwargs: Any
     ) -> None:
         super().__init__(url, **kwargs)
         self.rate_limit_seconds = rate_limit_seconds
@@ -40,16 +40,28 @@ class Cyberdrop(BasePlugin):
                 "Accept": "application/json, text/html, */*",
             }
         )
+        # Timestamp of the last API call. Use 0.0 for the first run.
+        self._last_api_call_time: float = 0.0
 
     def _sanitize_name(self, name: str) -> str:
         """Removes illegal characters from a filename or directory name."""
         return re.sub(INVALID_FILENAME_CHARS, "_", name).strip()
 
     def _get_file_info(self, file_id: str) -> dict[str, Any] | None:
-        """Fetches file metadata from the Cyberdrop API, respecting rate limits."""
+        """
+        Fetches file metadata from the Cyberdrop API, respecting rate limits.
+        This method ensures there is at least `rate_limit_seconds` between calls.
+        """
+        now = time.monotonic()
+        time_since_last_call = now - self._last_api_call_time
+
+        if time_since_last_call < self.rate_limit_seconds:
+            sleep_duration = self.rate_limit_seconds - time_since_last_call
+            logger.debug(f"Rate limiting: sleeping for {sleep_duration:.2f} seconds.")
+            time.sleep(sleep_duration)
+
         api_url = f"{self.API_BASE_URL}/info/{file_id}"
         try:
-            time.sleep(self.rate_limit_seconds)
             response = self.session.get(api_url, timeout=30)
             response.raise_for_status()
 
@@ -66,6 +78,8 @@ class Cyberdrop(BasePlugin):
             logger.error(f"Failed to get file info for ID {file_id}: {e}")
         except ValueError:
             logger.error(f"Failed to decode JSON from file info for ID {file_id}")
+        finally:
+            self._last_api_call_time = time.monotonic()
         return None
 
     def export(self) -> Generator[Item, None, None]:
