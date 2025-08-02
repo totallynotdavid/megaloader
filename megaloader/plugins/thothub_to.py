@@ -34,8 +34,11 @@ class ThothubTO(BasePlugin):
     _VIDEO_ID_RE = re.compile(r"video_id:\s*'(\d+)'")
     _LICENSE_CODE_RE = re.compile(r"license_code:\s*'(\$.+?)'")
     _VIDEO_URL_RE = re.compile(r"video_url:\s*'([^']+)'")
-
     _FILENAME_SANITIZE_RE = re.compile(r'[<>:"/\\|?*]')
+
+    _OBFUSCATION_PREFIX = "function/0/"
+    _FONT_SIZE_PX = 16
+    _HASH_PREFIX_LENGTH = 32
 
     def __init__(self, url: str, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
@@ -114,7 +117,7 @@ class ThothubTO(BasePlugin):
         f_str_2 = str(f_val)
 
         # Corresponds to JS `i = o(c) / 2 + 2`, where `c` is '16px'
-        i_val = 16 // 2 + 2
+        i_val = self._FONT_SIZE_PX // 2 + 2
         final_key = ""
         # Corresponds to the final nested loop that builds the key `m`
         for g in range(j + 1):
@@ -204,7 +207,9 @@ class ThothubTO(BasePlugin):
                 return None
 
             video_id = video_id_match.group(1)
-            obfuscated_url = obfuscated_url_match.group(1).replace("function/0/", "")
+            obfuscated_url = obfuscated_url_match.group(1).replace(
+                self._OBFUSCATION_PREFIX, ""
+            )
             license_code = license_code_match.group(1)
 
             # Third: Replicate the deobfuscation process.
@@ -216,8 +221,8 @@ class ThothubTO(BasePlugin):
             original_hash = url_parts[5]
 
             # c. IMPORTANT: The shuffling logic only applies to the first 32 characters.
-            hash_to_shuffle = original_hash[:32]
-            rest_of_hash = original_hash[32:]
+            hash_to_shuffle = original_hash[: self._HASH_PREFIX_LENGTH]
+            rest_of_hash = original_hash[self._HASH_PREFIX_LENGTH :]
 
             # d. Shuffle the 32-character prefix using the generated key.
             shuffled_prefix = self._deobfuscate_hash(hash_to_shuffle, deobfuscation_key)
@@ -228,7 +233,6 @@ class ThothubTO(BasePlugin):
 
             # Finally: Reconstruct the final URL.
             base_video_url = "/".join(url_parts)
-            # The 'rnd' parameter is important for the URL to be accepted by the server.
             rnd_timestamp = int(time.time() * 1000)
             separator = "&" if "?" in base_video_url else "?"
             final_video_url = f"{base_video_url}{separator}rnd={rnd_timestamp}"
@@ -253,12 +257,15 @@ class ThothubTO(BasePlugin):
                 f"An unexpected error occurred while processing {page_url}: {e}",
                 exc_info=True,
             )
-            debug_fd, debug_path = tempfile.mkstemp(
-                prefix="thothub_debug_", suffix=".html"
-            )
-            with os.fdopen(debug_fd, "w", encoding="utf-8") as f:
-                f.write(content)
-            logger.info(f"Saved the page content to: {debug_path}")
+            try:
+                debug_fd, debug_path = tempfile.mkstemp(
+                    prefix="thothub_debug_", suffix=".html"
+                )
+                with os.fdopen(debug_fd, "w", encoding="utf-8") as f:
+                    f.write(content)
+                logger.info(f"Saved the page content to: {debug_path}")
+            except Exception as debug_err:
+                logger.warning(f"Failed to write debug file: {debug_err}")
             return None
 
     def export(self) -> Generator[Item, None, None]:
@@ -329,7 +336,6 @@ class ThothubTO(BasePlugin):
             sanitized_album_title = self._sanitize_filename(item.album_title).replace(
                 ".mp4", ""
             )
-            # Prevent redundant nesting
             if os.path.basename(output_dir) != sanitized_album_title:
                 final_output_dir = os.path.join(output_dir, sanitized_album_title)
                 os.makedirs(final_output_dir, exist_ok=True)
