@@ -31,14 +31,32 @@ import urllib.parse
 from typing import Any, Optional
 
 from megaloader.plugin import BasePlugin, Item
-from megaloader.plugins import Bunkr, PixelDrain, get_plugin_class
+from megaloader.plugins import (
+    Bunkr,
+    Cyberdrop,
+    Fapello,
+    Gofile,
+    PixelDrain,
+    ThothubTO,
+    get_plugin_class,
+)
 
 
 # Suppress default logging unless explicitly configured
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __version__ = "0.1.0"
-__all__ = ["BasePlugin", "Bunkr", "Item", "PixelDrain", "download"]
+__all__ = [
+    "BasePlugin",
+    "Bunkr",
+    "Cyberdrop",
+    "Fapello",
+    "Gofile",
+    "Item",
+    "PixelDrain",
+    "ThothubTO",
+    "download",
+]
 
 INVALID_DIR_CHARS = r'[<>:"/\\|?*]'
 
