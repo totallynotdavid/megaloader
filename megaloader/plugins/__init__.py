@@ -4,6 +4,7 @@ from megaloader.plugins.cyberdrop import Cyberdrop
 from megaloader.plugins.fapello import Fapello
 from megaloader.plugins.gofile import Gofile
 from megaloader.plugins.pixeldrain import PixelDrain
+from megaloader.plugins.thothub_to import ThothubTO
 
 
 # Domain to plugin mapping
@@ -25,6 +26,8 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "gofile.io": Gofile,
     # PixelDrain domains
     "pixeldrain.com": PixelDrain,
+    # Thothub[dot]to domains
+    "thothub.to": ThothubTO,
 }
 
 
@@ -58,5 +61,6 @@ __all__ = [
     "Fapello",
     "Gofile",
     "PixelDrain",
+    "ThothubTO",
     "get_plugin_class",
 ]
