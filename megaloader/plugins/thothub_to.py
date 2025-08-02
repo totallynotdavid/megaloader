@@ -406,7 +406,9 @@ class ThothubTO(BasePlugin):
         headers["Referer"] = referer
         headers["Range"] = "bytes=0-"
         try:
-            logger.debug(f"Downloading: {item.url} to {output_path} with headers: {headers}")
+            logger.debug(
+                f"Downloading: {item.url} to {output_path} with headers: {headers}"
+            )
             with self.session.get(
                 item.url,
                 headers=headers,
