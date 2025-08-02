@@ -20,14 +20,16 @@ logger = logging.getLogger(__name__)
 
 class ThothubTO(BasePlugin):
     """
-    Extracts video URLs from Thothub[dot]to.
+    Extracts video and album URLs from Thothub[dot]to.
 
-    Thothub hides the video URL in the 'flashvars' object and uses obfuscated JS
+    For videos, the site hides the URL in 'flashvars' and uses obfuscated JS
     ('kt_player.js') to reveal them at runtime. This plugin mimics that logic.
 
     The deobfuscation process:
     1. Derive a 32-character key from 'license_code' in flashvars.
     2. Use the key to shuffle the first 32 chars of the URL hash.
+
+    For albums, it parses the HTML to find direct (but redirected) image links.
     """
 
     # Regex to find video metadata from the flashvars object in the HTML
@@ -57,10 +59,7 @@ class ThothubTO(BasePlugin):
             )
 
     def _sanitize_filename(self, filename: str) -> str:
-        sanitized = self._FILENAME_SANITIZE_RE.sub("_", filename).strip()
-        if not sanitized.lower().endswith(".mp4"):
-            sanitized += ".mp4"
-        return sanitized
+        return self._FILENAME_SANITIZE_RE.sub("_", filename).strip()
 
     def _generate_deobfuscation_key(self, license_code: str) -> str:
         """
@@ -240,12 +239,13 @@ class ThothubTO(BasePlugin):
             soup = BeautifulSoup(content, "html.parser")
             title_tag = soup.find("h1")
             title = title_tag.text.strip() if title_tag else f"thothub_{video_id}"
+            sanitized_title = self._sanitize_filename(title)
 
             logger.info(f"Successfully retrieved real video URL for '{title}'")
             logger.debug(f"Final URL: {final_video_url}")
             return Item(
                 url=final_video_url,
-                filename=self._sanitize_filename(title),
+                filename=f"{sanitized_title}.mp4",
                 album_title=album_title,
                 metadata={"referer": page_url},
             )
@@ -277,8 +277,61 @@ class ThothubTO(BasePlugin):
                 yield item
         elif path.startswith("/models/"):
             yield from self._export_from_model_page()
+        elif path.startswith("/albums/"):
+            yield from self._export_from_album_page()
         else:
             logger.error(f"Unrecognized Thothub URL format: {self.url}")
+
+    def _export_from_album_page(self) -> Generator[Item, None, None]:
+        logger.info(f"Exporting all images from album: {self.url}")
+        try:
+            response = self.session.get(self.url, timeout=30)
+            response.raise_for_status()
+            content = response.text
+            soup = BeautifulSoup(content, "html.parser")
+
+            album_title_tag = soup.find("h1")
+            album_title = (
+                album_title_tag.text.strip() if album_title_tag else "thothub_album"
+            )
+            sanitized_album_title = self._sanitize_filename(album_title)
+
+            image_links = soup.select('div.block-album a.item[href*="/get_image/"]')
+            if not image_links:
+                logger.warning(f"No image links found on album page: {self.url}")
+                return
+
+            logger.info(f"Found {len(image_links)} images in album '{album_title}'.")
+
+            for i, a_tag in enumerate(image_links):
+                image_page_url = a_tag.get("href")
+                if not image_page_url:
+                    continue
+
+                full_image_url = urljoin(self.url, image_page_url)
+                # The URL path is like: /get_image/.../sources/.../XXXXXXX.jpg/
+                # We extract 'XXXXXXX.jpg' as the filename.
+                path_part = urlparse(full_image_url).path.strip("/")
+                filename = os.path.basename(path_part)
+
+                if not filename:
+                    ext_match = re.search(r"\.(\w+)$", path_part)
+                    ext = ext_match.group(1) if ext_match else "jpg"
+                    filename = f"image_{i + 1}.{ext}"
+
+                yield Item(
+                    url=full_image_url,
+                    filename=filename,
+                    album_title=sanitized_album_title,
+                    metadata={"referer": self.url},
+                )
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch album page {self.url}: {e}")
+        except Exception as e:
+            logger.error(
+                f"An unexpected error occurred while processing album {self.url}: {e}",
+                exc_info=True,
+            )
 
     def _export_from_model_page(self) -> Generator[Item, None, None]:
         model_match = re.search(r"/models/([^/]+)", self.url)
@@ -315,13 +368,16 @@ class ThothubTO(BasePlugin):
             if not video_links:
                 logger.info("No more video links found on this page.")
                 break
+
+            sanitized_model_name = self._sanitize_filename(model_name)
+
             for link in video_links:
                 video_page_url = urljoin("https://thothub.to/", link)
                 if video_page_url in seen_urls:
                     continue
                 seen_urls.add(video_page_url)
                 item = self._get_item_from_video_page(
-                    video_page_url, album_title=model_name
+                    video_page_url, album_title=sanitized_model_name
                 )
                 if item:
                     yield item
@@ -333,9 +389,7 @@ class ThothubTO(BasePlugin):
         final_output_dir = output_dir
 
         if item.album_title:
-            sanitized_album_title = self._sanitize_filename(item.album_title).replace(
-                ".mp4", ""
-            )
+            sanitized_album_title = self._sanitize_filename(item.album_title)
             if os.path.basename(output_dir) != sanitized_album_title:
                 final_output_dir = os.path.join(output_dir, sanitized_album_title)
                 os.makedirs(final_output_dir, exist_ok=True)
@@ -352,7 +406,7 @@ class ThothubTO(BasePlugin):
         headers["Referer"] = referer
         headers["Range"] = "bytes=0-"
         try:
-            logger.debug(f"Downloading: {item.url} with headers: {headers}")
+            logger.debug(f"Downloading: {item.url} to {output_path} with headers: {headers}")
             with self.session.get(
                 item.url,
                 headers=headers,
