@@ -320,13 +320,18 @@ class ThothubTO(BasePlugin):
 
     def download_file(self, item: Item, output_dir: str) -> bool:
         os.makedirs(output_dir, exist_ok=True)
+
         final_output_dir = output_dir
+
         if item.album_title:
             sanitized_album_title = self._sanitize_filename(item.album_title).replace(
                 ".mp4", ""
             )
-            final_output_dir = os.path.join(output_dir, sanitized_album_title)
-            os.makedirs(final_output_dir, exist_ok=True)
+            # Prevent redundant nesting
+            if os.path.basename(output_dir) != sanitized_album_title:
+                final_output_dir = os.path.join(output_dir, sanitized_album_title)
+                os.makedirs(final_output_dir, exist_ok=True)
+
         output_path = os.path.join(final_output_dir, item.filename)
         if os.path.exists(output_path):
             logger.info(f"File already exists: {item.filename}")
