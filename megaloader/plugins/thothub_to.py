@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import tempfile
 import time
 
 from collections.abc import Generator
@@ -252,11 +253,12 @@ class ThothubTO(BasePlugin):
                 f"An unexpected error occurred while processing {page_url}: {e}",
                 exc_info=True,
             )
-            with open("debug_thothub_page.html", "w", encoding="utf-8") as f:
-                f.write(content)
-            logger.info(
-                "Saved the page content to 'debug_thothub_page.html' for debugging."
+            debug_fd, debug_path = tempfile.mkstemp(
+                prefix="thothub_debug_", suffix=".html"
             )
+            with os.fdopen(debug_fd, "w", encoding="utf-8") as f:
+                f.write(content)
+            logger.info(f"Saved the page content to: {debug_path}")
             return None
 
     def export(self) -> Generator[Item, None, None]:
