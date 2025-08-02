@@ -202,7 +202,7 @@ class ThothubTO(BasePlugin):
 
             if not video_id_match or not obfuscated_url_match or not license_code_match:
                 logger.error(
-                    f"Could not find video_id, video_url, or license_code on page {page_url}"
+                    f"Could not find video_id, video_url, or license_code on page {page_url}. The video might not be public."
                 )
                 return None
 
