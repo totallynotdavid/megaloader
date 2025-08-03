@@ -37,7 +37,11 @@ class Fanbox(BasePlugin):
             r"//(?:www\.)?([\w-]+)\.fanbox\.cc|fanbox\.cc/(?:@)?([\w-]+)", url
         )
         if match:
-            creator_id = next(group for group in match.groups() if group)
+            creator_id = next((group for group in match.groups() if group), None)
+            if creator_id is None:
+                raise ValueError(
+                    f"Invalid Fanbox URL: Could not extract creator ID from {url}"
+                )
             logger.debug(f"Extracted creator ID: {creator_id}")
             return creator_id
         raise ValueError(f"Invalid Fanbox URL: Could not extract creator ID from {url}")
