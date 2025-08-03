@@ -33,6 +33,10 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "thothub.to": ThothubTO,
 }
 
+SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {
+    "fanbox.cc", # Fanbox supports subdomains like {creator_id}.fanbox.cc
+}
+
 
 def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     """
@@ -51,6 +55,13 @@ def get_plugin_class(domain: str) -> type[BasePlugin] | None:
         return PLUGIN_REGISTRY[domain]
 
     # Check for subdomain matches
+    for supported_domain in SUBDOMAIN_SUPPORTED_DOMAINS:
+        if (
+            domain.endswith("." + supported_domain)
+            and supported_domain in PLUGIN_REGISTRY
+        ):
+            return PLUGIN_REGISTRY[supported_domain]
+
     for key, plugin_cls in PLUGIN_REGISTRY.items():
         if key in domain:
             return plugin_cls
