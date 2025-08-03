@@ -1,6 +1,9 @@
 import re
+
 import requests
+
 from megaloader.http import http_download
+
 
 BASE_API_URL = "https://api.fanbox.cc"
 
@@ -39,9 +42,9 @@ class Fanbox:
             for post in response["items"]:
                 response = self.execute_api("/post.info?postId=" + post["id"], False)
                 if (
-                    "body" in response.keys()
+                    "body" in response
                     and response["body"] is not None
-                    and "images" in response["body"].keys()
+                    and "images" in response["body"]
                 ):
                     for image in response["body"]["images"]:
                         yield image["originalUrl"]
@@ -58,7 +61,7 @@ class Fanbox:
     def plan_thumbnails(self):
         response = self.execute_api("/plan.listCreator")
         for p in response:
-            if "coverImageUrl" in p and p["coverImageUrl"]:
+            if p.get("coverImageUrl"):
                 yield p["coverImageUrl"]
 
     def execute_api(self, endpoint: str, required_creator_id: bool = True):
