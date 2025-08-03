@@ -151,7 +151,8 @@ class Fanbox(BasePlugin):
             if isinstance(item, dict) and (image_url := item.get("imageUrl")):
                 filename = os.path.basename(unquote(urlparse(image_url).path))
                 if not filename:
-                    filename = f"profile_image_{len(self.seen_urls)}{self._get_extension_from_url(image_url)}"
+                    url_hash = hashlib.md5(image_url.encode("utf-8")).hexdigest()[:8]
+                    filename = f"profile_image_{url_hash}{self._get_extension_from_url(image_url)}"
                 yield from self._create_item(image_url, filename)
                 assets_found += 1
 
