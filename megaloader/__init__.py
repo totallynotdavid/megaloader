@@ -34,6 +34,7 @@ from megaloader.plugin import BasePlugin, Item
 from megaloader.plugins import (
     Bunkr,
     Cyberdrop,
+    Fanbox,
     Fapello,
     Gofile,
     PixelDrain,
@@ -50,6 +51,7 @@ __all__ = [
     "BasePlugin",
     "Bunkr",
     "Cyberdrop",
+    "Fanbox",
     "Fapello",
     "Gofile",
     "Item",
