@@ -34,7 +34,7 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
 }
 
 SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {
-    "fanbox.cc", # Fanbox supports subdomains like {creator_id}.fanbox.cc
+    "fanbox.cc",  # Fanbox supports subdomains like {creator_id}.fanbox.cc
 }
 
 
