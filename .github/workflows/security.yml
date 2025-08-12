@@ -18,7 +18,7 @@ jobs:
             security-events: write
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v5
 
             - uses: tonybaloney/pycharm-security@5c1ceeb1fb2a18478fa7076a81f9f47fd450e592
               with:
