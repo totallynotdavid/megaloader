@@ -26,4 +26,4 @@ run = [
 [tasks.mypy]
 description = "Type check with mypy"
 alias = "m"
-run = "uv run mypy megaloader"
+run = "uv run mypy megaloader --config-file pyproject.toml"
