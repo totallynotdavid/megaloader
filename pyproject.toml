@@ -20,6 +20,12 @@ dependencies = [
     "requests>=2.32.4",
 ]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.7.0",
+    "mypy>=1.0.0",
+]
+
 [tool.setuptools]
 packages = ["megaloader"]
 
