@@ -5,6 +5,7 @@ from megaloader.plugins.fanbox import Fanbox
 from megaloader.plugins.fapello import Fapello
 from megaloader.plugins.gofile import Gofile
 from megaloader.plugins.pixeldrain import PixelDrain
+from megaloader.plugins.pixiv import Pixiv
 from megaloader.plugins.thothub_to import ThothubTO
 
 
@@ -29,6 +30,8 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "gofile.io": Gofile,
     # PixelDrain domains
     "pixeldrain.com": PixelDrain,
+    # Pixiv domains
+    "pixiv.net": Pixiv,
     # Thothub[dot]to domains
     "thothub.to": ThothubTO,
 }
@@ -76,6 +79,7 @@ __all__ = [
     "Fapello",
     "Gofile",
     "PixelDrain",
+    "Pixiv",
     "ThothubTO",
     "get_plugin_class",
 ]
