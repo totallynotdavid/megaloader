@@ -75,7 +75,11 @@ class Pixiv(BasePlugin):
 
     def _api_request(
         self, endpoint: str, params: Optional[dict[str, Any]] = None
-    ) -> Optional[dict[str, Any]]:
+    ) -> Optional[Any]:
+        """
+        Return the 'body' from Pixiv's ajax response.
+        The body may be a dict or a list depending on endpoint.
+        """
         url = f"{self.AJAX_URL}{endpoint}"
         request_params = {"lang": "en"}
         if params:
@@ -85,10 +89,10 @@ class Pixiv(BasePlugin):
             response = self.session.get(url, params=request_params, timeout=30)
             response.raise_for_status()
             data = response.json()
-            if data.get("error"):
+            if isinstance(data, dict) and data.get("error"):
                 logger.error(f"Pixiv API error for {url}: {data.get('message')}")
                 return None
-            return data.get("body")
+            return data.get("body") if isinstance(data, dict) else None
         except requests.RequestException as e:
             logger.error(f"API request failed for {url}: {e}")
         except ValueError:
@@ -119,6 +123,12 @@ class Pixiv(BasePlugin):
             logger.error(f"Could not retrieve profile for user {user_id}")
             return
 
+        if not isinstance(profile_data, dict):
+            logger.error(
+                f"Unexpected profile data shape for user {user_id}: {type(profile_data).__name__}"
+            )
+            return
+
         user_name = profile_data.get("name", f"user_{user_id}")
         album_title = f"{user_id}_{self._sanitize_name(user_name)}"
         logger.info(f"Album will be saved to: {album_title}")
@@ -129,6 +139,12 @@ class Pixiv(BasePlugin):
         all_works_data = self._api_request(f"/user/{user_id}/profile/all")
         if not all_works_data:
             logger.warning(f"Could not retrieve artwork list for user {user_id}")
+            return
+
+        if not isinstance(all_works_data, dict):
+            logger.warning(
+                f"Unexpected artwork list shape for user {user_id}: {type(all_works_data).__name__}"
+            )
             return
 
         illust_ids, manga_ids = [], []
@@ -187,15 +203,25 @@ class Pixiv(BasePlugin):
         if not page_data:
             # Fallback for single images or pages that don't use the /pages endpoint
             illust_data = self._api_request(f"/illust/{artwork_id}")
-            if illust_data and (url := illust_data.get("urls", {}).get("original")):
+            if isinstance(illust_data, dict) and (
+                url := illust_data.get("urls", {}).get("original")
+            ):
                 page_data = [{"urls": {"original": url}}]
             else:
                 logger.warning(f"Failed to get any image URL for artwork {artwork_id}")
                 return
 
+        if isinstance(page_data, dict):
+            page_data = [page_data]
+        elif not isinstance(page_data, list):
+            logger.warning(
+                f"Unexpected page data type for artwork {artwork_id}: {type(page_data).__name__}"
+            )
+            return
+
         if not album_title:
             illust_info = self._api_request(f"/illust/{artwork_id}")
-            if illust_info:
+            if isinstance(illust_info, dict):
                 artist_name = illust_info.get("userName", "unknown_artist")
                 artist_id = illust_info.get("userId", "unknown")
                 album_title = f"{artist_id}_{self._sanitize_name(artist_name)}"
@@ -205,8 +231,15 @@ class Pixiv(BasePlugin):
         has_multiple_pages = len(page_data) > 1
 
         for i, page in enumerate(page_data):
+            if not isinstance(page, dict):
+                logger.warning("page[%d] is not a dict, skipping: %r", i, page)
+                continue
+
             page_url = page.get("urls", {}).get("original")
             if not page_url:
+                logger.warning(
+                    "No usable image URL for artwork %s page %d", artwork_id, i
+                )
                 continue
 
             ext = self._get_extension_from_url(page_url)
