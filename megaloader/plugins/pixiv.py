@@ -236,8 +236,7 @@ class Pixiv(BasePlugin):
 
             page_url = page.get("urls", {}).get("original")
             if not page_url:
-                logger.warning(
-                    "No usable image URL for artwork %s page %d", artwork_id, i
+                    f"No usable image URL for artwork {artwork_id} page {i}"
                 )
                 continue
 
