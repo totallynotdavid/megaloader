@@ -56,7 +56,7 @@ class Pixiv(BasePlugin):
             logger.info("Loaded PHPSESSID from environment variable")
         else:
             logger.warning(
-                "PIXIV_PHPSESSID not set. Access to R-18/private content may be limited."
+                "PIXIV_PHPSESSID not set. Access will be limited to public posts only (some public posts may still be restricted by Pixiv)."
             )
         return session
 
@@ -135,10 +135,12 @@ class Pixiv(BasePlugin):
         illusts_data = all_works_data.get("illusts", {})
         if isinstance(illusts_data, dict):
             illust_ids = list(illusts_data.keys())
+            logger.debug(f"Found {len(illust_ids)} illustration works.")
 
         manga_data = all_works_data.get("manga", [])
         if isinstance(manga_data, dict):
             manga_ids = list(manga_data.keys())
+            logger.debug(f"Found {len(manga_ids)} manga works.")
 
         artwork_ids = illust_ids + manga_ids
 
@@ -200,13 +202,19 @@ class Pixiv(BasePlugin):
             else:
                 album_title = f"artwork_{artwork_id}"
 
+        has_multiple_pages = len(page_data) > 1
+
         for i, page in enumerate(page_data):
             page_url = page.get("urls", {}).get("original")
             if not page_url:
                 continue
 
             ext = self._get_extension_from_url(page_url)
-            filename = os.path.join(artwork_id, f"{artwork_id}_p{i}{ext}")
+
+            if has_multiple_pages:
+                filename = os.path.join(artwork_id, f"{artwork_id}_p{i}{ext}")
+            else:
+                filename = f"{artwork_id}_p{i}{ext}"
 
             yield Item(
                 url=page_url,
