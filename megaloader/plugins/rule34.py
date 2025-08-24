@@ -83,18 +83,34 @@ class Rule34(BasePlugin):
             return
 
         soup = BeautifulSoup(res.text, "html.parser")
-        original_link = soup.find("a", string="Original image")
+        file_url = None
+
+        # First: we try to find the "Original image" link first, as it's usually the best quality
+        original_link = soup.find(
+            "a", string=lambda t: t and "Original image" in t.strip()
+        )
         if original_link and original_link.get("href"):
             file_url = original_link["href"]
-        else:
+
+        # Second: If not found, check for a video source. This handles video posts.
+        if not file_url:
+            video_source = soup.select_one("video > source")
+            if video_source and video_source.get("src"):
+                file_url = video_source.get("src")
+
+        # Third: as a fallback for standard image posts, check for the main image tag.
+        if not file_url:
             img_tag = soup.select_one("img#image")
-            if not img_tag:
-                logger.warning(f"Could not find download link on post {self.post_id}")
-                return
-            file_url = img_tag.get("src")
+            if img_tag and img_tag.get("src"):
+                file_url = img_tag.get("src")
+
+        if not file_url:
+            logger.warning(f"Could not find download link on post {self.post_id}")
+            return
 
         if file_url.startswith("//"):
             file_url = "https:" + file_url
+
         filename = os.path.basename(unquote(urlparse(file_url).path))
         yield Item(url=file_url, filename=filename, album_title=f"post_{self.post_id}")
 
