@@ -231,13 +231,13 @@ class Pixiv(BasePlugin):
         has_multiple_pages = len(page_data) > 1
 
         for i, page in enumerate(page_data):
+            if not isinstance(page, dict):
                 logger.warning(f"page[{i}] is not a dict, skipping: {page!r}")
                 continue
 
             page_url = page.get("urls", {}).get("original")
             if not page_url:
-                    f"No usable image URL for artwork {artwork_id} page {i}"
-                )
+                logger.warning(f"No usable image URL for artwork {artwork_id} page {i}")
                 continue
 
             ext = self._get_extension_from_url(page_url)
