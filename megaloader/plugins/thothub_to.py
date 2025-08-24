@@ -308,7 +308,7 @@ class ThothubTO(BasePlugin):
                 if not image_page_url:
                     continue
 
-                full_image_url = urljoin(self.url, image_page_url)
+                full_image_url = urljoin(self.url, str(image_page_url))
                 # The URL path is like: /get_image/.../sources/.../XXXXXXX.jpg/
                 # We extract 'XXXXXXX.jpg' as the filename.
                 path_part = urlparse(full_image_url).path.strip("/")
@@ -372,7 +372,7 @@ class ThothubTO(BasePlugin):
             sanitized_model_name = self._sanitize_filename(model_name)
 
             for link in video_links:
-                video_page_url = urljoin("https://thothub.to/", link)
+                video_page_url = urljoin("https://thothub.to/", str(link))
                 if video_page_url in seen_urls:
                     continue
                 seen_urls.add(video_page_url)
