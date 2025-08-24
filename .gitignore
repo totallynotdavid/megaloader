@@ -1,4 +1,7 @@
 __pycache__
-
 # Media Files
 downloads/
+
+.env
+*.ps1
+*.sh
