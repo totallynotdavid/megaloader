@@ -22,7 +22,8 @@ class Rule34(BasePlugin):
     This plugin supports two operational modes:
 
     Via API (recommended): Uses the official API. It requires the following environment variables:
-    RULE34_API_KEY and RULE34_USER_ID. Get them at https://rule34.xxx/index.php?page=account&s=options
+    RULE34_API_KEY and RULE34_USER_ID. Get them at https://rule34.xxx/index.php?page=account&s=options.
+    You have to click on 'Generate New Key' the first time you use it.
 
     Scraping mode: Used as fallback when API credentials are missing.
     Scrapes the website directly and is less reliable, but requires no setup.
