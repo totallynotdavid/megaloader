@@ -28,8 +28,8 @@ class Rule34(BasePlugin):
     Scrapes the website directly and is less reliable, but requires no setup.
 
     Supported URL Formats
-    1. Single Post: https://rule34.xyz/index.php?page=post&s=view&id={postId}
-    2. Tag Gallery: https://rule34.xyz/index.php?page=post&s=list&tags={tags}
+    1. Single Post: https://rule34.xxx/index.php?page=post&s=view&id={postId}
+    2. Tag Gallery: https://rule34.xxx/index.php?page=post&s=list&tags={tags}
     """
 
     def __init__(self, url: str, **kwargs: Any) -> None:
