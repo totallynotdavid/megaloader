@@ -8,7 +8,7 @@ from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
 import requests
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from megaloader.http import download_file as http_download
 from megaloader.plugin import BasePlugin, Item
@@ -58,7 +58,7 @@ class Rule34(BasePlugin):
         self.use_api = bool(self.api_key and self.user_id)
 
     def _get_with_timeout(
-        self, url: str, params: Optional[dict] = None
+        self, url: str, params: Optional[dict[str, Any]] = None
     ) -> Optional[requests.Response]:
         try:
             response = self.session.get(url, params=params, timeout=30)
@@ -74,18 +74,24 @@ class Rule34(BasePlugin):
     def _extract_media_url(self, soup: BeautifulSoup) -> Optional[str]:
         # Try original image link first (best quality)
         original_link = soup.find("a", string=lambda t: t and "Original image" in t)
-        if original_link and original_link.get("href"):
-            return original_link["href"]
+        if isinstance(original_link, Tag):
+            href = original_link.get("href")
+            if href:
+                return str(href)
 
         # Try video source for video posts
         video_source = soup.select_one("video > source")
-        if video_source and video_source.get("src"):
-            return video_source["src"]
+        if isinstance(video_source, Tag):
+            src = video_source.get("src")
+            if src:
+                return str(src)
 
         # Fallback to main image
         img_tag = soup.select_one("img#image")
-        if img_tag and img_tag.get("src"):
-            return img_tag["src"]
+        if isinstance(img_tag, Tag):
+            src = img_tag.get("src")
+            if src:
+                return str(src)
 
         return None
 
@@ -183,12 +189,15 @@ class Rule34(BasePlugin):
                 break
 
             for link in post_links:
+                if not isinstance(link, Tag):
+                    continue
+
                 href = link.get("href")
                 if not href or href in seen_urls:
                     continue
-                seen_urls.add(href)
+                seen_urls.add(str(href))
 
-                post_url = urljoin("https://rule34.xxx/index.php", href)
+                post_url = urljoin("https://rule34.xxx/index.php", str(href))
                 post_response = self._get_with_timeout(post_url)
                 if not post_response:
                     continue
