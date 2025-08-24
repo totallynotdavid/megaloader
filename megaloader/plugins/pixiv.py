@@ -231,8 +231,7 @@ class Pixiv(BasePlugin):
         has_multiple_pages = len(page_data) > 1
 
         for i, page in enumerate(page_data):
-            if not isinstance(page, dict):
-                logger.warning("page[%d] is not a dict, skipping: %r", i, page)
+                logger.warning(f"page[{i}] is not a dict, skipping: {page!r}")
                 continue
 
             page_url = page.get("urls", {}).get("original")
