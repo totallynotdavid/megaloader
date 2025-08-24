@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import logging
 import os
 import re
