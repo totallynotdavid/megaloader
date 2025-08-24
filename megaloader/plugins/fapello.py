@@ -90,7 +90,7 @@ class Fapello(BasePlugin):
             logger.info(f"Found {len(thumb_elements)} media items on page {page_num}")
 
             for thumb_img in thumb_elements:
-                thumb_url = urljoin("https://fapello.com/", thumb_img["src"])
+                thumb_url = urljoin("https://fapello.com/", str(thumb_img["src"]))
                 full_res_url = self._get_full_res_url(thumb_url)
 
                 if full_res_url in seen_urls:
