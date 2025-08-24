@@ -118,7 +118,7 @@ class Cyberdrop(BasePlugin):
 
         logger.info(f"Found {len(file_links)} files in album. Fetching metadata...")
         for link in file_links:
-            file_url = urljoin(self.BASE_URL, link["href"])
+            file_url = urljoin(self.BASE_URL, str(link["href"]))
             file_id_match = re.search(r"/f/(\w+)", file_url)
             if not file_id_match:
                 continue
