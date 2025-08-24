@@ -64,7 +64,9 @@ class Pixiv(BasePlugin):
         if match := self._ARTWORK_RE.search(self.url):
             self.url_type = "artwork"
             self.content_id = match.group(1)
-        elif (match := self._USER_RE.search(self.url)) or (match := self._USER_OLD_RE.search(self.url)):
+        elif (match := self._USER_RE.search(self.url)) or (
+            match := self._USER_OLD_RE.search(self.url)
+        ):
             self.url_type = "user"
             self.content_id = match.group(1)
         else:
@@ -137,7 +139,7 @@ class Pixiv(BasePlugin):
         manga_data = all_works_data.get("manga", [])
         if isinstance(manga_data, dict):
             manga_ids = list(manga_data.keys())
-        
+
         artwork_ids = illust_ids + manga_ids
 
         if not artwork_ids:
@@ -159,16 +161,21 @@ class Pixiv(BasePlugin):
         if avatar_url := profile_data.get("imageBig"):
             ext = self._get_extension_from_url(avatar_url)
             filename = os.path.join(self.PROFILE_SUBFOLDER, f"avatar{ext}")
-            yield Item(url=avatar_url, filename=filename, album_title=album_title, metadata={"referer": referer})
+            yield Item(
+                url=avatar_url,
+                filename=filename,
+                album_title=album_title,
+                metadata={"referer": referer},
+            )
 
-        if (cover_url := (profile_data.get("background") or {}).get("url")):
+        if cover_url := (profile_data.get("background") or {}).get("url"):
             ext = self._get_extension_from_url(cover_url)
             filename = os.path.join(self.PROFILE_SUBFOLDER, f"cover{ext}")
             yield Item(
                 url=cover_url,
                 filename=filename,
                 album_title=album_title,
-                metadata={"referer": referer}
+                metadata={"referer": referer},
             )
 
     def _export_artwork_pages(
@@ -199,7 +206,7 @@ class Pixiv(BasePlugin):
                 continue
 
             ext = self._get_extension_from_url(page_url)
-            filename = f"{artwork_id}_p{i}{ext}"
+            filename = os.path.join(artwork_id, f"{artwork_id}_p{i}{ext}")
 
             yield Item(
                 url=page_url,
