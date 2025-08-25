@@ -1,11 +1,9 @@
-name: Security Report
+name: security report
 
 on:
     push:
-        branches:
-            - main
-        paths:
-            - "megaloader/**"
+        branches: ["main"]
+        paths: ['**/*.py']
     workflow_dispatch:
 
 jobs:
