@@ -136,7 +136,7 @@ uv install
 
 <details>
 <summary open>
-Recommended: mise installation
+<b>Recommended</b>: mise installation
 </summary>
 
 I recommend mise for the most reliable setup experience across different
