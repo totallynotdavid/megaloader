@@ -57,8 +57,9 @@ maintenance priority:
 | ThotHub.TO  | thothub.to                                       | Platform content                     | Extended |
 | Fapello     | fapello.com                                      | Profile extraction                   | Extended |
 
-> [!NOTE] 
+> [!NOTE]
 > **Core** plugins receive active maintenance and feature development.
+>
 > **Extended** plugins are supported on a best-effort basis and may occasionally
 > break without immediate fixes as I don't personally use them. They all work as
 > of 2025/08/25
