@@ -51,19 +51,19 @@ We currently support 11 platforms with different maintenance priorities. Core
 platforms receive active development and feature updates, while extended
 platforms are maintained on a best-effort basis.
 
-| Platform    | Domain(s)                                        | Supports                                                                            | Priority |
-| ----------- | ------------------------------------------------ | ----------------------------------------------------------------------------------- | -------- |
-| Bunkr       | bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su | Albums, single files                                                                | Core     |
-| PixelDrain  | pixeldrain.com                                   | Lists, single files, also: [proxy support](#pixeldrain-proxy-support)               | Core     |
-| Cyberdrop   | cyberdrop.me, cyberdrop.to                       | Albums, single files                                                                | Core     |
-| GoFile      | gofile.io                                        | Folders, single files, also: [password-protected folders](#gofile-password-support) | Core     |
-| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator}        | Creator content, also: [authentication](.env.example)                               | Extended |
-| Pixiv       | pixiv.net                                        | Single artworks, user galleries, also: [authentication](.env.example)               | Extended |
-| Rule34      | rule34.xxx                                       | API support, search results (tags), posts, also: [authentication](.env.example)     | Extended |
-| ThotsLife   | thotslife.com                                    | Albums, blog posts                                                                  | Extended |
-| ThotHub.VIP | thothub.vip                                      | Videos, albums                                                                      | Extended |
-| ThotHub.TO  | thothub.to                                       | Videos, albums                                                                      | Extended |
-| Fapello     | fapello.com                                      | Model profiles                                                                      | Extended |
+| Platform    | Domain(s)                                        | Supports                                                                      | Priority |
+| ----------- | ------------------------------------------------ | ----------------------------------------------------------------------------- | -------- |
+| Bunkr       | bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su | Albums, single files                                                          | Core     |
+| PixelDrain  | pixeldrain.com                                   | Lists, single files, [proxy support](#pixeldrain-proxy-support)               | Core     |
+| Cyberdrop   | cyberdrop.me, cyberdrop.to                       | Albums, single files                                                          | Core     |
+| GoFile      | gofile.io                                        | Folders, single files, [password-protected folders](#gofile-password-support) | Core     |
+| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator}        | Creator content, [authentication](.env.example)                               | Extended |
+| Pixiv       | pixiv.net                                        | Single artworks, user galleries, [authentication](.env.example)               | Extended |
+| Rule34      | rule34.xxx                                       | Tags, posts, [API support](.env.example)                                      | Extended |
+| ThotsLife   | thotslife.com                                    | Albums, blog posts                                                            | Extended |
+| ThotHub.VIP | thothub.vip                                      | Videos, albums                                                                | Extended |
+| ThotHub.TO  | thothub.to                                       | Videos, albums                                                                | Extended |
+| Fapello     | fapello.com                                      | Model profiles                                                                | Extended |
 
 <!-- prettier-ignore -->
 > [!NOTE]
