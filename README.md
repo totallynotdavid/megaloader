@@ -283,76 +283,11 @@ for i, item in enumerate(items):
         print(f"Failed to download {item.filename}")
 ```
 
-## Contributing
+## Contributing 👋
 
-We welcome contributions ranging from bug fixes to new platform support. The
-development workflow emphasizes code quality through automated tooling and
-comprehensive type checking.
-
-The project includes several automated tasks that maintain code quality and
-consistency. These tools are configured in [pyproject.toml](pyproject.toml)
-([ruff](pyproject.toml?plain=1#L32) and [mypy](pyproject.toml?plain=1#L69)) and
-can be executed through mise:
-
-```bash
-mise run fix     # Format code and apply automated fixes via ruff
-mise run mypy    # Run comprehensive type checking
-mise run export  # Update requirements.txt from pyproject.toml
-```
-
-All contributions must pass the automated CI pipeline, which includes type
-safety verification, code style enforcement, and security scanning through
-CodeQL. Running `mise run mypy` and `mise run fix` locally ensures your changes
-will partially pass the automated checks.
-
-### Creating new plugins
-
-New platform plugins should follow established patterns for consistency and
-maintainability. The basic structure requires inheriting from `BasePlugin` and
-implementing the two core methods, with registration in the
-[domain registry](megaloader/plugins/__init__.py?plain=1#L16) for automatic URL
-detection.
-
-```python
-class NewPlatformPlugin(BasePlugin):
-    def __init__(self, url: str, **kwargs: Any) -> None:
-        super().__init__(url, **kwargs)
-        # Initialize HTTP session, configure headers, handle authentication
-
-    def export(self) -> Generator[Item, None, None]:
-        # Parse platform URLs and extract file information
-        # Handle pagination, albums, and individual files
-        # Yield Item objects with complete download metadata
-        pass
-
-    def download_file(self, item: Item, output_dir: str) -> bool:
-        # Execute actual file download and storage
-        # Handle platform-specific download logic
-        # Return success/failure status for error handling
-        return True
-```
-
-Register your plugin in the domain mapping located in
-[`megaloader/plugins/__init__.py`](megaloader/plugins/__init__.py) to enable
-automatic URL detection.
-
-### Technical details
-
-The runtime maintains a minimal dependency footprint with three core libraries:
-
-- `requests` handles HTTP operations and session management,
-- `beautifulsoup4` provides HTML parsing capabilities, and
-- `lxml` serves as the high-performance parser backend.
-
-Development dependencies include `ruff` for code formatting and
-linting, plus `mypy` for static type checking. The complete dependency tree is
-available in [requirements.txt](requirements.txt).
-
-Configuration management centralizes around [pyproject.toml](pyproject.toml),
-which contains settings for all tools including ruff, mypy, and packaging
-metadata. The [mise.toml](mise.toml) file provides development environment
-automation with exact tool versions and task orchestration for consistent
-development experiences.
+Contributions are welcome and appreciated! For a complete guide to getting
+started, including development setup, coding standards, and creating new
+plugins, see our [contributing guide](.github/CONTRIBUTING.md).
 
 ## Getting help
 
@@ -364,5 +299,6 @@ problematic URLs. Include DEBUG-level logging output to speed up debugging.
 For **feature requests**, submit through GitHub Issues with their respective use
 cases, supported platforms, example URLs, and workflow explanations.
 
-For **general questions**, use GitHub Discussions for questions about usage,
-architecture, or integration.
+For **general questions**, use
+[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
+for questions about usage, architecture, or integration.
