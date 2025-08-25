@@ -9,6 +9,7 @@ from megaloader.plugins.pixiv import Pixiv
 from megaloader.plugins.rule34 import Rule34
 from megaloader.plugins.thothub_to import ThothubTO
 from megaloader.plugins.thothub_vip import ThothubVIP
+from megaloader.plugins.thotslife import Thotslife
 
 
 # Domain to plugin mapping
@@ -40,6 +41,8 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "thothub.to": ThothubTO,
     # Thothub[dot]vip domains
     "thothub.vip": ThothubVIP,
+    # Thotslife domains
+    "thotslife.com": Thotslife,
 }
 
 SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {
@@ -89,5 +92,6 @@ __all__ = [
     "Rule34",
     "ThothubTO",
     "ThothubVIP",
+    "Thotslife",
     "get_plugin_class",
 ]

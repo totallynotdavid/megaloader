@@ -1,96 +1,126 @@
+import logging
+import os
 import re
-import json
+
+from collections.abc import Generator
+from typing import Any
+from urllib.parse import unquote, urlparse
+
 import requests
-from megaloader import unentitify
-from megaloader.http import http_download
+
+from bs4 import BeautifulSoup
+
+from megaloader.plugin import BasePlugin, Item
 
 
-class ThotslifeResource:
-    REGEX_GALLERY = re.compile(
-        r"<figure class=\".+\" id=\".+\" data-g1-gallery-title=\"\" data-g1-gallery=\"(\[.*\])\" data-g1-share-shortlink=\"https:\/\/thotslife\.com\/.+\/#.+\">"
-    )
-    REGEX_MEDIA_VIDEO = re.compile(
-        r"^<source src=\"(https:\/\/.+thotslife\.com\/.+)\" label=\"\" type=\"video\/mp4\" \/>$",
-        re.M,
-    )
-    REGEX_MEDIA_IMAGE = re.compile(
-        r"^<a href='(https:\/\/thotslife\.com\/wp-content\/uploads\/.+)'>", re.M
-    )
-
-    def __init__(self, html: str):
-        self.__html = html
-
-    @property
-    def gallery(self):
-        for gallery in self.REGEX_GALLERY.findall(self.__html):
-            gallery = json.loads(unentitify(gallery))
-            for item in gallery:
-                if "full" in item.keys():
-                    yield item["full"]
-
-    @property
-    def media(self):
-        for m in self.REGEX_MEDIA_VIDEO.findall(self.__html):
-            yield m
-        for m in self.REGEX_MEDIA_IMAGE.findall(self.__html):
-            yield m
+logger = logging.getLogger(__name__)
 
 
-class Thotslife:
-    BASE_URL = "https://thotslife.com/tag/"
-    REGEX_RESOURCES = re.compile(
-        r"<a title=\".+\" class=\"g1-frame\" href=\"(https:\/\/thotslife\.com\/.+\/)\">"
-    )
+class Thotslife(BasePlugin):
+    _FILENAME_SANITIZE_RE = re.compile(r'[<>:"/\|?*]')
 
-    def __init__(self, tag: str):
-        self.BASE_URL += tag
-
-    def __get_page(self, page: int):
-        url = self.BASE_URL
-        if page > 1:
-            url += "/page/{}/".format(page)
-        response = requests.get(url)
-        body = response.text
-        if "Ooops, sorry! We couldn't find it" in body or response.code == 404:
-            return ""
-        return body
-
-    def __get_pages(self):
-        i = 1
-        while True:
-            page = self.__get_page(i)
-            if page == "":
-                break
-            yield page
-            i += 1
-
-    def get_resources(self):
-        for page in self.__get_pages():
-            for url in self.REGEX_RESOURCES.findall(page):
-                yield ThotslifeResource(requests.get(url).text)
-
-    def export(self):
-        for resource in self.get_resources():
-            for g in resource.gallery:
-                yield g
-            for m in resource.media:
-                yield m
-
-    @staticmethod
-    def download_file(url: str, output: str):
-        http_download(
-            url,
-            output,
-            custom_headers={
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "User-Agent": " (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
-                "Referer": "",
-                "Origin": "",
-                "Connection": "",
-                "Sec-Fetch-Dest": "",
-                "Sec-Fetch-Mode": "",
-                "Sec-Fetch-Site": "",
-                "Pragma": "",
-                "Cache-Control": "",
-            },
+    def __init__(self, url: str, **kwargs: Any) -> None:
+        super().__init__(url, **kwargs)
+        self.session = requests.Session()
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer": "https://thotslife.com/",
+            }
         )
+
+    def _sanitize_filename(self, filename: str) -> str:
+        return self._FILENAME_SANITIZE_RE.sub("_", filename).strip()
+
+    def export(self) -> Generator[Item, None, None]:
+        """
+        Fetches the page and yields all found media items (videos and images).
+        """
+        logger.info(f"Processing Thotslife URL: {self.url}")
+
+        try:
+            response = self.session.get(self.url, timeout=30)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch page {self.url}: {e}")
+            return
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        title_tag = soup.find("h1", class_="entry-title")
+        album_title = (
+            self._sanitize_filename(title_tag.text.strip())
+            if title_tag
+            else "thotslife_album"
+        )
+        logger.info(f"Found post: {album_title}")
+
+        article_body = soup.find("div", itemprop="articleBody")
+        if not article_body:
+            logger.warning(f"Could not find article body on page: {self.url}")
+            return
+
+        media_found = 0
+        seen_urls = set()
+
+        # Find videos
+        video_sources = article_body.select("video > source[src]")
+        for source in video_sources:
+            video_url = source.get("src")
+            if video_url and video_url not in seen_urls:
+                seen_urls.add(video_url)
+                filename = os.path.basename(unquote(urlparse(video_url).path))
+                if not filename:
+                    filename = f"{album_title}.mp4"
+
+                logger.debug(f"Found video: {filename}")
+                yield Item(url=video_url, filename=filename, album_title=album_title)
+                media_found += 1
+
+        # Find images (via data-src)
+        image_tags = article_body.select("img[data-src]")
+        for img in image_tags:
+            image_url = img.get("data-src")
+            if image_url and image_url not in seen_urls:
+                # Skip placeholder SVG images
+                if image_url.startswith("data:image/svg+xml"):
+                    continue
+
+                seen_urls.add(image_url)
+                filename = os.path.basename(unquote(urlparse(image_url).path))
+                if not filename:
+                    ext = os.path.splitext(urlparse(image_url).path)[1] or ".jpg"
+                    filename = f"image_{len(seen_urls)}{ext}"
+
+                logger.debug(f"Found image: {filename}")
+                yield Item(url=image_url, filename=filename, album_title=album_title)
+                media_found += 1
+
+        if media_found == 0:
+            logger.warning(f"No media found on page: {self.url}")
+
+    def download_file(self, item: Item, output_dir: str) -> bool:
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, item.filename)
+
+        if os.path.exists(output_path):
+            logger.info(f"File already exists: {item.filename}")
+            return True
+
+        try:
+            logger.debug(f"Downloading: {item.url}")
+            with self.session.get(
+                item.url, stream=True, timeout=360, allow_redirects=True, verify=False
+            ) as response:
+                response.raise_for_status()
+                with open(output_path, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+            logger.info(f"Downloaded: {item.filename}")
+            return True
+        except requests.RequestException as e:
+            logger.error(f"Download failed for {item.filename}: {e}")
+            if os.path.exists(output_path):
+                os.remove(output_path)
+            return False
