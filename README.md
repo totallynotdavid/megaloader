@@ -8,6 +8,7 @@ automatically downloads content from several file hosting and media platforms.
 It works with a plugin-based architecture to provide a unified interface for
 downloading from multiple platforms.
 
+<!-- prettier-ignore -->
 > [!WARNING]
 > Many supported platforms host adult content. This tool is designed
 > for content creators and digital archivists who need to work with such
@@ -64,15 +65,16 @@ platforms are maintained on a best-effort basis.
 | ThotHub.TO  | thothub.to                                       | Videos, albums                                           | Extended |
 | Fapello     | fapello.com                                      | Profile extraction                                       | Extended |
 
+<!-- prettier-ignore -->
 > [!NOTE]
 > Extended plugins work as of 2025/08/25 but may occasionally break
 > without immediate fixes since I don't really use them.
 
 ## Installation
 
-Python 3.10 or newer is required, though we recommend Python 3.13 or higher for
-reproducibility. The installation process varies depending on your preferred
-dependency management approach.
+Python 3.10 or newer is required, though [I recommend](mise.toml) Python 3.13 or
+higher for reproducibility. The installation process varies depending on your
+preferred dependency management approach.
 
 Begin by cloning the repository to your local machine:
 
@@ -186,6 +188,7 @@ ground up. Development priorities focus on four core platforms (Bunkr,
 PixelDrain, Cyberdrop, and GoFile) while maintaining best-effort support for
 extended platforms.
 
+<!-- prettier-ignore -->
 > [!TIP]
 > Report issues through the
 > [GitHub Issues](https://github.com/totallynotdavid/megaloader/issues) tracker.
@@ -324,6 +327,7 @@ class NewPlatformPlugin(BasePlugin):
         return True
 ```
 
+<!-- prettier-ignore -->
 Register your plugin in the domain mapping located in
 [megaloader/plugins/__init__.py](megaloader/plugins/__init__.py) to enable
 automatic URL detection.
