@@ -8,6 +8,7 @@ from megaloader.plugins.pixeldrain import PixelDrain
 from megaloader.plugins.pixiv import Pixiv
 from megaloader.plugins.rule34 import Rule34
 from megaloader.plugins.thothub_to import ThothubTO
+from megaloader.plugins.thothub_vip import ThothubVIP
 
 
 # Domain to plugin mapping
@@ -37,6 +38,8 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "rule34.xxx": Rule34,
     # Thothub[dot]to domains
     "thothub.to": ThothubTO,
+    # Thothub[dot]vip domains
+    "thothub.vip": ThothubVIP,
 }
 
 SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {
@@ -85,5 +88,6 @@ __all__ = [
     "Pixiv",
     "Rule34",
     "ThothubTO",
+    "ThothubVIP",
     "get_plugin_class",
 ]
