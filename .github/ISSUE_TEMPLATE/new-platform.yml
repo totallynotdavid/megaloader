@@ -1,0 +1,58 @@
+name: new platform support
+description: Request support for a new platform
+title: '[platform]: '
+labels: ['new platform', 'enhancement']
+
+body:
+  - type: input
+    id: platform-name
+    attributes:
+      label: Platform name
+    validations:
+      required: true
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain(s)
+      placeholder: 'example.com, alt-domain.net'
+    validations:
+      required: true
+
+  - type: textarea
+    id: urls
+    attributes:
+      label: Example URLs
+      description: Provide 2-3 working example URLs
+      placeholder: |
+        Album: https://{example}.com/album/123
+        Single file: https://{example}.com/file/456
+        Profile: https://{example}.com/user/name
+    validations:
+      required: true
+
+  - type: textarea
+    id: content-types
+    attributes:
+      label: Content types
+      description: What type of content does this platform host?
+      placeholder: 'Images, videos, documents, albums, etc.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: authentication
+    attributes:
+      label: Authentication
+      description: Login requirements, API keys, or access restrictions?
+      placeholder: 'None / requires account / API key needed / etc.'
+    validations:
+      required: false
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Why do you need this?
+      placeholder: 'Explain your use case for this platform'
+    validations:
+      required: true
