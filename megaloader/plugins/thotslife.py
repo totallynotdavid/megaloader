@@ -64,7 +64,7 @@ class Thotslife(BasePlugin):
         seen_urls = set()
 
         # Find videos
-        video_sources = article_body.select("video > source[src]")  # type: ignore[attr-defined]
+        video_sources = article_body.select("video > source[src]")
         for source in video_sources:
             video_url = source.get("src")
             if video_url and video_url not in seen_urls:
@@ -78,7 +78,7 @@ class Thotslife(BasePlugin):
                 media_found += 1
 
         # Find images (via data-src)
-        image_tags = article_body.select("img[data-src]")  # type: ignore[attr-defined]
+        image_tags = article_body.select("img[data-src]")
         for img in image_tags:
             image_url = img.get("data-src")
             if image_url and image_url not in seen_urls:
