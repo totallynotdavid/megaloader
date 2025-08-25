@@ -1,5 +1,5 @@
 name: bug report
-description: Report a bug or issue with megaloader
+description: report a bug or issue
 title: '[bug]: '
 labels: ['bug']
 

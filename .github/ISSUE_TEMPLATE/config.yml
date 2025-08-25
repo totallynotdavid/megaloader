@@ -1,9 +1,9 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: GitHub Discussions
+  - name: github discussions
     url: https://github.com/totallynotdavid/megaloader/discussions
-    about: Ask questions and discuss ideas with the community
-  - name: Contributing guide
+    about: ask questions and discuss ideas with the community
+  - name: contributing guide
     url: https://github.com/totallynotdavid/megaloader/blob/main/.github/CONTRIBUTING.md
-    about: Learn how to contribute to the project
+    about: learn how to contribute to the project
