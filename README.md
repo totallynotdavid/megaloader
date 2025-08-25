@@ -151,12 +151,12 @@ python example.py
 
 This project was originally developed by [@Ximaz](https://github.com/Ximaz), the
 original repository was deleted or made private at some point during/after 2023.
-I decided to continue development on my work, and have currently finished
+I decided to continue development and have currently finished
 completely refactoring the codebase to fix changes made by the sites we support.
 
 The
 [original implementation](https://github.com/totallynotdavid/megaloader/tree/9adeffe2d4055d26f9db2b7fcbf6f92de0aca628)
-has been largely rewritten with my own opinionade ideas. My focus is on the
+has been largely rewritten with my own opinionated ideas. My focus is on the
 following plugins (Bunkr, PixelDrain, Cyberdrop, and GoFile, which I decided to
 call core) while providing best-effort support for the extended set.
 
