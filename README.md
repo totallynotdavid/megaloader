@@ -83,7 +83,7 @@ cd megaloader
 Pick your poison:
 
 <details>
-<summary>**For most users (standard pip)**</summary>
+<summary><b>For most users (standard pip)</b></summary>
 
 If you're familiar with traditional Python package management, install
 dependencies from our requirements file:
@@ -101,9 +101,9 @@ python -m pip install -r requirements.txt
 Or if you're a developer:
 
 <details>
-<summary>**For [Poetry](https://python-poetry.org/docs/#installing-with-the-official-installer) users**</summary>
+<summary><b>For Poetry users</b></summary>
 
-If your workflow already includes Poetry for dependency management:
+You can install Poetry by following their [guide](https://python-poetry.org/docs/#installing-with-the-official-installer). If your workflow already includes Poetry for dependency management:
 
 ```bash
 poetry install
@@ -112,7 +112,7 @@ poetry install
 </details>
 
 <details>
-<summary>**For uv users**</summary>
+<summary><b>For uv users</b></summary>
 
 UV provides faster dependency resolution and installation. After
 [installing UV](https://docs.astral.sh/uv/getting-started/installation/):
@@ -123,7 +123,7 @@ uv install
 </details>
 
 <details>
-<summary>**Recommended: for mise users**</summary>
+<summary><b>Recommended: for mise users</b></summary>
 
 We recommend mise for a more reliable setup experience across different
 operating systems. After
