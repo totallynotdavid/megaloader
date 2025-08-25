@@ -50,19 +50,19 @@ We currently support 11 platforms with different maintenance priorities. Core
 platforms receive active development and feature updates, while extended
 platforms are maintained on a best-effort basis.
 
-| Platform    | Domain(s)                                        | Features                             | Priority |
-| ----------- | ------------------------------------------------ | ------------------------------------ | -------- |
-| Bunkr       | bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su | Albums, single files, API extraction | Core     |
-| PixelDrain  | pixeldrain.com                                   | Files, lists, proxy support          | Core     |
-| Cyberdrop   | cyberdrop.me, cyberdrop.to                       | Albums, galleries                    | Core     |
-| GoFile      | gofile.io                                        | Password-protected folders           | Core     |
-| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator}        | Creator content, authentication      | Extended |
-| Pixiv       | pixiv.net                                        | Artwork, user galleries              | Extended |
-| Rule34      | rule34.xxx                                       | Search results, posts                | Extended |
-| ThotsLife   | thotslife.com                                    | Albums, profiles                     | Extended |
-| ThotHub.VIP | thothub.vip                                      | Platform content                     | Extended |
-| ThotHub.TO  | thothub.to                                       | Platform content                     | Extended |
-| Fapello     | fapello.com                                      | Profile extraction                   | Extended |
+| Platform    | Domain(s)                                        | Features                                                                    | Priority |
+| ----------- | ------------------------------------------------ | --------------------------------------------------------------------------- | -------- |
+| Bunkr       | bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su | Albums, single files, API extraction                                        | Core     |
+| PixelDrain  | pixeldrain.com                                   | Files, lists, proxy support (see [this section](#pixeldrain-proxy-support)) | Core     |
+| Cyberdrop   | cyberdrop.me, cyberdrop.to                       | Albums, galleries                                                           | Core     |
+| GoFile      | gofile.io                                        | Password-protected folders (see [this section](#gofile-password-support))   | Core     |
+| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator}        | Creator content, authentication                                             | Extended |
+| Pixiv       | pixiv.net                                        | Artwork, user galleries                                                     | Extended |
+| Rule34      | rule34.xxx                                       | Search results, posts                                                       | Extended |
+| ThotsLife   | thotslife.com                                    | Albums, profiles                                                            | Extended |
+| ThotHub.VIP | thothub.vip                                      | Platform content                                                            | Extended |
+| ThotHub.TO  | thothub.to                                       | Platform content                                                            | Extended |
+| Fapello     | fapello.com                                      | Profile extraction                                                          | Extended |
 
 > [!NOTE]
 > Extended plugins work as of 2025/08/25 but may occasionally break
