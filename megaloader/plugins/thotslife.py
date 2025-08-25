@@ -8,7 +8,7 @@ from urllib.parse import unquote, urlparse
 
 import requests
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from megaloader.plugin import BasePlugin, Item
 
@@ -55,10 +55,13 @@ class Thotslife(BasePlugin):
         )
         logger.info(f"Found post: {album_title}")
 
-        article_body = soup.find("div", itemprop="articleBody")
-        if not article_body:
+        article_body_element = soup.find("div", itemprop="articleBody")
+
+        if not isinstance(article_body_element, Tag):
             logger.warning(f"Could not find article body on page: {self.url}")
             return
+
+        article_body: Tag = article_body_element
 
         media_found = 0
         seen_urls = set()
@@ -67,9 +70,11 @@ class Thotslife(BasePlugin):
         video_sources = article_body.select("video > source[src]")
         for source in video_sources:
             video_url = source.get("src")
-            if video_url and video_url not in seen_urls:
+
+            if isinstance(video_url, str) and video_url not in seen_urls:
                 seen_urls.add(video_url)
                 filename = os.path.basename(unquote(urlparse(video_url).path))
+
                 if not filename:
                     filename = f"{album_title}.mp4"
 
@@ -81,12 +86,14 @@ class Thotslife(BasePlugin):
         image_tags = article_body.select("img[data-src]")
         for img in image_tags:
             image_url = img.get("data-src")
-            if image_url and image_url not in seen_urls:
+
+            if isinstance(image_url, str) and image_url not in seen_urls:
                 # Skip placeholder SVG images
                 if image_url.startswith("data:image/svg+xml"):
                     continue
 
                 seen_urls.add(image_url)
+
                 filename = os.path.basename(unquote(urlparse(image_url).path))
                 if not filename:
                     ext = os.path.splitext(urlparse(image_url).path)[1] or ".jpg"
