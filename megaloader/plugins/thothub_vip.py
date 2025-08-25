@@ -73,7 +73,7 @@ class ThothubVIP(BasePlugin):
             return
 
         try:
-            metadata = json.loads(json_ld_script.string)
+            metadata = json.loads(json_ld_script.get_text().strip())
         except (json.JSONDecodeError, TypeError) as e:
             logger.error(f"Failed to parse JSON-LD metadata: {e}")
             return
