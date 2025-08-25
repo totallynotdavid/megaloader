@@ -208,7 +208,8 @@ Each plugin implements two core methods that handle the complete download
 workflow:
 
 - The `export()` method parses platform-specific pages and extracts file
-  information, yielding `Item` objects containing download metadata.
+  information, yielding [`Item`](megaloader/plugin.py?plain=1#L7) objects
+  containing download metadata.
 - The `download_file()` method handles actual file retrieval and storage,
   returning success or failure status.
 
