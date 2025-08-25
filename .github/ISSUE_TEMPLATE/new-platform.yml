@@ -1,5 +1,5 @@
 name: new platform support
-description: Request support for a new platform
+description: request support for a new platform
 title: '[platform]: '
 labels: ['new platform', 'enhancement']
 
