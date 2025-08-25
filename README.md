@@ -83,6 +83,8 @@ git clone https://github.com/totallynotdavid/megaloader
 cd megaloader
 ```
 
+Then, pick your poison (you only need to follow one):
+
 <details>
 <summary>
 Standard pip installation
