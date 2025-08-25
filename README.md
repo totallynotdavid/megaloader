@@ -344,13 +344,9 @@ The runtime maintains a minimal dependency footprint with three core libraries:
 - `beautifulsoup4` provides HTML parsing capabilities, and
 - `lxml` serves as the high-performance parser backend.
 
-Development dependencies include:
-
-- `ruff` for code formatting and linting, plus
-- `mypy` for static type checking.
-
-The complete dependency tree is available in
-[requirements.txt](requirements.txt).
+Development dependencies include `ruff` for code formatting and
+linting, plus `mypy` for static type checking. The complete dependency tree is
+available in [requirements.txt](requirements.txt).
 
 Configuration management centralizes around [pyproject.toml](pyproject.toml),
 which contains settings for all tools including ruff, mypy, and packaging
