@@ -236,7 +236,7 @@ function or plugin constructor.
 
 PixelDrain includes an optional proxy system that can help bypass rate limiting.
 This feature uses proxies provided by [@sh13y](https://github.com/sh13y) via
-[Cloudflare workers](https://github.sh13y/pixeldrain-ratelimit-bypasser). The
+[Cloudflare Workers](https://github.sh13y/pixeldrain-ratelimit-bypasser). The
 proxy option is disabled by default since it requires trusting external
 infrastructure. You can use it like this:
 
