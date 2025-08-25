@@ -72,9 +72,9 @@ platforms are maintained on a best-effort basis.
 
 ## Installation
 
-Python 3.10 or newer is required, though [I recommend](mise.toml?plain=1#L5) Python 3.13 or
-higher for reproducibility. The installation process varies depending on your
-preferred dependency management approach.
+Python 3.10 or newer is required, though [I recommend](mise.toml?plain=1#L5)
+Python 3.13 or higher for reproducibility. The installation process varies
+depending on your preferred dependency management approach.
 
 Begin by cloning the repository to your local machine:
 
@@ -89,8 +89,8 @@ Standard pip installation
 </summary>
 
 For users familiar with traditional Python package management, install
-dependencies directly from the requirements file. This method works across all
-Python environments and doesn't require additional tooling.
+dependencies directly from the requirements.txt file. This method works across
+all Python environments and doesn't require additional tooling.
 
 On macOS/Linux:
 
