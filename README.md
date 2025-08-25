@@ -15,7 +15,7 @@ downloading from multiple platforms.
 
 ## Getting started
 
-The package has an utomatic URL detection system makes downloading content
+The package has an automatic URL detection system that makes downloading content
 straightforward. The package analyzes URLs and selects the appropriate plugin
 automatically (see [plugins](megaloader/plugins/__init__.py)), requiring only
 the URL and destination path.
