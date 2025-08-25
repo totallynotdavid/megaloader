@@ -146,7 +146,7 @@ uv install
 I recommend mise for the most reliable setup experience across different
 operating systems. Mise automatically manages Python versions, tool
 installations, and project tasks. After
-[installing mise](https://mise.jdx.dev/getting-started.html):
+[installing mise](https://mise.jdx.dev/getting-started.html), run:
 
 ```bash
 mise install      # Sets up Python 3.13.7, uv, and ruff automatically
