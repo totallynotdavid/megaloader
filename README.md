@@ -369,5 +369,4 @@ For **feature requests**, submit through GitHub Issues with their respective use
 cases, supported platforms, example URLs, and workflow explanations.
 
 For **general questions**, use GitHub Discussions for questions about usage,
-architecture, or integration. This helps build a knowledge base for the
-community.
+architecture, or integration.
