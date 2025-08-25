@@ -72,7 +72,7 @@ platforms are maintained on a best-effort basis.
 
 ## Installation
 
-Python 3.10 or newer is required, though [I recommend](mise.toml) Python 3.13 or
+Python 3.10 or newer is required, though [I recommend](mise.toml?plain=1#L5) Python 3.13 or
 higher for reproducibility. The installation process varies depending on your
 preferred dependency management approach.
 
