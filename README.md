@@ -6,7 +6,8 @@
 This project will make you smile. Megaloader is a package written in Python to
 automate downloads from various file hosting and media platforms.
 
-> [!WARNING] Many supported platforms host adult content. This tool is designed
+> [!WARNING]
+> Many supported platforms host adult content. This tool is designed
 > for content creators and digital archivists who need to work with such
 > platforms.
 
@@ -56,7 +57,8 @@ maintenance priority:
 | ThotHub.TO  | thothub.to                                       | Platform content                     | Extended |
 | Fapello     | fapello.com                                      | Profile extraction                   | Extended |
 
-> [!NOTE] **Core** plugins receive active maintenance and feature development.
+> [!NOTE] 
+> **Core** plugins receive active maintenance and feature development.
 > **Extended** plugins are supported on a best-effort basis and may occasionally
 > break without immediate fixes as I don't personally use them. They all work as
 > of 2025/08/25
@@ -156,7 +158,8 @@ has been largely rewritten with my own opinionade ideas. My focus is on the
 following plugins (Bunkr, PixelDrain, Cyberdrop, and GoFile, which I decided to
 call core) while providing best-effort support for the extended set.
 
-> [!TIP] If you encounter issues with any plugin, please report them through the
+> [!TIP]
+> If you encounter issues with any plugin, please report them through the
 > [GitHub Issues](https://github.com/totallynotdavid/megaloader/issues) tracker.
 > Include specific URLs, error messages (logs with DEBUG), and your Python
 > version for faster troubleshooting.
