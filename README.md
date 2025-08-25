@@ -185,10 +185,11 @@ to fix issues caused by changes made by the supported sites.
 
 The
 [original implementation](https://github.com/totallynotdavid/megaloader/tree/9adeffe2d4055d26f9db2b7fcbf6f92de0aca628)
-served as inspiration, but the current codebase has been mostly rebuilt from the
-ground up. Development priorities focus on four core platforms (Bunkr,
-PixelDrain, Cyberdrop, and GoFile) while maintaining best-effort support for
-extended platforms.
+served as inspiration, but the current codebase has been
+[mostly rebuilt from the ground up](https://github.com/totallynotdavid/megaloader/graphs/contributors).
+Development priorities focus on four core platforms (Bunkr, PixelDrain,
+Cyberdrop, and GoFile) while maintaining best-effort support for extended
+platforms.
 
 <!-- prettier-ignore -->
 > [!TIP]
