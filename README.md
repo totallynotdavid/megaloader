@@ -3,18 +3,22 @@
 [![CodeQL](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml)
 [![lint and format check](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml)
 
-This project will make you smile. Megaloader is a package written in Python to
-automate downloads from various file hosting and media platforms.
+This project will make you smile. Megaloader is a package written in Python that
+automatically downloads content from several file hosting and media platforms.
+It works with a plugin-based architecture to provide a unified interface for
+downloading from multiple platforms.
 
 > [!WARNING]
 > Many supported platforms host adult content. This tool is designed
 > for content creators and digital archivists who need to work with such
 > platforms.
 
-## Quick start
+## Getting started
 
-The simplest way to use Megaloader is through its automatic URL detection
-system:
+The package has an utomatic URL detection system makes downloading content
+straightforward. The package analyzes URLs and selects the appropriate plugin
+automatically (see [plugins](megaloader/plugins/__init__.py)), requiring only
+the URL and destination path.
 
 ```python
 from megaloader import download
@@ -23,8 +27,8 @@ download("https://pixeldrain.com/u/95u1wnsd", "./downloads")
 download("https://cyberdrop.me/a/0OpiyaOV", "./downloads")
 ```
 
-You only need to pass the URL and the path to the folder where you want to store
-the downloaded files. For more control, you can work with plugins directly:
+When you need more control over the download process, you can specify the plugin
+class directly. This is useful if a platform domain changes.
 
 ```python
 from megaloader import Bunkr, download
@@ -36,12 +40,15 @@ download(
 )
 ```
 
-In both cases, the files will be stored in the specified download directory.
+The downloaded files are organized in the specified directory, with plugins
+automatically creating subdirectories based on album names or content structure
+when appropriate.
 
 ## Supported platforms
 
-Currently, Megaloader supports 11 different platforms with varying levels of
-maintenance priority:
+We currently support 11 platforms with different maintenance priorities. Core
+platforms receive active development and feature updates, while extended
+platforms are maintained on a best-effort basis.
 
 | Platform    | Domain(s)                                        | Features                             | Priority |
 | ----------- | ------------------------------------------------ | ------------------------------------ | -------- |
@@ -58,52 +65,57 @@ maintenance priority:
 | Fapello     | fapello.com                                      | Profile extraction                   | Extended |
 
 > [!NOTE]
-> **Core** plugins receive active maintenance and feature development.
->
-> **Extended** plugins are supported on a best-effort basis and may occasionally
-> break without immediate fixes as I don't personally use them. They all work as
-> of 2025/08/25
+> Extended plugins work as of 2025/08/25 but may occasionally break
+> without immediate fixes since I don't really use them.
 
 ## Installation
 
-You need a modern Python version, I tried to give support to at least Python
-3.10, but I recommend using Python 3.13 or higher (see [mise.toml](mise.toml)),
-however, older versions may work without issues.
+Python 3.10 or newer is required, though we recommend Python 3.13 or higher for
+reproducibility. The installation process varies depending on your preferred
+dependency management approach.
 
-We'll walk through several installation methods to match your development
-workflow.
-
-First, clone the repository to your local machine:
+Begin by cloning the repository to your local machine:
 
 ```bash
 git clone https://github.com/totallynotdavid/megaloader
 cd megaloader
 ```
 
-Pick your poison:
-
 <details>
-<summary><b>For most users (standard pip)</b></summary>
+<summary>
 
-If you're familiar with traditional Python package management, install
-dependencies from our requirements file:
+#### Standard pip installation
+
+</summary>
+
+For users familiar with traditional Python package management, install
+dependencies directly from the requirements file. This method works across all
+Python environments and doesn't require additional tooling.
+
+On macOS/Linux:
 
 ```bash
-# On macOS/Linux
 python3 -m pip install -r requirements.txt
+```
 
-# On Windows
+On Windows:
+
+```bash
 python -m pip install -r requirements.txt
 ```
 
 </details>
 
-Or if you're a developer:
-
 <details>
-<summary><b>For Poetry users</b></summary>
+<summary>
 
-You can install Poetry by following their [guide](https://python-poetry.org/docs/#installing-with-the-official-installer). If your workflow already includes Poetry for dependency management:
+#### Poetry installation
+
+</summary>
+
+After installing Poetry following their
+[official guide](https://python-poetry.org/docs/#installing-with-the-official-installer),
+install the project dependencies:
 
 ```bash
 poetry install
@@ -112,73 +124,98 @@ poetry install
 </details>
 
 <details>
-<summary><b>For uv users</b></summary>
+<summary>
 
-UV provides faster dependency resolution and installation. After
-[installing UV](https://docs.astral.sh/uv/getting-started/installation/):
+### UV installation
+
+</summary>
+
+uv offers faster dependency resolution and installation than pip. After
+[installing uv](https://docs.astral.sh/uv/getting-started/installation/), set up
+the project:
 
 ```bash
 uv install
 ```
+
 </details>
 
 <details>
-<summary><b>Recommended: for mise users</b></summary>
+<summary>
 
-We recommend mise for a more reliable setup experience across different
-operating systems. After
+#### Recommended: mise installation
+
+</summary>
+
+I recommend mise for the most reliable setup experience across different
+operating systems. Mise automatically manages Python versions, tool
+installations, and project tasks. After
 [installing mise](https://mise.jdx.dev/getting-started.html):
 
 ```bash
-mise install  # Sets up Python 3.13.7, uv, and ruff automatically
-mise run install # Installs the dependencies of the project
+mise install      # Sets up Python 3.13.7, uv, and ruff automatically
+mise run install  # Installs project dependencies
 ```
 
 </details>
 
-Once you have everything installed, you can play around with the
-[example](example.py) script:
+### Testing the installation
+
+Once installation is complete, verify everything works by running the example
+script. This script demonstrates basic functionality and helps confirm your
+setup:
+
+If you're using mise/uv:
 
 ```bash
-# If using mise/uv
 uv run example.py
+```
 
-# If using standard Python
+If you're using standard Python:
+
+```bash
 python example.py
 ```
 
+The example script located at [example.py](example.py) contains usage examples
+that showcase the package's core features.
+
 ## Project background
 
-This project was originally developed by [@Ximaz](https://github.com/Ximaz), the
-original repository was deleted or made private at some point during/after 2023.
-I decided to continue development and have currently finished
-completely refactoring the codebase to fix changes made by the sites we support.
+This project was originally created by [@Ximaz](https://github.com/Ximaz), but
+the original repository was deleted or made private sometime during or
+after 2023. I've taken over development and completely refactored the codebase
+to fix issues caused by changes made by the supported sites.
 
 The
 [original implementation](https://github.com/totallynotdavid/megaloader/tree/9adeffe2d4055d26f9db2b7fcbf6f92de0aca628)
-has been largely rewritten with my own opinionated ideas. My focus is on the
-following plugins (Bunkr, PixelDrain, Cyberdrop, and GoFile, which I decided to
-call core) while providing best-effort support for the extended set.
+served as inspiration, but the current codebase has been mostly rebuilt from the
+ground up. Development priorities focus on four core platforms (Bunkr,
+PixelDrain, Cyberdrop, and GoFile) while maintaining best-effort support for
+extended platforms.
 
 > [!TIP]
-> If you encounter issues with any plugin, please report them through the
+> Report issues through the
 > [GitHub Issues](https://github.com/totallynotdavid/megaloader/issues) tracker.
-> Include specific URLs, error messages (logs with DEBUG), and your Python
-> version for faster troubleshooting.
+> Include specific URLs, complete error messages with DEBUG logging enabled, and
+> your Python version.
 
-## Understanding the architecture
+## Architecture overview
 
-The package has a plugin-based architecture. Each supported platform is
-implemented as a separate plugin that inherits from a `BasePlugin` abstract base
-class.
+The project uses a plugin-based architecture where each supported platform is
+implemented as a separate plugin inheriting from the `BasePlugin` abstract base
+class defined in [megaloader/plugin.py](megaloader/plugin.py).
 
-Every plugin implements two methods:
+Each plugin implements two core methods that handle the complete download
+workflow:
 
-- `export()` - Parses platform-specific pages and extracts file information
-- `download_file()` - Handles the actual file retrieval and storage
+- The `export()` method parses platform-specific pages and extracts file
+  information, yielding `Item` objects containing download metadata.
+- The `download_file()` method handles actual file retrieval and storage,
+  returning success or failure status.
 
-An `Item` dataclass is used to pass information between these operations. See
-[megaloader/plugin.py](megaloader/plugin.py?plain=1#L7):
+The `Item` dataclass serves as the communication bridge between extraction and
+download operations:
 
 ```python
 @dataclass
@@ -190,15 +227,19 @@ class Item:
     metadata: Optional[dict[str, Any]] = None  # Additional platform data
 ```
 
-### Advanced usage
+## Advanced usage
 
-Some plugins support additional configuration options.
+Several plugins support additional configuration options that enable specialized
+functionality. These options are passed as keyword arguments to the `download()`
+function or plugin constructor.
 
-For example, PixelDrain has an additional `use_proxy` option which lets you use
-a list of proxies provided by [@sh13y](https://github.com/sh13y) via
-[Cloudflare workers](https://github.com/sh13y/pixeldrain-ratelimit-bypasser). Of
-course, this can help with rate limiting issues but the caveat is that you have
-to trust his code/deployments[^1]. This option is turned off by default.
+### PixelDrain proxy support
+
+PixelDrain includes an optional proxy system that can help bypass rate limiting.
+This feature uses proxies provided by [@sh13y](https://github.com/sh13y) via
+[Cloudflare workers](https://github.sh13y/pixeldrain-ratelimit-bypasser). The
+proxy option is disabled by default since it requires trusting external
+infrastructure. You can use it like this:
 
 ```python
 download(
@@ -208,8 +249,10 @@ download(
 )
 ```
 
-GoFile allows users to put a password to access their files/albums. The module
-support this via the password prop.
+### GoFile password support
+
+GoFile allows uploaders to password-protect their albums and folders. The plugin
+supports this authentication mechanism through the password parameter.
 
 ```python
 download(
@@ -219,19 +262,17 @@ download(
 )
 ```
 
-For maximum control over the download process, you can import a specific plugin
-and use it. If you intend to provide a service using this package, you should
-handle rate limiting, caching, URL validation by yourself. This package is not
-designed for high stressed scenarios (for now).
+### Direct plugin usage
 
-To use the plugin class, you can do something like this:
+For applications requiring fine-grained control over the download process, you
+can import and use plugin classes directly.
 
 ```python
 from megaloader.plugins import Cyberdrop
 
 plugin = Cyberdrop("https://cyberdrop.me/a/album_id")
 
-# Extract all items first (useful for progress tracking)
+# Extract all items first for progress tracking
 items = list(plugin.export())
 print(f"Found {len(items)} files to download")
 
@@ -243,85 +284,83 @@ for i, item in enumerate(items):
         print(f"Failed to download {item.filename}")
 ```
 
-## How to contribute
+## Contributing
 
-We welcome contributions whether you're fixing bugs, improving existing plugins,
-or adding support for new platforms.
+We welcome contributions ranging from bug fixes to new platform support. The
+development workflow emphasizes code quality through automated tooling and
+comprehensive type checking.
 
-Our development workflow includes several automated tasks for code quality:
+The project includes several automated tasks that maintain code quality and
+consistency. These tools are configured in [pyproject.toml](pyproject.toml)
+([ruff](pyproject.toml?plain=1#L32) and [mypy](pyproject.toml?plain=1#L69)) and
+can be executed through mise:
 
 ```bash
-mise run fix     # Format code and apply safe automated fixes via ruff
+mise run fix     # Format code and apply automated fixes via ruff
 mise run mypy    # Run comprehensive type checking
 mise run export  # Update requirements.txt from pyproject.toml
 ```
 
-All contributions must meet our automated CI pipeline requirements which include
-[type safety](.github/workflows/checks.yml) (you'll be fine if you pass
-`mise run mypy`), [code style](.github/workflows/checks.yml) (`mise run fix`)
-and [security](.github/workflows/codeql.yml) (codeql).
+All contributions must pass the automated CI pipeline, which includes type
+safety verification, code style enforcement, and security scanning through
+CodeQL. Running `mise run mypy` and `mise run fix` locally ensures your changes
+will partially pass the automated checks.
 
 ### Creating new plugins
 
-When developing plugins for new platforms, follow these guidelines:
-
-1. **Inherit from BasePlugin** and implement both required methods
-2. **Register your plugin** in the domain registry for automatic detection. See
-   [plugins/**init**.py](megaloader/plugins/__init__.py)
-3. (Optional) **Try to follow existing patterns** for consistency with the
-   existing codebase
-
-Here's a minimal plugin template:
+New platform plugins should follow established patterns for consistency and
+maintainability. The basic structure requires inheriting from `BasePlugin` and
+implementing the two core methods, with registration in the domain registry for
+automatic URL detection.
 
 ```python
 class NewPlatformPlugin(BasePlugin):
     def __init__(self, url: str, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
-        # Initialize session, configure headers, etc.
+        # Initialize HTTP session, configure headers, handle authentication
 
     def export(self) -> Generator[Item, None, None]:
-        # Parse the URL and extract file information
-        # Yield Item objects with download metadata
+        # Parse platform URLs and extract file information
+        # Handle pagination, albums, and individual files
+        # Yield Item objects with complete download metadata
         pass
 
     def download_file(self, item: Item, output_dir: str) -> bool:
-        # Handle actual file download and storage
-        # Return success/failure status
+        # Execute actual file download and storage
+        # Handle platform-specific download logic
+        # Return success/failure status for error handling
         return True
 ```
 
+Register your plugin in the domain mapping located in
+[megaloader/plugins/**init**.py](megaloader/plugins/__init__.py) to enable
+automatic URL detection.
+
 ### Technical details
 
-**Dependencies**: The runtime has a minimal footprint with just three core
-dependencies - `requests` for HTTP operations, `beautifulsoup4` for HTML
-parsing, and `lxml` as the high-performance parser backend for `beautifulsoup4`.
-Development dependencies include `ruff` for code quality and `mypy` for type
-safety. The [requirements.txt](requirements.txt) has a more extensive list but
-includes dependencies of our dependencies.
+The runtime maintains a minimal dependency footprint with three core libraries.
+`requests` handles HTTP operations and session management, `beautifulsoup4`
+provides HTML parsing capabilities, and `lxml` serves as the high-performance
+parser backend. Development dependencies include `ruff` for code formatting and
+linting, plus `mypy` for static type checking. The complete dependency tree is
+available in [requirements.txt](requirements.txt).
 
-**Configuration**: The `pyproject.toml` serves as the central configuration
-file, while `mise.toml` provides development environment automation with exact
-tool versions and task orchestration. Both ruff and mypy are configured in
-pyproject.toml.
+Configuration management centralizes around [pyproject.toml](pyproject.toml),
+which contains settings for all tools including ruff, mypy, and packaging
+metadata. The [mise.toml](mise.toml) file provides development environment
+automation with exact tool versions and task orchestration for consistent
+development experiences.
 
 ## Getting help
 
-**Bug Reports**: Use our
-[GitHub Issues](https://github.com/totallynotdavid/megaloader/issues) tracker.
-Include Python version, complete error messages, and specific URLs that are
-failing.
+For **bug reports** use
+[GitHub Issues](https://github.com/totallynotdavid/megaloader/issues). Make sure
+to include your Python version, complete error messages, stack traces, and
+problematic URLs. Include DEBUG-level logging output to speed up debugging.
 
-**Feature Requests**: Also through GitHub Issues. Describe your use case and the
-platform you'd like to see supported.
+For **feature requests**, submit through GitHub Issues with their respective use
+cases, supported platforms, example URLs, and workflow explanations.
 
-**General Questions**: GitHub Discussions are appropriate for general questions
-about usage or architecture.
-
-Remember to include relevant technical details like your Python version,
-dependency versions (you can get this with `uv tree` if using UV), and complete
-stack traces when reporting issues. This information significantly speeds up the
-debugging process and helps us provide better support.
-
-[^1]:
-    The repo may not be the code deployed on the actual worker and could
-    introduce you to man in the middle attacks.
+For **general questions**, use GitHub Discussions for questions about usage,
+architecture, or integration. This helps build a knowledge base for the
+community.
