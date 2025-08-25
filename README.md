@@ -202,7 +202,7 @@ platforms.
 
 The project uses a plugin-based architecture where each supported platform is
 implemented as a separate plugin inheriting from the `BasePlugin` abstract base
-class defined in [megaloader/plugin.py](megaloader/plugin.py).
+class defined in [megaloader/plugin.py](megaloader/plugin.py?plain=1#L18).
 
 Each plugin implements two core methods that handle the complete download
 workflow:
