@@ -83,7 +83,7 @@ cd megaloader
 
 <details>
 <summary>
-#### Standard pip installation
+Standard pip installation
 </summary>
 
 For users familiar with traditional Python package management, install
@@ -106,7 +106,7 @@ python -m pip install -r requirements.txt
 
 <details>
 <summary>
-#### Poetry installation
+Poetry installation
 </summary>
 
 After installing Poetry following their
@@ -121,7 +121,7 @@ poetry install
 
 <details>
 <summary>
-#### UV installation
+UV installation
 </summary>
 
 uv offers faster dependency resolution and installation than pip. After
@@ -136,9 +136,7 @@ uv install
 
 <details>
 <summary>
-
-#### Recommended: mise installation
-
+Recommended: mise installation
 </summary>
 
 I recommend mise for the most reliable setup experience across different
