@@ -332,9 +332,8 @@ class NewPlatformPlugin(BasePlugin):
         return True
 ```
 
-<!-- prettier-ignore -->
 Register your plugin in the domain mapping located in
-[megaloader/plugins/__init__.py](megaloader/plugins/__init__.py) to enable
+[`megaloader/plugins/__init__.py`](megaloader/plugins/__init__.py) to enable
 automatic URL detection.
 
 ### Technical details
