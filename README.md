@@ -134,8 +134,8 @@ uv install
 
 </details>
 
-<details>
-<summary open>
+<details open>
+<summary>
 <b>Recommended</b>: mise installation
 </summary>
 
