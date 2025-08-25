@@ -64,7 +64,7 @@ class Thotslife(BasePlugin):
         seen_urls = set()
 
         # Find videos
-        video_sources = article_body.select("video > source[src]")
+        video_sources = article_body.select("video > source[src]")  # type: ignore[attr-defined]
         for source in video_sources:
             video_url = source.get("src")
             if video_url and video_url not in seen_urls:
@@ -78,7 +78,7 @@ class Thotslife(BasePlugin):
                 media_found += 1
 
         # Find images (via data-src)
-        image_tags = article_body.select("img[data-src]")
+        image_tags = article_body.select("img[data-src]")  # type: ignore[attr-defined]
         for img in image_tags:
             image_url = img.get("data-src")
             if image_url and image_url not in seen_urls:
@@ -107,10 +107,16 @@ class Thotslife(BasePlugin):
             logger.info(f"File already exists: {item.filename}")
             return True
 
+        is_video = item.filename.lower().endswith(".mp4")
+
         try:
             logger.debug(f"Downloading: {item.url}")
             with self.session.get(
-                item.url, stream=True, timeout=360, allow_redirects=True, verify=False
+                item.url,
+                stream=True,
+                timeout=360,
+                allow_redirects=True,
+                verify=not is_video,
             ) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
