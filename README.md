@@ -309,8 +309,9 @@ will partially pass the automated checks.
 
 New platform plugins should follow established patterns for consistency and
 maintainability. The basic structure requires inheriting from `BasePlugin` and
-implementing the two core methods, with registration in the domain registry for
-automatic URL detection.
+implementing the two core methods, with registration in the
+[domain registry](megaloader/plugins/__init__.py?plain=1#L16) for automatic URL
+detection.
 
 ```python
 class NewPlatformPlugin(BasePlugin):
