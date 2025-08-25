@@ -120,6 +120,7 @@ UV provides faster dependency resolution and installation. After
 ```bash
 uv install
 ```
+</details>
 
 <details>
 <summary>**Recommended: for mise users**</summary>
