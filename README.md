@@ -56,12 +56,12 @@ platforms are maintained on a best-effort basis.
 | PixelDrain  | pixeldrain.com                                   | Files, lists, [proxy support](#pixeldrain-proxy-support) | Core     |
 | Cyberdrop   | cyberdrop.me, cyberdrop.to                       | Albums, galleries                                        | Core     |
 | GoFile      | gofile.io                                        | [Password-protected folders](#gofile-password-support)   | Core     |
-| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator}        | Creator content, authentication                          | Extended |
-| Pixiv       | pixiv.net                                        | Artwork, user galleries                                  | Extended |
-| Rule34      | rule34.xxx                                       | Search results, posts                                    | Extended |
-| ThotsLife   | thotslife.com                                    | Albums, profiles                                         | Extended |
-| ThotHub.VIP | thothub.vip                                      | Platform content                                         | Extended |
-| ThotHub.TO  | thothub.to                                       | Platform content                                         | Extended |
+| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator}        | Creator content, [authentication](.env.example)          | Extended |
+| Pixiv       | pixiv.net                                        | Artwork, user galleries, [authentication](.env.example)  | Extended |
+| Rule34      | rule34.xxx                                       | Search results (tags), posts                             | Extended |
+| ThotsLife   | thotslife.com                                    | Albums, blog posts                                       | Extended |
+| ThotHub.VIP | thothub.vip                                      | Videos, albums                                           | Extended |
+| ThotHub.TO  | thothub.to                                       | Videos, albums                                           | Extended |
 | Fapello     | fapello.com                                      | Profile extraction                                       | Extended |
 
 > [!NOTE]
