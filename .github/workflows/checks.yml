@@ -24,7 +24,7 @@ jobs:
       with:
         python-version: '3.13'
         
-    - uses: astral-sh/setup-uv@4e1e303f7dafb1a3ec7770a507052543f593ad96
+    - uses: astral-sh/setup-uv@b75a909f75acd358c2196fb9a5f1299a9a8868a4
       with:
         version: "0.8.13"
 
