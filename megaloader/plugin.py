@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -10,9 +10,9 @@ class Item:
 
     url: str
     filename: str
-    album_title: Optional[str] = None
-    file_id: Optional[str] = None
-    metadata: Optional[dict[str, Any]] = None
+    album_title: str | None = None
+    file_id: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class BasePlugin(ABC):
@@ -25,7 +25,8 @@ class BasePlugin(ABC):
 
     def __init__(self, url: str, **kwargs: Any) -> None:
         if not url.strip():
-            raise ValueError("URL must be a non-empty string")
+            msg = "URL must be a non-empty string"
+            raise ValueError(msg)
         self.url = url.strip()
         self._config = kwargs
 

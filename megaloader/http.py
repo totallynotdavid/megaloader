@@ -2,7 +2,6 @@ import contextlib
 import logging
 import os
 
-from typing import Optional
 from urllib.parse import unquote, urlparse
 
 import requests
@@ -20,10 +19,10 @@ DEFAULT_HEADERS = {
 def download_file(
     url: str,
     output_dir: str,
-    filename: Optional[str] = None,
-    headers: Optional[dict[str, str]] = None,
+    filename: str | None = None,
+    headers: dict[str, str] | None = None,
     timeout: int = 30,
-) -> Optional[str]:
+) -> str | None:
     """
     Download a file from URL to output directory.
 
@@ -62,7 +61,10 @@ def download_file(
     try:
         logger.debug(f"Downloading: {url}")
         with requests.get(
-            url, headers=req_headers, stream=True, timeout=timeout
+            url,
+            headers=req_headers,
+            stream=True,
+            timeout=timeout,
         ) as response:
             response.raise_for_status()
 
@@ -75,7 +77,7 @@ def download_file(
         return output_path
 
     except requests.RequestException as e:
-        logger.error(f"Download failed for {filename}: {e}")
+        logger.exception(f"Download failed for {filename}: {e}")
         if os.path.exists(output_path):
             with contextlib.suppress(OSError):
                 os.remove(output_path)
