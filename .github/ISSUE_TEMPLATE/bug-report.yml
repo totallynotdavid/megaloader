@@ -7,20 +7,20 @@ body:
   - type: input
     id: platform
     attributes:
-      label: Platform
-      description: Which platform were you downloading from?
+      label: Platform/module name (if applicable)
+      description: Which platform were you downloading from? Leave blank if not related to a specific platform.
       placeholder: "Bunkr, PixelDrain, Cyberdrop, GoFile, etc."
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: url
     attributes:
-      label: Problem URL(s)
-      description: The specific URL(s) causing issues
+      label: Problem URL(s) (if applicable)
+      description: The specific URL(s) causing issues. Leave blank if not related to specific URLs.
       placeholder: "Paste the exact URL(s) you were trying to download"
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: description
