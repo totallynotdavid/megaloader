@@ -38,7 +38,9 @@ def download_file(
         Path to downloaded file, or None if failed
     """
     if filename is None:
-        filename = os.path.basename(unquote(urlparse(url).path))
+        path = unquote(urlparse(url).path)
+        path = path.replace("\\", "/")  # Normalize path separators
+        filename = os.path.basename(path)
         if not filename:
             logger.error(f"Could not determine filename from URL: {url}")
             return None
