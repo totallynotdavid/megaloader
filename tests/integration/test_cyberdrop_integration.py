@@ -21,15 +21,15 @@ class TestCyberdropIntegration:
 
         api_response = {
             "name": "test_file.jpg",
-            "auth_url": "https://api.cyberdrop.me/auth/testid",
+            "auth_url": "https://api.cyberdrop.cr/auth/testid",
         }
 
         requests_mock.get(album_url, text=album_html)
         requests_mock.get(
-            "https://api.cyberdrop.me/api/file/info/ID1", json=api_response
+            "https://api.cyberdrop.cr/api/file/info/ID1", json=api_response
         )
         requests_mock.get(
-            "https://api.cyberdrop.me/api/file/info/ID2", json=api_response
+            "https://api.cyberdrop.cr/api/file/info/ID2", json=api_response
         )
 
         plugin = Cyberdrop(album_url)
@@ -44,11 +44,11 @@ class TestCyberdropIntegration:
         file_url = "https://cyberdrop.me/f/FILEID"
         api_response = {
             "name": "single.mp4",
-            "auth_url": "https://api.cyberdrop.me/auth/FILEID",
+            "auth_url": "https://api.cyberdrop.cr/auth/FILEID",
         }
 
         requests_mock.get(
-            "https://api.cyberdrop.me/api/file/info/FILEID", json=api_response
+            "https://api.cyberdrop.cr/api/file/info/FILEID", json=api_response
         )
 
         plugin = Cyberdrop(file_url)
@@ -62,8 +62,8 @@ class TestCyberdropIntegration:
         plugin = Cyberdrop("https://cyberdrop.me/f/TEST", rate_limit_seconds=0.2)
 
         requests_mock.get(
-            "https://api.cyberdrop.me/api/file/info/TEST",
-            json={"name": "file.txt", "auth_url": "https://api.cyberdrop.me/auth/TEST"},
+            "https://api.cyberdrop.cr/api/file/info/TEST",
+            json={"name": "file.txt", "auth_url": "https://api.cyberdrop.cr/auth/TEST"},
         )
 
         start = time.monotonic()

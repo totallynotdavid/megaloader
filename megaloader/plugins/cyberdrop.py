@@ -25,8 +25,8 @@ class Cyberdrop(BasePlugin):
     Supports both album links (/a/...) and single file links (/f/...).
     """
 
-    API_BASE_URL = "https://api.cyberdrop.me/api/file"
-    BASE_URL = "https://cyberdrop.me"
+    API_BASE_URL = "https://api.cyberdrop.cr/api/file"
+    BASE_URL = "https://cyberdrop.cr"
 
     def __init__(
         self, url: str, rate_limit_seconds: float = 1.0, **kwargs: Any
