@@ -23,6 +23,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.18.2",
+    "pytest>=8.4.2",
+    "requests-mock>=1.12.1",
 ]
 
 [tool.setuptools]
