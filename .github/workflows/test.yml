@@ -1,0 +1,40 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.7"
+
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run tests
+        run: uv run pytest -v --tb=short
+
+      - name: Coverage & Codecov (3.13 only)
+        if: matrix.python-version == '3.13'
+        run: |
+          uv add --group dev pytest-cov
+          uv run pytest --cov=megaloader --cov-report=xml --cov-report=term
+        continue-on-error: true
+      - if: matrix.python-version == '3.13'
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
