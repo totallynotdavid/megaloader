@@ -15,24 +15,20 @@ maintainers = [
 ]
 
 dependencies = [
-    "beautifulsoup4>=4.13.4",
-    "lxml>=6.0.1",
+    "beautifulsoup4>=4.14.2",
+    "lxml>=6.0.2",
     "requests>=2.32.5",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.12.10",
-    "mypy>=1.17.1",
+    "mypy>=1.18.2",
 ]
 
 [tool.setuptools]
 packages = ["megaloader"]
 
 [tool.ruff]
-extend-exclude = [
-    "megaloader/old_plugins*",
-]
 fix = true
 line-length = 88
 target-version = "py39"
