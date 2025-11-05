@@ -14,7 +14,7 @@ FIXTURES = HERE / "fixtures"
 
 def load_fixture(name: str) -> str:
     path = FIXTURES / name
-    with open(path, encoding="utf-8") as f:
+    with path.open(encoding="utf-8") as f:
         return f.read()
 
 
