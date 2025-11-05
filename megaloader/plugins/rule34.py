@@ -73,11 +73,12 @@ class Rule34(BasePlugin):
 
     def _extract_media_url(self, soup: BeautifulSoup) -> Optional[str]:
         # Try original image link first (best quality)
-        original_link = soup.find("a", string=lambda t: t and "Original image" in t)
-        if isinstance(original_link, Tag):
-            href = original_link.get("href")
-            if href:
-                return str(href)
+        for link in soup.find_all("a"):
+            if link.string and "Original image" in link.string:
+                href = link.get("href")
+                if href:
+                    return str(href)
+                break
 
         # Try video source for video posts
         video_source = soup.select_one("video > source")
