@@ -18,8 +18,8 @@ class TestFilenameSanitization:
             ("file*?.mp4", "file__.mp4"),
             (
                 "../../../etc/passwd",
-                "../../../etc/passwd",
-            ),  # traversal preserved for now
+                ".._.._.._etc_passwd",
+            ),  # path separators replaced
             ("normal_file.jpg", "normal_file.jpg"),
         ],
     )
