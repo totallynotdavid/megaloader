@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,7 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@30ce38e20653a26dd16caa082b010cec334ccf56 # v3.5.1
         with:
           version: "0.9.7"
 
@@ -28,13 +31,14 @@ jobs:
       - name: Run tests
         run: uv run pytest -v --tb=short
 
-      - name: Coverage & Codecov (3.13 only)
+      - name: Coverage & codecov (3.13 only)
         if: matrix.python-version == '3.13'
         run: |
           uv add --group dev pytest-cov
           uv run pytest --cov=megaloader --cov-report=xml --cov-report=term
         continue-on-error: true
+
       - if: matrix.python-version == '3.13'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           file: ./coverage.xml
