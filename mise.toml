@@ -2,17 +2,27 @@
 python.uv_venv_auto = true
 
 [tools]
-python = "3.13.7"
-uv = "0.8.13"
-ruff = "0.12.10"
+uv = "0.9.7"
+ruff = "0.14.3"
 
 [tasks.install]
 description = "Install dependencies"
 alias = "i"
 run = "uv sync --all-groups"
 
-[tasks.export]
-description = "Export deps to requirements.txt"
+[tasks.update]
+description = "Update all dependencies"
+alias = "u"
+run = "uv sync -U"
+
+[tasks.outdated]
+description = "List outdated dependencies"
+alias = "o"
+run = "uv pip list --outdated"
+
+[tasks.export-deps]
+description = "Export dependencies to requirements.txt"
+alias = "ed"
 run = "uv export --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file requirements.txt"
 
 [tasks.fix]
