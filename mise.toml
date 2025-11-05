@@ -42,3 +42,8 @@ run = [
 description = "Type check with mypy"
 alias = "m"
 run = "uv run mypy megaloader --config-file pyproject.toml"
+
+[tasks.test]
+description = "Run the pytest suite, including live tests"
+alias = "t"
+run = "uv run pytest --run-live"
