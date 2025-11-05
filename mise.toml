@@ -30,12 +30,12 @@ description = "Export dev dependencies to requirements-dev.txt"
 alias = "edd"
 run = "uv export --format requirements-txt --no-hashes --no-header --dev --no-annotate --output-file requirements-dev.txt"
 
-[tasks.fix]
+[tasks.format]
 description = "Lint & format (fix by default)"
 alias = "f"
 run = [
-  "uv run ruff format . --config pyproject.toml",
-  "uv run ruff check --fix --unsafe-fixes . --config pyproject.toml",
+  "ruff format . --config pyproject.toml",
+  "ruff check --fix --unsafe-fixes . --config pyproject.toml",
 ]
 
 [tasks.mypy]
