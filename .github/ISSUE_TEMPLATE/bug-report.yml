@@ -8,7 +8,9 @@ body:
     id: platform
     attributes:
       label: Platform/module name (if applicable)
-      description: Which platform were you downloading from? Leave blank if not related to a specific platform.
+      description:
+        Which platform were you downloading from? Leave blank if not related to
+        a specific platform.
       placeholder: "Bunkr, PixelDrain, Cyberdrop, GoFile, etc."
     validations:
       required: false
@@ -17,7 +19,9 @@ body:
     id: url
     attributes:
       label: Problem URL(s) (if applicable)
-      description: The specific URL(s) causing issues. Leave blank if not related to specific URLs.
+      description:
+        The specific URL(s) causing issues. Leave blank if not related to
+        specific URLs.
       placeholder: "Paste the exact URL(s) you were trying to download"
     validations:
       required: false
