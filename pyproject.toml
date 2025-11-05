@@ -33,28 +33,53 @@ packages = ["megaloader"]
 [tool.ruff]
 fix = true
 line-length = 88
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
+preview = true
 extend-select = [
+    "A",   # flake8-builtins
     "B",   # flake8-bugbear
+    "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions
+    "C90", # mccabe
+    "COM", # flake8-commas
+    "CPY", # flake8-copyright
+    "DTZ", # flake8-datetimez
+    "EM",  # flake8-errmsg
     "ERA", # flake8-eradicate/eradicate
+    "EXE", # flake8-executable
+    "F",   # pyflakes
+    "FA",  # flake8-future-annotations
+    "FBT", # flake8-boolean-trap
+    "FIX", # flake8-fixme
+    "FLY", # flynt
+    "FURB", # refurb
+    "G",   # flake8-logging-format
     "I",   # isort
+    "ICN", # flake8-import-conventions
+    "INP", # flake8-no-pep420
+    "ISC", # flake8-implicit-str-concat
+    "LOG", # flake8-logging
     "N",   # pep8-naming
-    "PIE", # flake8-pie
     "PGH", # pygrep
+    "PIE", # flake8-pie
+    "PTH", # flake8-use-pathlib
+    "Q",   # flake8-quotes
+    "RET", # flake8-return
+    "RSE", # flake8-raise
     "RUF", # ruff checks
     "SIM", # flake8-simplify
+    "T10", # flake8-debugger
     "T20", # flake8-print
     "TC",  # flake8-type-checking
+    "TD",  # flake8-todos
     "TID", # flake8-tidy-imports
+    "TRY", # tryceratops
     "UP",  # pyupgrade
 ]
 
-extend-safe-fixes = [
-    "TC",  # move import from and to TYPE_CHECKING blocks
-]
+ignore = ["COM812", "TRY300", "CPY001"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -66,8 +91,6 @@ lines-after-imports = 2
 
 [tool.mypy]
 files = "megaloader"
-namespace_packages = true
-explicit_package_bases = true
 strict = true
 enable_error_code = [
     "ignore-without-code",
