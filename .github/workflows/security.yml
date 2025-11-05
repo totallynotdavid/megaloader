@@ -1,24 +1,24 @@
 name: security report
 
 on:
-    push:
-        branches: ["main"]
-        paths: ['**/*.py']
-    workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths: ["**/*.py"]
+  workflow_dispatch:
 
 jobs:
-    security_checks:
-        runs-on: ubuntu-latest
-        name: PyCharm Security Scan
-        permissions:
-            actions: read
-            contents: read
-            security-events: write
+  security_checks:
+    runs-on: ubuntu-latest
+    name: PyCharm Security Scan
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
-        steps:
-            - uses: actions/checkout@v5
+    steps:
+      - uses: actions/checkout@v5
 
-            - uses: tonybaloney/pycharm-security@5c1ceeb1fb2a18478fa7076a81f9f47fd450e592
-              with:
-                  path: megaloader/
-                  fail_on_warnings: "no"
+      - uses: tonybaloney/pycharm-security@5c1ceeb1fb2a18478fa7076a81f9f47fd450e592
+        with:
+          path: megaloader/
+          fail_on_warnings: "no"

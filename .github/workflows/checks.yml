@@ -2,13 +2,13 @@ name: lint and format check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - '**/*.py'
+      - "**/*.py"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - '**/*.py'
+      - "**/*.py"
 
 permissions:
   contents: read
@@ -16,22 +16,22 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v5
-      
-    - uses: actions/setup-python@v6
-      with:
-        python-version: '3.13'
-        
-    - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41
-      with:
-        version: "0.8.13"
 
-    - run: uv sync --all-groups
-      
-    - run: uv run ruff format --check --diff . --config pyproject.toml
-      
-    - run: uv run ruff check . --config pyproject.toml
-      
-    - run: uv run mypy megaloader --config pyproject.toml
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41
+        with:
+          version: "0.8.13"
+
+      - run: uv sync --all-groups
+
+      - run: uv run ruff format --check --diff . --config pyproject.toml
+
+      - run: uv run ruff check . --config pyproject.toml
+
+      - run: uv run mypy megaloader --config pyproject.toml
