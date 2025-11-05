@@ -9,7 +9,7 @@ hosts; the resulting URLs are used in the test suite.
 > **Location:** `images/`\
 > **Source:** [yavuzceliker/sample-images](https://github.com/yavuzceliker/sample-images)\
 > **License:**
-> Pixabay Content License.\
+> Pixabay Content License.
 
 Files:
 
