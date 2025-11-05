@@ -23,6 +23,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.18.2",
+    "pytest>=8.4.2",
+    "requests-mock>=1.12.1",
 ]
 
 [tool.setuptools]
@@ -71,9 +73,6 @@ enable_error_code = [
     "ignore-without-code",
     "redundant-expr",
     "truthy-bool",
-]
-exclude = [
-    "megaloader/old_plugins*",
 ]
 
 [[tool.mypy.overrides]]

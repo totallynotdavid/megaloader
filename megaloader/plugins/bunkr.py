@@ -63,6 +63,9 @@ class Bunkr(BasePlugin):
 
         seen_urls = set()
         for link in file_links:
+            # Skip JavaScript templates
+            if "file.slug" in link or "+" in link:
+                continue
             file_url = urljoin(base_url, link)
             if file_url in seen_urls:
                 continue
@@ -97,7 +100,10 @@ class Bunkr(BasePlugin):
         if not filename:
             filename = f"bunkr_file_{os.path.basename(urlparse(file_url).path)}"
 
-        yield Item(url=download_url, filename=filename)
+        # Extract file ID from URL
+        file_id = os.path.basename(urlparse(file_url).path)
+
+        yield Item(url=download_url, filename=filename, file_id=file_id)
 
     def _extract_filename(self, content: str) -> str | None:
         """Extract original filename from page content."""

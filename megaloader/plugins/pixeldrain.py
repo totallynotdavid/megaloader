@@ -49,7 +49,9 @@ class PixelDrain(BasePlugin):
         response.raise_for_status()
 
         # Extract viewer data from JavaScript script on the page
-        match = re.search(r"window\.viewer_data\s*=\s*({.*?});", response.text)
+        match = re.search(
+            r"window\.viewer_data\s*=\s*({.*?});", response.text, re.DOTALL
+        )
         if not match:
             raise ValueError("Could not find viewer data on page")
 

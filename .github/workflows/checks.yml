@@ -2,13 +2,11 @@ name: lint and format check
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "**/*.py"
+    branches: ["main"]
+    paths: ["**/*.py"]
   pull_request:
-    branches: [main]
-    paths:
-      - "**/*.py"
+    branches: ["main"]
+    paths: ["**/*.py"]
 
 permissions:
   contents: read
@@ -25,17 +23,19 @@ jobs:
           python-version: "3.13.7"
 
       - name: Install and run ruff format check
-        uses: astral-sh/ruff-action@v3
+        uses: astral-sh/ruff-action@4ac3c5ec5652cc235ceeac069541cd5c630e7e3d # v3.5.1
         with:
           args: "format --check --diff"
 
       - name: Run ruff check
-        uses: astral-sh/ruff-action@v3
+        uses: astral-sh/ruff-action@4ac3c5ec5652cc235ceeac069541cd5c630e7e3d # v3.5.1
         with:
           args: "check . --config pyproject.toml"
 
       - name: Install dev dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
+        run:
+          python -m pip install --upgrade pip && python -m pip install -r
+          requirements-dev.txt
 
       - name: Run mypy
         run: mypy megaloader --config pyproject.toml
