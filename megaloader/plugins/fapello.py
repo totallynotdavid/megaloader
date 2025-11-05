@@ -1,8 +1,8 @@
 import logging
-import os
 import re
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urljoin, urlparse
 
@@ -42,7 +42,7 @@ class Fapello(BasePlugin):
         if not model_name:
             msg = "Invalid Fapello URL provided. Model name is empty."
             raise ValueError(msg)
-        logger.debug(f"Found model name: {model_name}")
+        logger.debug("Found model name: %s", model_name)
         return model_name
 
     def _get_full_res_url(self, thumb_url: str) -> str:
@@ -54,20 +54,22 @@ class Fapello(BasePlugin):
         Scrapes all media from a model's profile by iterating through their
         AJAX-loaded pages of thumbnails.
         """
-        logger.info(f"Starting export for Fapello model: {self.model}")
+        logger.info("Starting export for Fapello model: %s", self.model)
         page_num = 1
         seen_urls = set()
 
         while True:
             ajax_url = f"https://fapello.com/ajax/model/{self.model}/page-{page_num}/"
-            logger.debug(f"Fetching page: {ajax_url}")
+            logger.debug("Fetching page: %s", ajax_url)
 
             try:
                 response = self.session.get(ajax_url, timeout=30)
                 response.raise_for_status()
-            except requests.RequestException as e:
+            except requests.RequestException:
                 logger.exception(
-                    f"Failed to fetch page {page_num} for model {self.model}: {e}",
+                    "Failed to fetch page %d for model %s",
+                    page_num,
+                    self.model,
                 )
                 break
 
@@ -83,13 +85,18 @@ class Fapello(BasePlugin):
             if not thumb_elements:
                 if page_num == 1:
                     logger.warning(
-                        f"No media found on the first page for model: {self.model}. The model may not exist or has no content.",
+                        "No media found on the first page for model: %s. The model may not exist or has no content.",
+                        self.model,
                     )
                 else:
                     logger.info("Reached the last page of content (no media found).")
                 break
 
-            logger.info(f"Found {len(thumb_elements)} media items on page {page_num}")
+            logger.info(
+                "Found %d media items on page %d",
+                len(thumb_elements),
+                page_num,
+            )
 
             for thumb_img in thumb_elements:
                 thumb_url = urljoin("https://fapello.com/", str(thumb_img["src"]))
@@ -99,29 +106,30 @@ class Fapello(BasePlugin):
                     continue
                 seen_urls.add(full_res_url)
 
-                filename = os.path.basename(unquote(urlparse(full_res_url).path))
+                filename = Path(unquote(urlparse(full_res_url).path)).name
                 yield Item(url=full_res_url, filename=filename, album_title=self.model)
             page_num += 1
 
     def download_file(self, item: Item, output_dir: str) -> bool:
         """Downloads a single file from Fapello."""
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, item.filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / item.filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
 
         try:
-            logger.debug(f"Downloading: {item.url}")
+            logger.debug("Downloading: %s", item.url)
             with self.session.get(item.url, stream=True, timeout=180) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with output_path.open("wb") as f:
                     f.writelines(response.iter_content(chunk_size=8192))
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-        except requests.RequestException as e:
-            logger.exception(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+        except requests.RequestException:
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            logger.info("Downloaded: %s", item.filename)
+            return True

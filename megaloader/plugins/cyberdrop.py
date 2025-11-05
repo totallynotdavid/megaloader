@@ -1,9 +1,9 @@
 import logging
-import os
 import re
 import time
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -60,7 +60,7 @@ class Cyberdrop(BasePlugin):
 
         if time_since_last_call < self.rate_limit_seconds:
             sleep_duration = self.rate_limit_seconds - time_since_last_call
-            logger.debug(f"Rate limiting: sleeping for {sleep_duration:.2f} seconds.")
+            logger.debug("Rate limiting: sleeping for %.2f seconds.", sleep_duration)
             time.sleep(sleep_duration)
 
         api_url = f"{self.API_BASE_URL}/info/{file_id}"
@@ -70,24 +70,24 @@ class Cyberdrop(BasePlugin):
 
             data = response.json()
             if not isinstance(data, dict):
-                logger.error(f"API response for {file_id} is not a valid JSON object.")
+                logger.error("API response for %s is not a valid JSON object.", file_id)
                 return None
 
-            if not data.get("name") or not data.get("auth_url"):
-                logger.error(f"Invalid metadata for file ID {file_id}: {data}")
-                return None
-            return data
-        except requests.RequestException as e:
-            logger.exception(f"Failed to get file info for ID {file_id}: {e}")
+            if data.get("name") and data.get("auth_url"):
+                return data
+            logger.error("Invalid metadata for file ID %s: %s", file_id, data)
+            return None
+        except requests.RequestException:
+            logger.exception("Failed to get file info for ID %s", file_id)
         except ValueError:
-            logger.exception(f"Failed to decode JSON from file info for ID {file_id}")
+            logger.exception("Failed to decode JSON from file info for ID %s", file_id)
         finally:
             self._last_api_call_time = time.monotonic()
         return None
 
     def export(self) -> Generator[Item, None, None]:
         """Extracts downloadable items from a Cyberdrop URL."""
-        logger.info(f"Processing Cyberdrop URL: {self.url}")
+        logger.info("Processing Cyberdrop URL: %s", self.url)
         parsed_url = urlparse(self.url)
 
         if parsed_url.path.startswith("/a/"):
@@ -95,15 +95,15 @@ class Cyberdrop(BasePlugin):
         elif parsed_url.path.startswith("/f/"):
             yield from self._export_single_file()
         else:
-            logger.warning(f"Unrecognized Cyberdrop URL format: {self.url}")
+            logger.warning("Unrecognized Cyberdrop URL format: %s", self.url)
 
     def _export_album(self) -> Generator[Item, None, None]:
         """Extracts all items from an album page."""
         try:
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
-        except requests.RequestException as e:
-            logger.exception(f"Failed to fetch album page {self.url}: {e}")
+        except requests.RequestException:
+            logger.exception("Failed to fetch album page %s", self.url)
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -112,14 +112,14 @@ class Cyberdrop(BasePlugin):
         album_title = (
             self._sanitize_name(title_el.text) if title_el else "cyberdrop_album"
         )
-        logger.info(f"Found album: {album_title}")
+        logger.info("Found album: %s", album_title)
 
         file_links = soup.select("a.file[href], a#file[href]")
         if not file_links:
             logger.warning("No file links found on album page.")
             return
 
-        logger.info(f"Found {len(file_links)} files in album. Fetching metadata...")
+        logger.info("Found %d files in album. Fetching metadata...", len(file_links))
         for link in file_links:
             file_url = urljoin(self.BASE_URL, str(link["href"]))
             file_id_match = re.search(r"/f/(\w+)", file_url)
@@ -140,7 +140,7 @@ class Cyberdrop(BasePlugin):
         """Extracts an item from a single file page."""
         file_id_match = re.search(r"/f/(\w+)", self.url)
         if not file_id_match:
-            logger.error(f"Could not extract file ID from URL: {self.url}")
+            logger.error("Could not extract file ID from URL: %s", self.url)
             return
 
         file_id = file_id_match.group(1)
@@ -154,11 +154,11 @@ class Cyberdrop(BasePlugin):
 
     def download_file(self, item: Item, output_dir: str) -> bool:
         """Downloads a single file from Cyberdrop."""
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, item.filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / item.filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
 
         try:
@@ -169,20 +169,23 @@ class Cyberdrop(BasePlugin):
 
             if not direct_url:
                 logger.error(
-                    f"Could not get direct download URL for {item.filename}. API response: {response_json}",
+                    "Could not get direct download URL for %s. API response: %s",
+                    item.filename,
+                    response_json,
                 )
                 return False
 
-            logger.debug(f"Downloading {item.filename} from direct URL")
+            logger.debug("Downloading %s from direct URL", item.filename)
             with self.session.get(direct_url, stream=True, timeout=180) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with output_path.open("wb") as f:
                     f.writelines(response.iter_content(chunk_size=8192))
 
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-        except (requests.RequestException, ValueError, KeyError) as e:
-            logger.exception(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+            logger.info("Downloaded: %s", item.filename)
+        except (requests.RequestException, ValueError, KeyError):
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            return True

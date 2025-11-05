@@ -1,9 +1,9 @@
 import hashlib
 import logging
-import os
 import re
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -57,7 +57,8 @@ class Gofile(BasePlugin):
         """Lazily fetches the dynamic website token from Gofile's JavaScript."""
         if self._website_token is None:
             logger.debug("Fetching dynamic website token...")
-            try:
+
+            def _fetch_token() -> str:
                 js_url = "https://gofile.io/dist/js/global.js"
                 response = self.session.get(js_url, timeout=30)
                 response.raise_for_status()
@@ -68,9 +69,13 @@ class Gofile(BasePlugin):
                     msg = "Could not find website token in global.js."
                     raise RuntimeError(msg)
 
-                self._website_token = match.group(1)
+                return match.group(1)
+
+            try:
+                self._website_token = _fetch_token()
                 logger.debug(
-                    f"Successfully fetched website token: {self._website_token}",
+                    "Successfully fetched website token: %s",
+                    self._website_token,
                 )
             except (requests.RequestException, RuntimeError) as e:
                 msg = f"Failed to get Gofile website token: {e}"
@@ -113,69 +118,86 @@ class Gofile(BasePlugin):
         if self.password_hash:
             params["password"] = self.password_hash
 
+        def _raise_validation_error(msg: str) -> None:
+            raise ValueError(msg)
+
         try:
-            logger.info(f"Fetching content for Gofile ID: {self.content_id}")
-            response = self.session.get(
-                api_url,
-                params=params,
-                headers=headers,
-                timeout=30,
-            )
-            response.raise_for_status()
-            data = response.json()
 
-            status = data.get("status")
-            if status != "ok":
-                error_msg = data.get("data", {}).get(
-                    "message",
-                    f"Unknown error: {status}",
+            def _process_response() -> Any:
+                def _validate_data(data: dict[str, Any]) -> Any:
+                    status = data.get("status")
+                    if status != "ok":
+                        error_msg = data.get("data", {}).get(
+                            "message",
+                            f"Unknown error: {status}",
+                        )
+                        msg = f"Gofile API returned an error: {error_msg}"
+                        raise ConnectionError(msg)
+
+                    content_data = data.get("data")
+                    if not content_data:
+                        msg = "Gofile API returned an empty data object."
+                        _raise_validation_error(msg)
+                    return content_data
+
+                response = self.session.get(
+                    api_url,
+                    params=params,
+                    headers=headers,
+                    timeout=30,
                 )
-                msg = f"Gofile API returned an error: {error_msg}"
-                raise ConnectionError(msg)
+                response.raise_for_status()
+                data = response.json()
+                return _validate_data(data)
 
-            content_data = data.get("data")
-            if not content_data:
-                msg = "Gofile API returned an empty data object."
-                raise ValueError(msg)
+            content_data = _process_response()
 
             album_title = content_data.get("name", self.content_id)
 
             if "children" not in content_data:
                 logger.warning(
-                    f"No downloadable files found in Gofile folder '{album_title}'. A password may be required.",
+                    "No downloadable files found in Gofile folder '%s'. A password may be required.",
+                    album_title,
                 )
                 return
 
             files = content_data["children"]
-            logger.info(f"Found {len(files)} files in folder '{album_title}'.")
-            for file_info in files.values():
-                if file_info.get("type") == "file":
-                    yield Item(
-                        url=file_info["link"],
-                        filename=file_info["name"],
-                        file_id=file_info["id"],
-                        album_title=album_title,
-                        metadata={"size": file_info.get("size")},
-                    )
+            logger.info("Found %d files in folder '%s'.", len(files), album_title)
+            yield from self._yield_file_items(files, album_title)
 
-        except (requests.RequestException, ValueError, KeyError) as e:
-            logger.exception(f"Failed to export from Gofile: {e}")
+        except (requests.RequestException, ValueError, KeyError):
+            logger.exception("Failed to export from Gofile")
             raise
+
+    def _yield_file_items(
+        self,
+        files: dict[str, Any],
+        album_title: str,
+    ) -> Generator[Item, None, None]:
+        for file_info in files.values():
+            if file_info.get("type") == "file":
+                yield Item(
+                    url=file_info["link"],
+                    filename=file_info["name"],
+                    file_id=file_info["id"],
+                    album_title=album_title,
+                    metadata={"size": file_info.get("size")},
+                )
 
     def download_file(self, item: Item, output_dir: str) -> bool:
         """Downloads a single file from Gofile, using the auth token as a cookie."""
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, item.filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / item.filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
 
         # Gofile links require the account token to be sent as a cookie.
         headers = {"Cookie": f"accountToken={self.api_token}"}
 
         try:
-            logger.debug(f"Downloading: {item.url}")
+            logger.debug("Downloading: %s", item.url)
             with self.session.get(
                 item.url,
                 headers=headers,
@@ -183,12 +205,15 @@ class Gofile(BasePlugin):
                 timeout=180,
             ) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
-                    f.writelines(response.iter_content(chunk_size=8192))
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-        except requests.RequestException as e:
-            logger.exception(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+                with Path(output_path).open("wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+            logger.info("Downloaded: %s", item.filename)
+        except requests.RequestException:
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            return True
