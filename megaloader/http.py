@@ -1,7 +1,7 @@
 import contextlib
 import logging
-import os
 
+from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 import requests
@@ -39,27 +39,27 @@ def download_file(
     if filename is None:
         path = unquote(urlparse(url).path)
         path = path.replace("\\", "/")  # Normalize path separators
-        filename = os.path.basename(path)
+        filename = Path(path).name
         if not filename:
-            logger.error(f"Could not determine filename from URL: {url}")
+            logger.error("Could not determine filename from URL: %s", url)
             return None
 
     # Sanitize filename
     filename = filename.strip().replace("/", "_").replace("\\", "_")
-    output_path = os.path.join(os.path.abspath(output_dir), filename)
+    output_path = Path(output_dir).resolve() / filename
 
-    if os.path.exists(output_path):
-        logger.info(f"File already exists: {filename}")
-        return output_path
+    if output_path.exists():
+        logger.info("File already exists: %s", filename)
+        return str(output_path)
 
-    os.makedirs(output_dir, exist_ok=True)
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     req_headers = DEFAULT_HEADERS.copy()
     if headers:
         req_headers.update(headers)
 
     try:
-        logger.debug(f"Downloading: {url}")
+        logger.debug("Downloading: %s", url)
         with requests.get(
             url,
             headers=req_headers,
@@ -68,17 +68,17 @@ def download_file(
         ) as response:
             response.raise_for_status()
 
-            with open(output_path, "wb") as f:
+            with output_path.open("wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
                         f.write(chunk)
 
-        logger.debug(f"Downloaded: {filename}")
-        return output_path
-
-    except requests.RequestException as e:
-        logger.exception(f"Download failed for {filename}: {e}")
-        if os.path.exists(output_path):
+        logger.debug("Downloaded: %s", filename)
+    except requests.RequestException:
+        logger.exception("Download failed for %s", filename)
+        if output_path.exists():
             with contextlib.suppress(OSError):
-                os.remove(output_path)
+                output_path.unlink()
         return None
+    else:
+        return str(output_path)
