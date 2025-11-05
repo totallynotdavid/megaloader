@@ -3,6 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
@@ -66,10 +67,11 @@ class Rule34(BasePlugin):
         try:
             response = self.session.get(url, params=params, timeout=30)
             response.raise_for_status()
-            return response
         except requests.RequestException as e:
-            logger.warning(f"Request failed for {url}: {e}")
+            logger.warning("Request failed for %s: %s", url, e)
             return None
+        else:
+            return response
 
     def _normalize_url(self, url: str) -> str:
         return f"https:{url}" if url.startswith("//") else url
@@ -107,7 +109,7 @@ class Rule34(BasePlugin):
     ) -> Item:
         """Create Item with normalized URL and extracted filename."""
         file_url = self._normalize_url(file_url)
-        filename = os.path.basename(unquote(urlparse(file_url).path))
+        filename = Path(unquote(urlparse(file_url).path)).name
         return Item(
             url=file_url,
             filename=filename,
@@ -137,7 +139,7 @@ class Rule34(BasePlugin):
             yield self._create_item(file_url, f"post_{self.post_id}", self.post_id)
 
     def _export_api(self) -> Generator[Item, None, None]:
-        logger.info(f"Using API mode for tags: {' '.join(self.tags)}")
+        logger.info("Using API mode for tags: %s", " ".join(self.tags))
         album_title = "_".join(sorted(self.tags))
         page = 0
 
@@ -162,8 +164,8 @@ class Rule34(BasePlugin):
 
             try:
                 root = ET.fromstring(response.content)
-            except ET.ParseError as e:
-                logger.exception(f"Failed to parse API response: {e}")
+            except ET.ParseError:
+                logger.exception("Failed to parse API response")
                 break
 
             posts = list(root.iter("post"))
@@ -177,7 +179,7 @@ class Rule34(BasePlugin):
             page += 1
 
     def _export_scraper(self) -> Generator[Item, None, None]:
-        logger.info(f"Using scraper mode for tags: {' '.join(self.tags)}")
+        logger.info("Using scraper mode for tags: %s", " ".join(self.tags))
         album_title = "_".join(sorted(self.tags))
         pid = 0
         seen_urls = set()
