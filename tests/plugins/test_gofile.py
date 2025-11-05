@@ -8,8 +8,6 @@ from megaloader.plugins.gofile import Gofile
 
 
 class TestGofileURLParsing:
-    """Test URL validation and content ID extraction."""
-
     def test_invalid_url_raises(self):
         with pytest.raises(ValueError, match="Invalid Gofile URL"):
             Gofile("https://gofile.io/invalid-url")
@@ -28,8 +26,6 @@ class TestGofileURLParsing:
 
 
 class TestGofilePasswordHandling:
-    """Test password hashing and authentication."""
-
     def test_password_hash_generation(self):
         plugin = Gofile("https://gofile.io/d/test", password="mypassword")
         assert plugin.password_hash is not None
@@ -92,8 +88,6 @@ class TestGofileTokenFetching:
 
 
 class TestGofileExport:
-    """Test file export from Gofile folders."""
-
     def test_export_success(self, requests_mock):
         plugin = Gofile("https://gofile.io/d/test123")
 
@@ -240,11 +234,9 @@ class TestGofileDownload:
 
 @pytest.mark.live
 class TestGofileLive:
-    """Live integration tests against real Gofile URLs."""
-
     def test_live_token_fetching(self):
         """Verify we can fetch real tokens from Gofile."""
-        plugin = Gofile("https://gofile.io/d/any")
+        plugin = Gofile("https://gofile.io/d/wAKzmW")
 
         try:
             website_token = plugin.website_token

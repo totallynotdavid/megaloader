@@ -9,8 +9,6 @@ from megaloader.plugins.cyberdrop import Cyberdrop
 
 
 class TestCyberdropURLParsing:
-    """Test URL validation and content type detection."""
-
     def test_album_export(self, requests_mock, fixture_loader):
         album_url = "https://cyberdrop.me/a/album1"
         album_html = fixture_loader("cyberdrop_album.html")
@@ -53,8 +51,6 @@ class TestCyberdropURLParsing:
 
 
 class TestCyberdropFilenameHandling:
-    """Test filename sanitization."""
-
     @pytest.mark.parametrize(
         "input_name,expected",
         [
@@ -71,8 +67,6 @@ class TestCyberdropFilenameHandling:
 
 
 class TestCyberdropRateLimiting:
-    """Test API rate limiting behavior."""
-
     def test_rate_limiting_between_api_calls(self, requests_mock):
         plugin = Cyberdrop("https://cyberdrop.me/f/TEST", rate_limit_seconds=0.5)
 
@@ -94,8 +88,6 @@ class TestCyberdropRateLimiting:
 
 
 class TestCyberdropAPIErrorHandling:
-    """Test API error handling."""
-
     def test_api_invalid_response(self, requests_mock):
         plugin = Cyberdrop("https://cyberdrop.me/f/BAD")
 
@@ -135,8 +127,6 @@ class TestCyberdropAPIErrorHandling:
 
 
 class TestCyberdropDownload:
-    """Test file download functionality."""
-
     def test_download_file_success(self, requests_mock, tmp_output_dir):
         plugin = Cyberdrop("https://cyberdrop.me/f/DL")
 
@@ -177,8 +167,6 @@ class TestCyberdropDownload:
 
 @pytest.mark.live
 class TestCyberdropLive:
-    """Live integration tests against real Cyberdrop URLs."""
-
     def test_live_album(self):
         """Test against a real Cyberdrop album."""
         url = "https://cyberdrop.me/a/0OpiyaOV"

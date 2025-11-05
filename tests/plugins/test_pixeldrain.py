@@ -159,8 +159,6 @@ class TestPixelDrainProxyRouting:
 
 
 class TestPixelDrainFileSizeFormatting:
-    """Test human-readable file size formatting."""
-
     @pytest.mark.parametrize(
         "size,expected_unit",
         [
@@ -179,8 +177,6 @@ class TestPixelDrainFileSizeFormatting:
 
 
 class TestPixelDrainErrorHandling:
-    """Test error handling for various failure scenarios."""
-
     def test_missing_viewer_data(self, requests_mock):
         url = "https://pixeldrain.com/u/nodata"
         requests_mock.get(url, text="<html><body>No viewer data</body></html>")
@@ -230,8 +226,6 @@ class TestPixelDrainErrorHandling:
 
 
 class TestPixelDrainDownload:
-    """Test file download functionality."""
-
     def test_download_file_success(self, requests_mock, tmp_output_dir):
         plugin = PixelDrain("https://pixeldrain.com/u/test")
 
@@ -272,10 +266,7 @@ class TestPixelDrainDownload:
 
 @pytest.mark.live
 class TestPixelDrainLive:
-    """Live integration tests against real PixelDrain URLs."""
-
     def test_live_single_file(self):
-        """Test against a real PixelDrain file URL."""
         url = "https://pixeldrain.com/u/95u1wnsd"
 
         try:
@@ -293,7 +284,6 @@ class TestPixelDrainLive:
             pytest.skip(f"Live PixelDrain file no longer available: {e}")
 
     def test_live_file_list(self):
-        """Test against a real PixelDrain list URL."""
         url = "https://pixeldrain.com/l/nH4ZKt3b"
 
         try:

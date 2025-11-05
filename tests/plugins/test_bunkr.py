@@ -8,8 +8,6 @@ from megaloader.plugins.bunkr import Bunkr
 
 
 class TestBunkrURLParsing:
-    """Test URL validation and content type detection."""
-
     def test_album_url_detection(self, requests_mock):
         album_url = "https://bunkr.ru/a/test123"
         requests_mock.get(album_url, text="<html><body></body></html>")
@@ -37,8 +35,6 @@ class TestBunkrURLParsing:
 
 
 class TestBunkrAlbumParsing:
-    """Test album page parsing with realistic HTML structures."""
-
     def test_parse_album_with_multiple_files(self, requests_mock):
         album_url = "https://bunkr.ru/a/real-album"
         album_html = """
@@ -100,7 +96,6 @@ class TestBunkrAlbumParsing:
         assert len(items) == 0
 
     def test_album_with_duplicate_links(self, requests_mock):
-        """Duplicate file links should be handled correctly (deduplicated)."""
         album_url = "https://bunkr.ru/a/dupes"
         album_html = """<html><body>
         <a href="/f/same">File</a>
@@ -123,8 +118,6 @@ class TestBunkrAlbumParsing:
 
 
 class TestBunkrFilenameExtraction:
-    """Test filename extraction from various HTML structures."""
-
     @pytest.mark.parametrize(
         "html,expected",
         [
@@ -153,8 +146,6 @@ class TestBunkrFilenameExtraction:
 
 
 class TestBunkrErrorHandling:
-    """Test error handling for various failure scenarios."""
-
     @pytest.mark.parametrize(
         "exception_type,exception_instance",
         [
@@ -201,8 +192,6 @@ class TestBunkrErrorHandling:
 
 
 class TestBunkrSecurity:
-    """Test security-related edge cases."""
-
     @pytest.mark.parametrize(
         "malicious_filename",
         [
@@ -216,13 +205,17 @@ class TestBunkrSecurity:
     ):
         """
         Filenames with path traversal, null bytes, or excessive length
-        should be preserved in the Item - sanitization happens in download_file.
+        should be preserved in the Item; sanitization happens in download_file.
         """
         url = "https://bunkr.ru/f/malicious"
-        html = f"""<html>
+
+        html = f"""
+        <html>
         <a class="btn btn-main" href="/download/mal">Download</a>
         <meta property="og:title" content="{malicious_filename}">
-        </html>"""
+        </html>
+        """
+
         requests_mock.get(url, text=html)
 
         plugin = Bunkr(url)
@@ -233,8 +226,6 @@ class TestBunkrSecurity:
 
 
 class TestBunkrDownload:
-    """Test file download functionality."""
-
     def test_download_file_already_exists(self, tmp_output_dir):
         plugin = Bunkr("https://bunkr.ru/f/test")
 
@@ -261,8 +252,6 @@ class TestBunkrDownload:
 
 @pytest.mark.live
 class TestBunkrLive:
-    """Live integration tests against real Bunkr URLs."""
-
     def test_live_single_file_real_url(self):
         """Test against a real Bunkr file URL from the project examples."""
         url = "https://bunkrr.su/d/megaloader-main-RKEICuly.zip"
