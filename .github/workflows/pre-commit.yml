@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
     main-linux:
-        uses: asottile/workflows/.github/workflows/tox.yml@v1.8.1
+        uses: asottile/workflows/.github/workflows/tox.yml@v1.9.0
         with:
             env: '["py311", "py312", "py313"]'
             os: ubuntu-latest
