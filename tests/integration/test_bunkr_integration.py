@@ -6,7 +6,7 @@ from megaloader.plugins.bunkr import Bunkr
 
 @pytest.mark.integration
 class TestBunkrIntegration:
-    def test_album_url_parsing(self, requests_mock):
+    def test_album_url_parsing(self, requests_mock) -> None:
         album_url = "https://bunkr.si/a/testalbum"
 
         album_html = """
@@ -33,7 +33,7 @@ class TestBunkrIntegration:
         assert len(items) == 2
         assert all(item.filename == "test.jpg" for item in items)
 
-    def test_single_file_url_parsing(self, requests_mock):
+    def test_single_file_url_parsing(self, requests_mock) -> None:
         file_url = "https://bunkr.si/f/testfile"
 
         file_html = """
@@ -51,7 +51,7 @@ class TestBunkrIntegration:
         assert len(items) == 1
         assert items[0].filename == "myfile.zip"
 
-    def test_filename_extraction_fallback(self, requests_mock):
+    def test_filename_extraction_fallback(self, requests_mock) -> None:
         url = "https://bunkr.si/f/test"
 
         html = """
@@ -68,7 +68,7 @@ class TestBunkrIntegration:
 
         assert items[0].filename == "fallback.mp4"
 
-    def test_network_error_handling(self, requests_mock):
+    def test_network_error_handling(self, requests_mock) -> None:
         url = "https://bunkr.si/a/error"
         requests_mock.get(url, exc=requests.ConnectionError("failed"))
 
@@ -79,13 +79,13 @@ class TestBunkrIntegration:
 
 @pytest.mark.integration
 class TestBunkrDownloadIntegration:
-    def test_file_already_exists_skip(self, tmp_output_dir):
-        import os
+    def test_file_already_exists_skip(self, tmp_output_dir) -> None:
+        from pathlib import Path
 
         plugin = Bunkr("https://bunkr.si/f/test")
 
-        existing = os.path.join(tmp_output_dir, "exists.txt")
-        with open(existing, "w") as f:
+        existing = Path(tmp_output_dir) / "exists.txt"
+        with existing.open("w") as f:
             f.write("original")
 
         result = plugin._download_file_direct(
@@ -96,5 +96,5 @@ class TestBunkrDownloadIntegration:
         )
 
         assert result is True
-        with open(existing) as f:
+        with existing.open() as f:
             assert f.read() == "original"

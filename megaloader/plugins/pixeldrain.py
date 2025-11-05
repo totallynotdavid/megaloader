@@ -1,10 +1,10 @@
 import json
 import logging
 import math
-import os
 import re
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any, ClassVar
 
 import requests
@@ -31,29 +31,32 @@ class PixelDrain(BasePlugin):
         "pd10.sriflix.my",
     ]
 
-    def __init__(self, url: str, use_proxy: bool = False, **kwargs: Any) -> None:
+    def __init__(self, url: str, *, use_proxy: bool = False, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
         self.use_proxy = use_proxy
         self.proxy_index = 0
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
         )
 
     def export(self) -> Generator[Item, None, None]:
-        logger.info(f"Processing PixelDrain URL: {self.url}")
+        logger.info("Processing PixelDrain URL: %s", self.url)
 
         response = self.session.get(self.url, timeout=30)
         response.raise_for_status()
 
         # Extract viewer data from JavaScript script on the page
         match = re.search(
-            r"window\.viewer_data\s*=\s*({.*?});", response.text, re.DOTALL
+            r"window\.viewer_data\s*=\s*({.*?});",
+            response.text,
+            re.DOTALL,
         )
         if not match:
-            raise ValueError("Could not find viewer data on page")
+            msg = "Could not find viewer data on page"
+            raise ValueError(msg)
 
         data = json.loads(match.group(1))
         api_response = data.get("api_response", {})
@@ -63,7 +66,9 @@ class PixelDrain(BasePlugin):
             files = api_response["files"]
             total_size = sum(f.get("size", 0) for f in files)
             logger.info(
-                f"Found list with {len(files)} files ({self._format_size(total_size)})"
+                "Found list with %d files (%s)",
+                len(files),
+                self._format_size(total_size),
             )
 
             for file_data in files:
@@ -76,7 +81,9 @@ class PixelDrain(BasePlugin):
         elif "name" in api_response:
             # Single file
             logger.info(
-                f"Found single file: {api_response['name']} ({self._format_size(api_response.get('size', 0))})"
+                "Found single file: %s (%s)",
+                api_response["name"],
+                self._format_size(api_response.get("size", 0)),
             )
             yield Item(
                 url=f"https://pixeldrain.com/api/file/{api_response['id']}",
@@ -91,31 +98,34 @@ class PixelDrain(BasePlugin):
             return False
         download_url = self._get_download_url(item.file_id)
 
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, item.filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / item.filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
 
         try:
             with requests.get(
-                download_url, stream=True, timeout=60, headers=self.session.headers
+                download_url,
+                stream=True,
+                timeout=60,
+                headers=self.session.headers,
             ) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with Path(output_path).open("wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
 
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-
-        except Exception as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+            logger.info("Downloaded: %s", item.filename)
+        except Exception:
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            return True
 
     def _get_download_url(self, file_id: str) -> str:
         """Get download URL, using proxy if enabled."""
@@ -123,8 +133,8 @@ class PixelDrain(BasePlugin):
             proxy = self.PROXIES[self.proxy_index]
             self.proxy_index = (self.proxy_index + 1) % len(self.PROXIES)
             return f"https://{proxy}/api/file/{file_id}?download"
-        else:
-            return f"https://pixeldrain.com/api/file/{file_id}"
+
+        return f"https://pixeldrain.com/api/file/{file_id}"
 
     def _format_size(self, size_bytes: int) -> str:
         """Format file size in human readable format."""

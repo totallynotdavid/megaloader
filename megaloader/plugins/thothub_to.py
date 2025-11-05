@@ -5,7 +5,8 @@ import tempfile
 import time
 
 from collections.abc import Generator
-from typing import Any, Optional
+from pathlib import Path
+from typing import Any
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -48,14 +49,14 @@ class ThothubTO(BasePlugin):
         self.session.headers.update(
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            }
+            },
         )
-        logger.debug(f"Initialized Thothub plugin with URL: {self.url}")
+        logger.debug("Initialized Thothub plugin with URL: %s", self.url)
         try:
             self.session.get("https://thothub.to/", timeout=30)
         except requests.RequestException:
             logger.warning(
-                "Failed to pre-fetch homepage, session cookies might be incomplete."
+                "Failed to pre-fetch homepage, session cookies might be incomplete.",
             )
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -185,11 +186,14 @@ class ThothubTO(BasePlugin):
         return "".join(h_list)
 
     def _get_item_from_video_page(
-        self, page_url: str, album_title: Optional[str] = None
-    ) -> Optional[Item]:
+        self,
+        page_url: str,
+        album_title: str | None = None,
+    ) -> Item | None:
+        content: str = ""
         try:
             # First: Get the video page content. All necessary data is here.
-            logger.debug(f"Fetching video page to get metadata: {page_url}")
+            logger.debug("Fetching video page to get metadata: %s", page_url)
             page_response = self.session.get(page_url, timeout=30)
             page_response.raise_for_status()
             content = page_response.text
@@ -201,13 +205,15 @@ class ThothubTO(BasePlugin):
 
             if not video_id_match or not obfuscated_url_match or not license_code_match:
                 logger.error(
-                    f"Could not find video_id, video_url, or license_code on page {page_url}. The video might not be public."
+                    "Could not find video_id, video_url, or license_code on page %s. The video might not be public.",
+                    page_url,
                 )
                 return None
 
             video_id = video_id_match.group(1)
             obfuscated_url = obfuscated_url_match.group(1).replace(
-                self._OBFUSCATION_PREFIX, ""
+                self._OBFUSCATION_PREFIX,
+                "",
             )
             license_code = license_code_match.group(1)
 
@@ -241,31 +247,32 @@ class ThothubTO(BasePlugin):
             title = title_tag.text.strip() if title_tag else f"thothub_{video_id}"
             sanitized_title = self._sanitize_filename(title)
 
-            logger.info(f"Successfully retrieved real video URL for '{title}'")
-            logger.debug(f"Final URL: {final_video_url}")
+            logger.info("Successfully retrieved real video URL for '%s'", title)
+            logger.debug("Final URL: %s", final_video_url)
             return Item(
                 url=final_video_url,
                 filename=f"{sanitized_title}.mp4",
                 album_title=album_title,
                 metadata={"referer": page_url},
             )
-        except requests.RequestException as e:
-            logger.error(f"Failed to process video page {page_url}: {e}")
+        except requests.RequestException:
+            logger.exception("Failed to process video page %s", page_url)
             return None
-        except Exception as e:
-            logger.error(
-                f"An unexpected error occurred while processing {page_url}: {e}",
-                exc_info=True,
+        except Exception:
+            logger.exception(
+                "An unexpected error occurred while processing %s",
+                page_url,
             )
             try:
                 debug_fd, debug_path = tempfile.mkstemp(
-                    prefix="thothub_debug_", suffix=".html"
+                    prefix="thothub_debug_",
+                    suffix=".html",
                 )
                 with os.fdopen(debug_fd, "w", encoding="utf-8") as f:
                     f.write(content)
-                logger.info(f"Saved the page content to: {debug_path}")
-            except Exception as debug_err:
-                logger.warning(f"Failed to write debug file: {debug_err}")
+                logger.info("Saved the page content to: %s", debug_path)
+            except OSError as debug_err:
+                logger.warning("Failed to write debug file: %s", debug_err)
             return None
 
     def export(self) -> Generator[Item, None, None]:
@@ -280,10 +287,10 @@ class ThothubTO(BasePlugin):
         elif path.startswith("/albums/"):
             yield from self._export_from_album_page()
         else:
-            logger.error(f"Unrecognized Thothub URL format: {self.url}")
+            logger.error("Unrecognized Thothub URL format: %s", self.url)
 
     def _export_from_album_page(self) -> Generator[Item, None, None]:
-        logger.info(f"Exporting all images from album: {self.url}")
+        logger.info("Exporting all images from album: %s", self.url)
         try:
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
@@ -298,10 +305,10 @@ class ThothubTO(BasePlugin):
 
             image_links = soup.select('div.block-album a.item[href*="/get_image/"]')
             if not image_links:
-                logger.warning(f"No image links found on album page: {self.url}")
+                logger.warning("No image links found on album page: %s", self.url)
                 return
 
-            logger.info(f"Found {len(image_links)} images in album '{album_title}'.")
+            logger.info("Found %d images in album '%s'.", len(image_links), album_title)
 
             for i, a_tag in enumerate(image_links):
                 image_page_url = a_tag.get("href")
@@ -312,7 +319,7 @@ class ThothubTO(BasePlugin):
                 # The URL path is like: /get_image/.../sources/.../XXXXXXX.jpg/
                 # We extract 'XXXXXXX.jpg' as the filename.
                 path_part = urlparse(full_image_url).path.strip("/")
-                filename = os.path.basename(path_part)
+                filename = Path(path_part).name
 
                 if not filename:
                     ext_match = re.search(r"\.(\w+)$", path_part)
@@ -325,21 +332,24 @@ class ThothubTO(BasePlugin):
                     album_title=sanitized_album_title,
                     metadata={"referer": self.url},
                 )
-        except requests.RequestException as e:
-            logger.error(f"Failed to fetch album page {self.url}: {e}")
-        except Exception as e:
-            logger.error(
-                f"An unexpected error occurred while processing album {self.url}: {e}",
-                exc_info=True,
+        except requests.RequestException:
+            logger.exception("Failed to fetch album page %s", self.url)
+        except Exception:
+            logger.exception(
+                "An unexpected error occurred while processing album %s",
+                self.url,
             )
 
     def _export_from_model_page(self) -> Generator[Item, None, None]:
         model_match = re.search(r"/models/([^/]+)", self.url)
+
         if not model_match:
-            logger.error(f"Could not extract model name from URL: {self.url}")
+            logger.error("Could not extract model name from URL: %s", self.url)
             return
+
         model_name = model_match.group(1)
-        logger.info(f"Exporting all videos for model: {model_name}")
+        logger.info("Exporting all videos for model: %s", model_name)
+
         page_num = 1
         seen_urls = set()
         while True:
@@ -348,23 +358,26 @@ class ThothubTO(BasePlugin):
                 f"&block_id=list_videos_common_videos_list&sort_by=post_date&from={page_num}"
             )
             try:
-                logger.debug(f"Fetching AJAX page {page_num} for {model_name}")
+                logger.debug("Fetching AJAX page %d for %s", page_num, model_name)
                 response = self.session.get(ajax_url, timeout=30)
                 if response.status_code == 404:
                     logger.info("Reached the end of model's videos (404).")
                     break
                 response.raise_for_status()
-            except requests.RequestException as e:
-                logger.error(f"Failed to fetch AJAX page {page_num}: {e}")
+            except requests.RequestException:
+                logger.exception("Failed to fetch AJAX page %d", page_num)
                 break
+
             html_snippet = response.text
             if not html_snippet.strip():
                 logger.info("Reached the end of model's videos (empty page).")
                 break
+
             soup = BeautifulSoup(html_snippet, "html.parser")
             video_links = [
                 a["href"] for a in soup.select('div.item > a[href*="/videos/"]')
             ]
+
             if not video_links:
                 logger.info("No more video links found on this page.")
                 break
@@ -373,41 +386,51 @@ class ThothubTO(BasePlugin):
 
             for link in video_links:
                 video_page_url = urljoin("https://thothub.to/", str(link))
+
                 if video_page_url in seen_urls:
                     continue
+
                 seen_urls.add(video_page_url)
                 item = self._get_item_from_video_page(
-                    video_page_url, album_title=sanitized_model_name
+                    video_page_url,
+                    album_title=sanitized_model_name,
                 )
+
                 if item:
                     yield item
             page_num += 1
 
     def download_file(self, item: Item, output_dir: str) -> bool:
-        os.makedirs(output_dir, exist_ok=True)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-        final_output_dir = output_dir
+        final_output_dir = Path(output_dir)
 
         if item.album_title:
             sanitized_album_title = self._sanitize_filename(item.album_title)
-            if os.path.basename(output_dir) != sanitized_album_title:
-                final_output_dir = os.path.join(output_dir, sanitized_album_title)
-                os.makedirs(final_output_dir, exist_ok=True)
 
-        output_path = os.path.join(final_output_dir, item.filename)
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+            if Path(output_dir).name != sanitized_album_title:
+                final_output_dir = Path(output_dir) / sanitized_album_title
+                Path(final_output_dir).mkdir(parents=True, exist_ok=True)
+
+        output_path = Path(final_output_dir) / item.filename
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
+
         referer = item.metadata.get("referer") if item.metadata else None
         if not referer:
-            logger.error(f"Cannot download {item.filename}, missing referer URL.")
+            logger.error("Cannot download %s, missing referer URL.", item.filename)
             return False
-        headers = self.session.headers.copy()
+
+        headers = dict(self.session.headers)
         headers["Referer"] = referer
         headers["Range"] = "bytes=0-"
         try:
             logger.debug(
-                f"Downloading: {item.url} to {output_path} with headers: {headers}"
+                "Downloading: %s to %s with headers: %s",
+                item.url,
+                output_path,
+                headers,
             )
             with self.session.get(
                 item.url,
@@ -417,13 +440,15 @@ class ThothubTO(BasePlugin):
                 allow_redirects=True,
             ) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with Path(output_path).open("wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-        except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+                        if chunk:
+                            f.write(chunk)
+            logger.info("Downloaded: %s", item.filename)
+        except requests.RequestException:
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            return True
