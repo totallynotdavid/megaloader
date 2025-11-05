@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from tests.test_urls import BUNKR_URLS
 
@@ -6,8 +7,8 @@ from tests.test_urls import BUNKR_URLS
 @pytest.mark.live
 @pytest.mark.downloads_file
 class TestBunkrLive:
-    def test_bunkr_images_album(self):
-        """Test against real Bunkr images album with sample files"""
+    def test_bunkr_images_album(self) -> None:
+        """Test against real Bunkr images album with sample files."""
         from megaloader.plugins.bunkr import Bunkr
 
         url = BUNKR_URLS["images"]
@@ -36,11 +37,11 @@ class TestBunkrLive:
                 assert item.url
                 assert item.file_id
                 assert "get.bunkr" in item.url or "bunkr" in item.url
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Bunkr images album unavailable: {e}")
 
-    def test_bunkr_videos_album(self):
-        """Test against real Bunkr videos album with sample files"""
+    def test_bunkr_videos_album(self) -> None:
+        """Test against real Bunkr videos album with sample files."""
         from megaloader.plugins.bunkr import Bunkr
 
         url = BUNKR_URLS["videos"]
@@ -67,5 +68,5 @@ class TestBunkrLive:
                 assert item.url
                 assert item.file_id
                 assert "get.bunkr" in item.url or "bunkr" in item.url
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Bunkr videos album unavailable: {e}")

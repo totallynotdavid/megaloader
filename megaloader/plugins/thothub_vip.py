@@ -1,9 +1,9 @@
 import json
 import logging
-import os
 import re
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -33,7 +33,7 @@ class ThothubVIP(BasePlugin):
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Referer": "https://thothub.vip/",
-            }
+            },
         )
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -45,7 +45,7 @@ class ThothubVIP(BasePlugin):
         Routes the URL to the appropriate handler based on its format
         (e.g., /video/ or /album/).
         """
-        logger.info(f"Processing thothub.vip URL: {self.url}")
+        logger.info("Processing thothub.vip URL: %s", self.url)
 
         if "/video/" in self.url:
             yield from self._export_video()
@@ -53,7 +53,8 @@ class ThothubVIP(BasePlugin):
             yield from self._export_album()
         else:
             logger.warning(
-                f"Unsupported URL format: {self.url}. Only /video/ and /album/ URLs are supported."
+                "Unsupported URL format: %s. Only /video/ and /album/ URLs are supported.",
+                self.url,
             )
             return
 
@@ -61,8 +62,8 @@ class ThothubVIP(BasePlugin):
         try:
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
-        except requests.RequestException as e:
-            logger.error(f"Failed to fetch video page {self.url}: {e}")
+        except requests.RequestException:
+            logger.exception("Failed to fetch video page %s", self.url)
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -74,8 +75,8 @@ class ThothubVIP(BasePlugin):
 
         try:
             metadata = json.loads(json_ld_script.get_text().strip())
-        except (json.JSONDecodeError, TypeError) as e:
-            logger.error(f"Failed to parse JSON-LD metadata: {e}")
+        except (json.JSONDecodeError, TypeError):
+            logger.exception("Failed to parse JSON-LD metadata")
             return
 
         if not isinstance(metadata, dict):
@@ -93,15 +94,15 @@ class ThothubVIP(BasePlugin):
         sanitized_name = self._sanitize_filename(video_name)
         filename = f"{sanitized_name}.mp4"
 
-        logger.info(f"Found video: {video_name}")
+        logger.info("Found video: %s", video_name)
         yield Item(url=full_content_url, filename=filename)
 
     def _export_album(self) -> Generator[Item, None, None]:
         try:
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
-        except requests.RequestException as e:
-            logger.error(f"Failed to fetch album page {self.url}: {e}")
+        except requests.RequestException:
+            logger.exception("Failed to fetch album page %s", self.url)
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -112,10 +113,10 @@ class ThothubVIP(BasePlugin):
 
         image_links = soup.select("div.album-inner a.item.album-img[href]")
         if not image_links:
-            logger.warning(f"No image links found in album: {album_title}")
+            logger.warning("No image links found in album: %s", album_title)
             return
 
-        logger.info(f"Found {len(image_links)} images in album '{album_title}'.")
+        logger.info("Found %d images in album '%s'.", len(image_links), album_title)
         for link in image_links:
             href = link.get("href")
             if not href:
@@ -124,11 +125,12 @@ class ThothubVIP(BasePlugin):
             full_image_url = urljoin(self.url, str(href))
             # Extract filename from the URL path, e.g., .../123456.jpg/ -> 123456.jpg
             clean_path = urlparse(full_image_url).path.strip("/")
-            filename = os.path.basename(clean_path)
+            filename = Path(clean_path).name
 
             if not filename:
                 logger.warning(
-                    f"Could not determine filename for URL: {full_image_url}"
+                    "Could not determine filename for URL: %s",
+                    full_image_url,
                 )
                 continue
 
@@ -139,27 +141,31 @@ class ThothubVIP(BasePlugin):
             )
 
     def download_file(self, item: Item, output_dir: str) -> bool:
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, item.filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / item.filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
 
         try:
-            logger.debug(f"Downloading: {item.url}")
+            logger.debug("Downloading: %s", item.url)
             with self.session.get(
-                item.url, stream=True, timeout=3600, allow_redirects=True
+                item.url,
+                stream=True,
+                timeout=3600,
+                allow_redirects=True,
             ) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with Path(output_path).open("wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-        except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+            logger.info("Downloaded: %s", item.filename)
+        except requests.RequestException:
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            return True

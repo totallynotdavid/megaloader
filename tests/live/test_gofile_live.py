@@ -1,12 +1,13 @@
 import pytest
+import requests
 
 from tests.test_urls import GOFILE_URLS
 
 
 @pytest.mark.live
 class TestGofileLive:
-    def test_gofile_token_fetching(self):
-        """Test that we can fetch real Gofile tokens"""
+    def test_gofile_token_fetching(self) -> None:
+        """Test that we can fetch real Gofile tokens."""
         from megaloader.plugins.gofile import Gofile
 
         plugin = Gofile("https://gofile.io/d/test")
@@ -17,11 +18,11 @@ class TestGofileLive:
 
             assert wt and len(wt) > 0
             assert api and len(api) > 0
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Gofile API unreachable: {e}")
 
-    def test_gofile_images_album(self):
-        """Test against real Gofile images album with sample files"""
+    def test_gofile_images_album(self) -> None:
+        """Test against real Gofile images album with sample files."""
         from megaloader.plugins.gofile import Gofile
 
         url = GOFILE_URLS["images"]
@@ -51,11 +52,11 @@ class TestGofileLive:
                 assert item.file_id
                 assert item.metadata is not None
                 assert item.metadata.get("size") is not None
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Gofile images album unavailable: {e}")
 
-    def test_gofile_videos_album(self):
-        """Test against real Gofile videos album with sample files"""
+    def test_gofile_videos_album(self) -> None:
+        """Test against real Gofile videos album with sample files."""
         from megaloader.plugins.gofile import Gofile
 
         url = GOFILE_URLS["videos"]
@@ -83,5 +84,5 @@ class TestGofileLive:
                 assert item.file_id
                 assert item.metadata is not None
                 assert item.metadata.get("size") is not None
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Gofile videos album unavailable: {e}")

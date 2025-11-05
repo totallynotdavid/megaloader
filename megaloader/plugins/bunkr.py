@@ -2,10 +2,10 @@ import base64
 import html
 import logging
 import math
-import os
 import re
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from urllib.parse import quote, urljoin, urlparse
 
@@ -25,13 +25,13 @@ class Bunkr(BasePlugin):
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
         )
 
     def export(self) -> Generator[Item, None, None]:
         """Extract files from Bunkr URL (album or single file)."""
-        logger.info(f"Processing Bunkr URL: {self.url}")
+        logger.info("Processing Bunkr URL: %s", self.url)
 
         response = self.session.get(self.url, allow_redirects=True, timeout=30)
         response.raise_for_status()
@@ -46,10 +46,12 @@ class Bunkr(BasePlugin):
             # Single file viewer page
             yield from self._process_file_page(content, resolved_url)
         else:
-            logger.warning(f"Unrecognized Bunkr URL format: {resolved_url}")
+            logger.warning("Unrecognized Bunkr URL format: %s", resolved_url)
 
     def _process_album(
-        self, content: str, base_url: str
+        self,
+        content: str,
+        base_url: str,
     ) -> Generator[Item, None, None]:
         """Extract file links from album page."""
         # Find file links using regex
@@ -59,7 +61,7 @@ class Bunkr(BasePlugin):
             logger.warning("No files found in album")
             return
 
-        logger.info(f"Found {len(file_links)} files in album")
+        logger.info("Found %d files in album", len(file_links))
 
         seen_urls = set()
         for link in file_links:
@@ -74,7 +76,9 @@ class Bunkr(BasePlugin):
             yield from self._process_file_url(file_url)
 
     def _process_file_page(
-        self, content: str, file_url: str
+        self,
+        content: str,
+        file_url: str,
     ) -> Generator[Item, None, None]:
         """Process single file viewer page."""
         yield from self._process_file_url(file_url)
@@ -90,7 +94,7 @@ class Bunkr(BasePlugin):
             response.text,
         )
         if not download_match:
-            logger.warning(f"No download button found for {file_url}")
+            logger.warning("No download button found for %s", file_url)
             return
 
         download_url = urljoin(file_url, download_match.group(1))
@@ -98,10 +102,10 @@ class Bunkr(BasePlugin):
         # Extract filename from og:title or script
         filename = self._extract_filename(response.text)
         if not filename:
-            filename = f"bunkr_file_{os.path.basename(urlparse(file_url).path)}"
+            filename = f"bunkr_file_{Path(urlparse(file_url).path).name}"
 
         # Extract file ID from URL
-        file_id = os.path.basename(urlparse(file_url).path)
+        file_id = Path(urlparse(file_url).path).name
 
         yield Item(url=download_url, filename=filename, file_id=file_id)
 
@@ -128,12 +132,14 @@ class Bunkr(BasePlugin):
 
             file_id = self._extract_file_id(response.text, item.url)
             if not file_id:
-                logger.error(f"Could not extract file ID from {item.url}")
+                logger.error("Could not extract file ID from %s", item.url)
                 return False
 
             # Call API to get encrypted URL
             api_response = self.session.post(
-                self.API_URL, json={"id": file_id}, timeout=30
+                self.API_URL,
+                json={"id": file_id},
+                timeout=30,
             )
             api_response.raise_for_status()
             api_data = api_response.json()
@@ -146,11 +152,14 @@ class Bunkr(BasePlugin):
 
             # Download the file
             return self._download_file_direct(
-                download_url, item.filename, output_dir, item.url
+                download_url,
+                item.filename,
+                output_dir,
+                item.url,
             )
 
-        except Exception as e:
-            logger.error(f"Failed to download {item.filename}: {e}")
+        except Exception:
+            logger.exception("Failed to download %s", item.filename)
             return False
 
     def _extract_file_id(self, content: str, url: str) -> str | None:
@@ -187,40 +196,47 @@ class Bunkr(BasePlugin):
             base_url = decrypted.decode("utf-8")
             return f"{base_url}?n={quote(filename)}"
 
-        except (KeyError, ValueError, Exception) as e:
-            logger.error(f"URL decryption failed: {e}")
+        except (KeyError, ValueError, Exception):
+            logger.exception("URL decryption failed")
             return None
 
     def _download_file_direct(
-        self, url: str, filename: str, output_dir: str, referer: str
+        self,
+        url: str,
+        filename: str,
+        output_dir: str,
+        referer: str,
     ) -> bool:
         """Download file with proper headers."""
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", filename)
             return True
 
         headers = {
-            "Referer": f"{urlparse(referer).scheme}://{urlparse(referer).netloc}/"
+            "Referer": f"{urlparse(referer).scheme}://{urlparse(referer).netloc}/",
         }
 
         try:
             with self.session.get(
-                url, headers=headers, stream=True, timeout=60
+                url,
+                headers=headers,
+                stream=True,
+                timeout=60,
             ) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with output_path.open("wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
 
-            logger.info(f"Downloaded: {filename}")
-            return True
-
-        except Exception as e:
-            logger.error(f"Download failed: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+        except Exception:
+            logger.exception("Download failed")
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            logger.info("Downloaded: %s", filename)
+            return True
