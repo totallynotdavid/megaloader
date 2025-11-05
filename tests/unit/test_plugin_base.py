@@ -29,7 +29,6 @@ class TestBasePluginContract:
         assert item.metadata == metadata
 
     def test_plugin_requires_non_empty_url(self):
-        """Verify plugins reject empty URLs"""
         with pytest.raises(ValueError, match="URL must be a non-empty string"):
 
             class DummyPlugin(BasePlugin):
@@ -42,7 +41,6 @@ class TestBasePluginContract:
             DummyPlugin("")
 
     def test_plugin_requires_url_argument(self):
-        """Verify plugins require URL parameter"""
         with pytest.raises(TypeError):
 
             class DummyPlugin(BasePlugin):
@@ -75,7 +73,7 @@ class TestBasePluginContract:
                 def download_file(self, item, output_dir):
                     return True
 
-            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # Abstract class instantiation (intentional for test)
+            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # intentional for test
 
     def test_download_file_method_abstract(self):
         """Verify download_file method must be implemented"""
@@ -85,11 +83,9 @@ class TestBasePluginContract:
                 def export(self):
                     yield from []
 
-            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # Abstract class instantiation (intentional for test)
+            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # intentional for test
 
     def test_plugin_config_storage(self):
-        """Verify plugin stores configuration kwargs"""
-
         class DummyPlugin(BasePlugin):
             def export(self):
                 yield from []

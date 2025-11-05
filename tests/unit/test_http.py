@@ -30,7 +30,6 @@ class TestDownloadFileUtility:
                 assert result is None
 
     def test_sanitizes_filenames(self, requests_mock, tmp_path):
-        """Test that dangerous filename characters are sanitized"""
         dangerous_urls = [
             ("https://example.com/path/file.txt", "file.txt"),  # / becomes _
             ("https://example.com/path\\file.txt", "file.txt"),  # \ handled by basename
@@ -56,7 +55,6 @@ class TestDownloadFileUtility:
         assert os.path.exists(result)
 
     def test_handles_network_errors(self, requests_mock, tmp_path):
-        """Test error handling for network failures"""
         import requests
 
         url = "https://example.com/fail.txt"
@@ -88,7 +86,6 @@ class TestDownloadFileUtility:
         assert file_path.read_text() == "existing content"
 
     def test_custom_headers(self, requests_mock, tmp_path):
-        """Test custom headers are sent with request"""
         url = "https://example.com/custom.txt"
         custom_headers = {"X-Custom": "test"}
 

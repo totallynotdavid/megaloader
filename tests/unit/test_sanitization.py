@@ -5,8 +5,6 @@ import pytest
 
 @pytest.mark.unit
 class TestFilenameSanitization:
-    """Test that filenames are properly sanitized"""
-
     INVALID_DIR_CHARS = r'[<>:"/\\|?*]'
 
     @pytest.mark.parametrize(
