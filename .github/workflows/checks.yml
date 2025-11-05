@@ -2,13 +2,11 @@ name: lint and format check
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "**/*.py"
+    branches: ["main"]
+    paths: ["**/*.py"]
   pull_request:
-    branches: [main]
-    paths:
-      - "**/*.py"
+    branches: ["main"]
+    paths: ["**/*.py"]
 
 permissions:
   contents: read
