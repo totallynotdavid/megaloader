@@ -1,8 +1,8 @@
 import logging
-import os
 import re
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
 
@@ -36,13 +36,13 @@ class Thotslife(BasePlugin):
         """
         Fetches the page and yields all found media items (videos and images).
         """
-        logger.info(f"Processing Thotslife URL: {self.url}")
+        logger.info("Processing Thotslife URL: %s", self.url)
 
         try:
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
-        except requests.RequestException as e:
-            logger.exception(f"Failed to fetch page {self.url}: {e}")
+        except requests.RequestException:
+            logger.exception("Failed to fetch page %s", self.url)
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -53,35 +53,55 @@ class Thotslife(BasePlugin):
             if title_tag
             else "thotslife_album"
         )
-        logger.info(f"Found post: {album_title}")
+        logger.info("Found post: %s", album_title)
 
         article_body_element = soup.find("div", itemprop="articleBody")
 
         if not isinstance(article_body_element, Tag):
-            logger.warning(f"Could not find article body on page: {self.url}")
+            logger.warning("Could not find article body on page: %s", self.url)
             return
 
         article_body: Tag = article_body_element
 
         media_found = 0
-        seen_urls = set()
+        seen_urls: set[str] = set()
 
-        # Find videos
+        for item in self._find_videos(article_body, album_title, seen_urls):
+            yield item
+            media_found += 1
+        for item in self._find_images(article_body, album_title, seen_urls):
+            yield item
+            media_found += 1
+
+        if media_found == 0:
+            logger.warning("No media found on page: %s", self.url)
+
+    def _find_videos(
+        self,
+        article_body: Tag,
+        album_title: str,
+        seen_urls: set[str],
+    ) -> Generator[Item, None, None]:
         video_sources = article_body.select("video > source[src]")
         for source in video_sources:
             video_url = source.get("src")
 
             if isinstance(video_url, str) and video_url not in seen_urls:
                 seen_urls.add(video_url)
-                filename = os.path.basename(unquote(urlparse(video_url).path))
+                filename = Path(unquote(urlparse(video_url).path)).name
 
                 if not filename:
                     filename = f"{album_title}.mp4"
 
-                logger.debug(f"Found video: {filename}")
+                logger.debug("Found video: %s", filename)
                 yield Item(url=video_url, filename=filename, album_title=album_title)
-                media_found += 1
 
+    def _find_images(
+        self,
+        article_body: Tag,
+        album_title: str,
+        seen_urls: set[str],
+    ) -> Generator[Item, None, None]:
         # Find images (via data-src)
         image_tags = article_body.select("img[data-src]")
         for img in image_tags:
@@ -94,30 +114,26 @@ class Thotslife(BasePlugin):
 
                 seen_urls.add(image_url)
 
-                filename = os.path.basename(unquote(urlparse(image_url).path))
+                filename = Path(unquote(urlparse(image_url).path)).name
                 if not filename:
-                    ext = os.path.splitext(urlparse(image_url).path)[1] or ".jpg"
+                    ext = Path(urlparse(image_url).path).suffix or ".jpg"
                     filename = f"image_{len(seen_urls)}{ext}"
 
-                logger.debug(f"Found image: {filename}")
+                logger.debug("Found image: %s", filename)
                 yield Item(url=image_url, filename=filename, album_title=album_title)
-                media_found += 1
-
-        if media_found == 0:
-            logger.warning(f"No media found on page: {self.url}")
 
     def download_file(self, item: Item, output_dir: str) -> bool:
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, item.filename)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        output_path = Path(output_dir) / item.filename
 
-        if os.path.exists(output_path):
-            logger.info(f"File already exists: {item.filename}")
+        if output_path.exists():
+            logger.info("File already exists: %s", item.filename)
             return True
 
         is_video = item.filename.lower().endswith(".mp4")
 
         try:
-            logger.debug(f"Downloading: {item.url}")
+            logger.debug("Downloading: %s", item.url)
             with self.session.get(
                 item.url,
                 stream=True,
@@ -126,14 +142,15 @@ class Thotslife(BasePlugin):
                 verify=not is_video,
             ) as response:
                 response.raise_for_status()
-                with open(output_path, "wb") as f:
+                with Path(output_path).open("wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
-            logger.info(f"Downloaded: {item.filename}")
-            return True
-        except requests.RequestException as e:
-            logger.exception(f"Download failed for {item.filename}: {e}")
-            if os.path.exists(output_path):
-                os.remove(output_path)
+            logger.info("Downloaded: %s", item.filename)
+        except requests.RequestException:
+            logger.exception("Download failed for %s", item.filename)
+            if output_path.exists():
+                output_path.unlink()
             return False
+        else:
+            return True
