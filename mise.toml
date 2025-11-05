@@ -25,6 +25,11 @@ description = "Export dependencies to requirements.txt"
 alias = "ed"
 run = "uv export --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file requirements.txt"
 
+[tasks.export-dev]
+description = "Export dev dependencies to requirements-dev.txt"
+alias = "edd"
+run = "uv export --format requirements-txt --no-hashes --no-header --dev --no-annotate --output-file requirements-dev.txt"
+
 [tasks.fix]
 description = "Lint & format (fix by default)"
 alias = "f"
