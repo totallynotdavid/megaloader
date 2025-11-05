@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from tests.test_urls import GOFILE_URLS
 
@@ -17,7 +18,7 @@ class TestGofileLive:
 
             assert wt and len(wt) > 0
             assert api and len(api) > 0
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Gofile API unreachable: {e}")
 
     def test_gofile_images_album(self) -> None:
@@ -51,7 +52,7 @@ class TestGofileLive:
                 assert item.file_id
                 assert item.metadata is not None
                 assert item.metadata.get("size") is not None
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Gofile images album unavailable: {e}")
 
     def test_gofile_videos_album(self) -> None:
@@ -83,5 +84,5 @@ class TestGofileLive:
                 assert item.file_id
                 assert item.metadata is not None
                 assert item.metadata.get("size") is not None
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Gofile videos album unavailable: {e}")

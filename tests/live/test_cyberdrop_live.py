@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from tests.test_urls import CYBERDROP_URLS
 
@@ -38,7 +39,7 @@ class TestCyberdropLive:
                 assert item.filename
                 assert item.url
                 assert item.file_id
-        except Exception as e:
+        except requests.RequestException as e:
             import traceback
 
             traceback.print_exc()
@@ -74,5 +75,5 @@ class TestCyberdropLive:
                 assert item.filename
                 assert item.url
                 assert item.file_id
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Cyberdrop videos album unavailable: {e}")

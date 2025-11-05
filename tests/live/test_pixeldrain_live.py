@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from tests.test_urls import PIXELDRAIN_URLS
 
@@ -37,7 +38,7 @@ class TestPixelDrainLive:
                 assert item.file_id
                 assert item.metadata is not None
                 assert item.metadata.get("size", 0) > 0
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"PixelDrain images list unavailable: {e}")
 
     def test_pixeldrain_videos_list(self) -> None:
@@ -69,5 +70,5 @@ class TestPixelDrainLive:
                 assert item.file_id
                 assert item.metadata is not None
                 assert item.metadata.get("size", 0) > 0
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"PixelDrain videos list unavailable: {e}")

@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from tests.test_urls import BUNKR_URLS
 
@@ -36,7 +37,7 @@ class TestBunkrLive:
                 assert item.url
                 assert item.file_id
                 assert "get.bunkr" in item.url or "bunkr" in item.url
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Bunkr images album unavailable: {e}")
 
     def test_bunkr_videos_album(self) -> None:
@@ -67,5 +68,5 @@ class TestBunkrLive:
                 assert item.url
                 assert item.file_id
                 assert "get.bunkr" in item.url or "bunkr" in item.url
-        except Exception as e:
+        except requests.RequestException as e:
             pytest.skip(f"Bunkr videos album unavailable: {e}")

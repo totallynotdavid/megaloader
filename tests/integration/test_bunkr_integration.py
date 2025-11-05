@@ -80,12 +80,12 @@ class TestBunkrIntegration:
 @pytest.mark.integration
 class TestBunkrDownloadIntegration:
     def test_file_already_exists_skip(self, tmp_output_dir) -> None:
-        import os
+        from pathlib import Path
 
         plugin = Bunkr("https://bunkr.si/f/test")
 
-        existing = os.path.join(tmp_output_dir, "exists.txt")
-        with open(existing, "w") as f:
+        existing = Path(tmp_output_dir) / "exists.txt"
+        with existing.open("w") as f:
             f.write("original")
 
         result = plugin._download_file_direct(
@@ -96,5 +96,5 @@ class TestBunkrDownloadIntegration:
         )
 
         assert result is True
-        with open(existing) as f:
+        with existing.open() as f:
             assert f.read() == "original"

@@ -72,9 +72,9 @@ class TestPixelDrainIntegration:
 
         assert result is True
 
-        import os
+        from pathlib import Path
 
-        path = os.path.join(tmp_output_dir, "test.jpg")
-        assert os.path.exists(path)
-        with open(path, "rb") as f:
+        path = Path(tmp_output_dir) / "test.jpg"
+        assert path.exists()
+        with path.open("rb") as f:
             assert f.read() == content

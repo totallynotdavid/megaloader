@@ -90,9 +90,9 @@ class TestCyberdropIntegration:
 
         assert result is True
 
-        import os
+        from pathlib import Path
 
-        path = os.path.join(tmp_output_dir, "test.bin")
-        assert os.path.exists(path)
-        with open(path, "rb") as f:
+        path = Path(tmp_output_dir) / "test.bin"
+        assert path.exists()
+        with path.open("rb") as f:
             assert f.read() == file_content
