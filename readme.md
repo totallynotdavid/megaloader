@@ -8,12 +8,6 @@ automatically downloads content from several file hosting and media platforms.
 It works with a plugin-based architecture to provide a unified interface for
 downloading from multiple platforms.
 
-<!-- prettier-ignore -->
-> [!WARNING]
-> Many supported platforms host adult content. This tool is designed
-> for content creators and digital archivists who need to work with such
-> platforms.
-
 ## Getting started
 
 The package has an automatic URL detection system that makes downloading content
@@ -43,7 +37,8 @@ download(
 
 The downloaded files are organized in the specified directory, with plugins
 automatically creating subdirectories based on album names or content structure
-when appropriate.
+when appropriate. To disable automatic subdirectory creation, set
+`create_album_subdirs=False`.
 
 ## Supported platforms
 
@@ -193,8 +188,8 @@ platforms.
 
 <!-- prettier-ignore -->
 > [!TIP]
-> Report issues through the
-> [GitHub Issues](https://github.com/totallynotdavid/megaloader/issues) tracker.
+> Report bugs through
+> [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions) tracker.
 > Include specific URLs, complete error messages with DEBUG logging enabled, and
 > your Python version.
 
@@ -292,12 +287,13 @@ plugins, see our [contributing guide](.github/CONTRIBUTING.md).
 ## Getting help
 
 For **bug reports** use
-[GitHub Issues](https://github.com/totallynotdavid/megaloader/issues). Make sure
-to include your Python version, complete error messages, stack traces, and
-problematic URLs. Include DEBUG-level logging output to speed up debugging.
+[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
+Make sure to include your Python version, complete error messages, stack traces,
+and problematic URLs. Include DEBUG-level logging output to speed up debugging.
 
-For **feature requests**, submit through GitHub Issues with their respective use
-cases, supported platforms, example URLs, and workflow explanations.
+For **feature requests**, submit through GitHub Discussions with their
+respective use cases, supported platforms, example URLs, and workflow
+explanations.
 
 For **general questions**, use
 [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)

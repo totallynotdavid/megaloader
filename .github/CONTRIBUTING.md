@@ -94,3 +94,10 @@ workflow.
 
 To discuss design choices, integrations, or open questions, please use
 [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
+
+### Reporting bugs
+
+Bug reports should be submitted through
+[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
+rather than GitHub Issues. Include your Python version, complete error messages,
+stack traces, problematic URLs, and DEBUG-level logging output.

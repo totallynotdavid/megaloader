@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "This project will make you smile. It allows you to use some download plugins for many websites such as Cyberdrop, Fanbox, GoFile, Pixiv, Rule34, Thotslife, and so on..."
 
 license = { text = "MIT" }
-readme = "README.md"
+readme = "readme.md"
 requires-python = ">=3.10"
 
 authors = [
