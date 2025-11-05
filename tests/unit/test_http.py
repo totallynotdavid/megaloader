@@ -1,5 +1,6 @@
-import os
 import tempfile
+
+from pathlib import Path
 
 import pytest
 
@@ -25,7 +26,7 @@ class TestDownloadFileUtility:
             result = download_file(url, tempfile.gettempdir())
             if expected:
                 assert result is not None
-                assert os.path.basename(result) == expected
+                assert Path(result).name == expected
             else:
                 assert result is None
 
@@ -39,7 +40,7 @@ class TestDownloadFileUtility:
             requests_mock.get(url, content=b"test")
             result = download_file(url, str(tmp_path))
             assert result is not None
-            assert os.path.basename(result) == expected_filename
+            assert Path(result).name == expected_filename
 
     def test_creates_output_directory(self, requests_mock, tmp_path) -> None:
         """Test that missing output directories are created."""
@@ -52,7 +53,7 @@ class TestDownloadFileUtility:
         result = download_file(url, str(nested_dir))
         assert result is not None
         assert nested_dir.exists()
-        assert os.path.exists(result)
+        assert Path(result).exists()
 
     def test_handles_network_errors(self, requests_mock, tmp_path) -> None:
         import requests
