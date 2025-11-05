@@ -1,7 +1,5 @@
 import logging
 
-import requests
-
 from megaloader import Bunkr, PixelDrain, download
 
 
@@ -13,12 +11,10 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(name)s: %(mess
 download("https://pixeldrain.com/u/95u1wnsd", "./downloads")
 
 # Inject a session with, e.g., retry logic.
-session = requests.Session()
-# Add your custom adapter/retry logic like this: session.mount(...)
+# Note: Plugins currently create their own sessions internally.
 download(
     "https://bunkrr.su/d/megaloader-main-RKEICuly.zip",
     "./downloads",
-    session=session,
     plugin_class=Bunkr,
 )
 
