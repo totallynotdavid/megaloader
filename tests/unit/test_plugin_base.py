@@ -5,33 +5,98 @@ from megaloader.plugin import BasePlugin, Item
 
 @pytest.mark.unit
 class TestBasePluginContract:
-    def test_item_dataclass(self):
-        """Verify Item has required fields"""
+    def test_item_dataclass_required_fields(self):
+        """Verify Item requires url and filename"""
         item = Item(url="http://example.com/file.txt", filename="test.txt")
-        assert item.url
-        assert item.filename
+        assert item.url == "http://example.com/file.txt"
+        assert item.filename == "test.txt"
         assert item.album_title is None
+        assert item.file_id is None
         assert item.metadata is None
 
-    def test_plugin_requires_url(self):
-        """Verify plugins require non-empty URL"""
-        with pytest.raises(ValueError):
+    def test_item_dataclass_optional_fields(self):
+        """Verify Item optional fields work correctly"""
+        metadata = {"size": 1024, "type": "image"}
+        item = Item(
+            url="http://example.com/file.txt",
+            filename="test.txt",
+            album_title="Test Album",
+            file_id="12345",
+            metadata=metadata,
+        )
+        assert item.album_title == "Test Album"
+        assert item.file_id == "12345"
+        assert item.metadata == metadata
+
+    def test_plugin_requires_non_empty_url(self):
+        """Verify plugins reject empty URLs"""
+        with pytest.raises(ValueError, match="URL must be a non-empty string"):
 
             class DummyPlugin(BasePlugin):
                 def export(self):
-                    pass
+                    yield from []
 
                 def download_file(self, item, output_dir):
-                    pass
+                    return True
 
             DummyPlugin("")
 
-    def test_export_must_be_implemented(self):
-        """Verify export is abstract"""
+    def test_plugin_requires_url_argument(self):
+        """Verify plugins require URL parameter"""
         with pytest.raises(TypeError):
+
+            class DummyPlugin(BasePlugin):
+                def export(self):
+                    yield from []
+
+                def download_file(self, item, output_dir):
+                    return True
+
+            DummyPlugin()  # type: ignore[reportCallIssue]  # Missing url argument (intentional for test)
+
+    def test_plugin_stores_url(self):
+        """Verify plugin stores and strips URL"""
+
+        class DummyPlugin(BasePlugin):
+            def export(self):
+                yield from []
+
+            def download_file(self, item, output_dir):
+                return True
+
+        plugin = DummyPlugin("  http://example.com/test  ")
+        assert plugin.url == "http://example.com/test"
+
+    def test_export_method_abstract(self):
+        """Verify export method must be implemented"""
+        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
 
             class BadPlugin(BasePlugin):
                 def download_file(self, item, output_dir):
-                    pass
+                    return True
 
-            BadPlugin("http://example.com")
+            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # Abstract class instantiation (intentional for test)
+
+    def test_download_file_method_abstract(self):
+        """Verify download_file method must be implemented"""
+        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
+
+            class BadPlugin(BasePlugin):
+                def export(self):
+                    yield from []
+
+            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # Abstract class instantiation (intentional for test)
+
+    def test_plugin_config_storage(self):
+        """Verify plugin stores configuration kwargs"""
+
+        class DummyPlugin(BasePlugin):
+            def export(self):
+                yield from []
+
+            def download_file(self, item, output_dir):
+                return True
+
+        plugin = DummyPlugin("http://example.com", custom_option="test", timeout=30)
+        assert plugin._config["custom_option"] == "test"
+        assert plugin._config["timeout"] == 30
