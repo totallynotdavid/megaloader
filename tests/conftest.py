@@ -23,14 +23,34 @@ def fixture_loader():
     return load_fixture
 
 
-def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "live: mark test as requiring live network access"
-    )
-
-
 @pytest.fixture
 def tmp_output_dir(tmp_path):
     d = tmp_path / "out"
     d.mkdir()
     return str(d)
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "unit: Unit tests (fast, mocked)")
+    config.addinivalue_line(
+        "markers", "integration: Integration tests (mocked, realistic)"
+    )
+    config.addinivalue_line("markers", "live: Live network tests (requires internet)")
+    config.addinivalue_line("markers", "downloads_file: Performs actual file downloads")
+
+
+def pytest_collection_modifyitems(config, items):
+    """Skip live tests unless --run-live is passed"""
+    if config.getoption("--run-live", default=False):
+        return
+
+    skip_live = pytest.mark.skip(reason="need --run-live option to run")
+    for item in items:
+        if "live" in item.keywords:
+            item.add_marker(skip_live)
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-live", action="store_true", default=False, help="run live network tests"
+    )
