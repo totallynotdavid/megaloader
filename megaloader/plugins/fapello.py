@@ -28,7 +28,7 @@ class Fapello(BasePlugin):
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                 "Referer": "https://fapello.com/",
-            }
+            },
         )
         self.model = self._get_model_from_url(url)
 
@@ -36,10 +36,12 @@ class Fapello(BasePlugin):
         """Extracts the model name from a Fapello URL."""
         match = re.search(r"fapello\.com/([a-zA-Z0-9_\-~\.]+)", url)
         if not match:
-            raise ValueError("Invalid Fapello URL provided. Could not find model name.")
+            msg = "Invalid Fapello URL provided. Could not find model name."
+            raise ValueError(msg)
         model_name = match.group(1).split("/")[0]
         if not model_name:
-            raise ValueError("Invalid Fapello URL provided. Model name is empty.")
+            msg = "Invalid Fapello URL provided. Model name is empty."
+            raise ValueError(msg)
         logger.debug(f"Found model name: {model_name}")
         return model_name
 
@@ -64,8 +66,8 @@ class Fapello(BasePlugin):
                 response = self.session.get(ajax_url, timeout=30)
                 response.raise_for_status()
             except requests.RequestException as e:
-                logger.error(
-                    f"Failed to fetch page {page_num} for model {self.model}: {e}"
+                logger.exception(
+                    f"Failed to fetch page {page_num} for model {self.model}: {e}",
                 )
                 break
 
@@ -81,7 +83,7 @@ class Fapello(BasePlugin):
             if not thumb_elements:
                 if page_num == 1:
                     logger.warning(
-                        f"No media found on the first page for model: {self.model}. The model may not exist or has no content."
+                        f"No media found on the first page for model: {self.model}. The model may not exist or has no content.",
                     )
                 else:
                     logger.info("Reached the last page of content (no media found).")
@@ -115,12 +117,11 @@ class Fapello(BasePlugin):
             with self.session.get(item.url, stream=True, timeout=180) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+                    f.writelines(response.iter_content(chunk_size=8192))
             logger.info(f"Downloaded: {item.filename}")
             return True
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False

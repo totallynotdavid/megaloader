@@ -33,7 +33,7 @@ class ThothubVIP(BasePlugin):
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Referer": "https://thothub.vip/",
-            }
+            },
         )
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -53,7 +53,7 @@ class ThothubVIP(BasePlugin):
             yield from self._export_album()
         else:
             logger.warning(
-                f"Unsupported URL format: {self.url}. Only /video/ and /album/ URLs are supported."
+                f"Unsupported URL format: {self.url}. Only /video/ and /album/ URLs are supported.",
             )
             return
 
@@ -62,7 +62,7 @@ class ThothubVIP(BasePlugin):
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch video page {self.url}: {e}")
+            logger.exception(f"Failed to fetch video page {self.url}: {e}")
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -75,7 +75,7 @@ class ThothubVIP(BasePlugin):
         try:
             metadata = json.loads(json_ld_script.get_text().strip())
         except (json.JSONDecodeError, TypeError) as e:
-            logger.error(f"Failed to parse JSON-LD metadata: {e}")
+            logger.exception(f"Failed to parse JSON-LD metadata: {e}")
             return
 
         if not isinstance(metadata, dict):
@@ -101,7 +101,7 @@ class ThothubVIP(BasePlugin):
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch album page {self.url}: {e}")
+            logger.exception(f"Failed to fetch album page {self.url}: {e}")
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -128,7 +128,7 @@ class ThothubVIP(BasePlugin):
 
             if not filename:
                 logger.warning(
-                    f"Could not determine filename for URL: {full_image_url}"
+                    f"Could not determine filename for URL: {full_image_url}",
                 )
                 continue
 
@@ -149,7 +149,10 @@ class ThothubVIP(BasePlugin):
         try:
             logger.debug(f"Downloading: {item.url}")
             with self.session.get(
-                item.url, stream=True, timeout=3600, allow_redirects=True
+                item.url,
+                stream=True,
+                timeout=3600,
+                allow_redirects=True,
             ) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
@@ -159,7 +162,7 @@ class ThothubVIP(BasePlugin):
             logger.info(f"Downloaded: {item.filename}")
             return True
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False

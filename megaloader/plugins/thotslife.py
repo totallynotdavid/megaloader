@@ -26,7 +26,7 @@ class Thotslife(BasePlugin):
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Referer": "https://thotslife.com/",
-            }
+            },
         )
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -42,7 +42,7 @@ class Thotslife(BasePlugin):
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch page {self.url}: {e}")
+            logger.exception(f"Failed to fetch page {self.url}: {e}")
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -133,7 +133,7 @@ class Thotslife(BasePlugin):
             logger.info(f"Downloaded: {item.filename}")
             return True
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False

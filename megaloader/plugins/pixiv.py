@@ -4,7 +4,7 @@ import os
 import re
 
 from collections.abc import Generator
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -21,7 +21,7 @@ class Pixiv(BasePlugin):
     Supports user profiles and single artwork pages.
     - https://www.pixiv.net/en/users/{userId}
     - https://www.pixiv.net/en/artworks/{artworkId}
-    - http://www.pixiv.net/member.php?id={userId}
+    - http://www.pixiv.net/member.php?id={userId}.
 
     To download R-18 or private content, set the PIXIV_PHPSESSID environment
     variable to your 'PHPSESSID' cookie value from pixiv.net.
@@ -38,8 +38,8 @@ class Pixiv(BasePlugin):
     def __init__(self, url: str, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
         self.session = self._create_session()
-        self.url_type: Optional[str] = None
-        self.content_id: Optional[str] = None
+        self.url_type: str | None = None
+        self.content_id: str | None = None
         self._parse_url()
 
     def _create_session(self) -> requests.Session:
@@ -48,7 +48,7 @@ class Pixiv(BasePlugin):
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Referer": f"{self.BASE_URL}/",
-            }
+            },
         )
 
         if pixiv_session_id := os.getenv("PIXIV_PHPSESSID"):
@@ -56,7 +56,7 @@ class Pixiv(BasePlugin):
             logger.info("Loaded PHPSESSID from environment variable")
         else:
             logger.warning(
-                "PIXIV_PHPSESSID not set. Access will be limited to public posts only (some public posts may still be restricted by Pixiv)."
+                "PIXIV_PHPSESSID not set. Access will be limited to public posts only (some public posts may still be restricted by Pixiv).",
             )
         return session
 
@@ -70,12 +70,15 @@ class Pixiv(BasePlugin):
             self.url_type = "user"
             self.content_id = match.group(1)
         else:
-            raise ValueError(f"Invalid or unsupported Pixiv URL: {self.url}")
+            msg = f"Invalid or unsupported Pixiv URL: {self.url}"
+            raise ValueError(msg)
         logger.debug(f"Parsed URL type: {self.url_type}, ID: {self.content_id}")
 
     def _api_request(
-        self, endpoint: str, params: Optional[dict[str, Any]] = None
-    ) -> Optional[Any]:
+        self,
+        endpoint: str,
+        params: dict[str, Any] | None = None,
+    ) -> Any | None:
         """
         Return the 'body' from Pixiv's ajax response.
         The body may be a dict or a list depending on endpoint.
@@ -94,9 +97,9 @@ class Pixiv(BasePlugin):
                 return None
             return data.get("body") if isinstance(data, dict) else None
         except requests.RequestException as e:
-            logger.error(f"API request failed for {url}: {e}")
+            logger.exception(f"API request failed for {url}: {e}")
         except ValueError:
-            logger.error(f"Failed to decode JSON from API response for {url}")
+            logger.exception(f"Failed to decode JSON from API response for {url}")
         return None
 
     def _sanitize_name(self, name: str) -> str:
@@ -125,7 +128,7 @@ class Pixiv(BasePlugin):
 
         if not isinstance(profile_data, dict):
             logger.error(
-                f"Unexpected profile data shape for user {user_id}: {type(profile_data).__name__}"
+                f"Unexpected profile data shape for user {user_id}: {type(profile_data).__name__}",
             )
             return
 
@@ -143,7 +146,7 @@ class Pixiv(BasePlugin):
 
         if not isinstance(all_works_data, dict):
             logger.warning(
-                f"Unexpected artwork list shape for user {user_id}: {type(all_works_data).__name__}"
+                f"Unexpected artwork list shape for user {user_id}: {type(all_works_data).__name__}",
             )
             return
 
@@ -170,7 +173,9 @@ class Pixiv(BasePlugin):
             yield from self._export_artwork_pages(artwork_id, album_title)
 
     def _export_user_profile_assets(
-        self, profile_data: dict[str, Any], album_title: str
+        self,
+        profile_data: dict[str, Any],
+        album_title: str,
     ) -> Generator[Item, None, None]:
         logger.debug("Processing profile assets (avatar and cover image).")
         user_id = profile_data.get("userId")
@@ -197,7 +202,9 @@ class Pixiv(BasePlugin):
             )
 
     def _export_artwork_pages(
-        self, artwork_id: str, album_title: Optional[str] = None
+        self,
+        artwork_id: str,
+        album_title: str | None = None,
     ) -> Generator[Item, None, None]:
         page_data = self._api_request(f"/illust/{artwork_id}/pages")
         if not page_data:
@@ -215,7 +222,7 @@ class Pixiv(BasePlugin):
             page_data = [page_data]
         elif not isinstance(page_data, list):
             logger.warning(
-                f"Unexpected page data type for artwork {artwork_id}: {type(page_data).__name__}"
+                f"Unexpected page data type for artwork {artwork_id}: {type(page_data).__name__}",
             )
             return
 
@@ -262,13 +269,16 @@ class Pixiv(BasePlugin):
             logger.info(f"File already exists: {item.filename}")
             return True
 
-        headers = self.session.headers.copy()
+        headers = dict(self.session.headers)
         if item.metadata and "referer" in item.metadata:
             headers["Referer"] = item.metadata["referer"]
 
         try:
             with self.session.get(
-                item.url, headers=headers, stream=True, timeout=180
+                item.url,
+                headers=headers,
+                stream=True,
+                timeout=180,
             ) as response:
                 response.raise_for_status()
                 with open(full_path, "wb") as f:
@@ -278,7 +288,7 @@ class Pixiv(BasePlugin):
             logger.info(f"Downloaded: {item.filename}")
             return True
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(full_path):
                 with contextlib.suppress(OSError):
                     os.remove(full_path)

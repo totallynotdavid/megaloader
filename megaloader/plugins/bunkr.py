@@ -25,8 +25,8 @@ class Bunkr(BasePlugin):
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
         )
 
     def export(self) -> Generator[Item, None, None]:
@@ -49,7 +49,9 @@ class Bunkr(BasePlugin):
             logger.warning(f"Unrecognized Bunkr URL format: {resolved_url}")
 
     def _process_album(
-        self, content: str, base_url: str
+        self,
+        content: str,
+        base_url: str,
     ) -> Generator[Item, None, None]:
         """Extract file links from album page."""
         # Find file links using regex
@@ -74,7 +76,9 @@ class Bunkr(BasePlugin):
             yield from self._process_file_url(file_url)
 
     def _process_file_page(
-        self, content: str, file_url: str
+        self,
+        content: str,
+        file_url: str,
     ) -> Generator[Item, None, None]:
         """Process single file viewer page."""
         yield from self._process_file_url(file_url)
@@ -133,7 +137,9 @@ class Bunkr(BasePlugin):
 
             # Call API to get encrypted URL
             api_response = self.session.post(
-                self.API_URL, json={"id": file_id}, timeout=30
+                self.API_URL,
+                json={"id": file_id},
+                timeout=30,
             )
             api_response.raise_for_status()
             api_data = api_response.json()
@@ -146,11 +152,14 @@ class Bunkr(BasePlugin):
 
             # Download the file
             return self._download_file_direct(
-                download_url, item.filename, output_dir, item.url
+                download_url,
+                item.filename,
+                output_dir,
+                item.url,
             )
 
         except Exception as e:
-            logger.error(f"Failed to download {item.filename}: {e}")
+            logger.exception(f"Failed to download {item.filename}: {e}")
             return False
 
     def _extract_file_id(self, content: str, url: str) -> str | None:
@@ -188,11 +197,15 @@ class Bunkr(BasePlugin):
             return f"{base_url}?n={quote(filename)}"
 
         except (KeyError, ValueError, Exception) as e:
-            logger.error(f"URL decryption failed: {e}")
+            logger.exception(f"URL decryption failed: {e}")
             return None
 
     def _download_file_direct(
-        self, url: str, filename: str, output_dir: str, referer: str
+        self,
+        url: str,
+        filename: str,
+        output_dir: str,
+        referer: str,
     ) -> bool:
         """Download file with proper headers."""
         os.makedirs(output_dir, exist_ok=True)
@@ -203,12 +216,15 @@ class Bunkr(BasePlugin):
             return True
 
         headers = {
-            "Referer": f"{urlparse(referer).scheme}://{urlparse(referer).netloc}/"
+            "Referer": f"{urlparse(referer).scheme}://{urlparse(referer).netloc}/",
         }
 
         try:
             with self.session.get(
-                url, headers=headers, stream=True, timeout=60
+                url,
+                headers=headers,
+                stream=True,
+                timeout=60,
             ) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
@@ -220,7 +236,7 @@ class Bunkr(BasePlugin):
             return True
 
         except Exception as e:
-            logger.error(f"Download failed: {e}")
+            logger.exception(f"Download failed: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False

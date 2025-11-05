@@ -4,7 +4,7 @@ import os
 import re
 
 from collections.abc import Generator
-from typing import Any, Optional
+from typing import Any
 
 import requests
 
@@ -28,12 +28,12 @@ class Gofile(BasePlugin):
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
         )
 
         self.content_id = self._get_content_id_from_url(url)
-        self.password_hash: Optional[str] = None
+        self.password_hash: str | None = None
 
         password = self._config.get("password")
         if password and isinstance(password, str):
@@ -41,14 +41,15 @@ class Gofile(BasePlugin):
             self.password_hash = hashlib.sha256(password.encode()).hexdigest()
 
         # Placeholders for lazy-loaded tokens
-        self._website_token: Optional[str] = None
-        self._api_token: Optional[str] = None
+        self._website_token: str | None = None
+        self._api_token: str | None = None
 
     def _get_content_id_from_url(self, url: str) -> str:
         """Extracts the content ID from a Gofile URL."""
         match = re.search(r"gofile\.io/(?:d|f)/([\w-]+)", url)
         if not match:
-            raise ValueError("Invalid Gofile URL. Could not extract content ID.")
+            msg = "Invalid Gofile URL. Could not extract content ID."
+            raise ValueError(msg)
         return match.group(1)
 
     @property
@@ -64,14 +65,17 @@ class Gofile(BasePlugin):
                 # Use regex to find the '.wt = "..."' assignment
                 match = re.search(r'\.wt\s*=\s*"([^"]+)"', response.text)
                 if not match:
-                    raise RuntimeError("Could not find website token in global.js.")
+                    msg = "Could not find website token in global.js."
+                    raise RuntimeError(msg)
 
                 self._website_token = match.group(1)
                 logger.debug(
-                    f"Successfully fetched website token: {self._website_token}"
+                    f"Successfully fetched website token: {self._website_token}",
                 )
             except (requests.RequestException, RuntimeError) as e:
-                raise ConnectionError(f"Failed to get Gofile website token: {e}") from e
+                msg = f"Failed to get Gofile website token: {e}"
+                raise ConnectionError(msg) from e
+        assert self._website_token is not None
         return self._website_token
 
     @property
@@ -86,16 +90,18 @@ class Gofile(BasePlugin):
                 data = response.json()
 
                 if data.get("status") != "ok" or "token" not in data.get("data", {}):
-                    raise ConnectionError(
-                        "Failed to create a Gofile account to get API token."
-                    )
+                    msg = "Failed to create a Gofile account to get API token."
+                    raise ConnectionError(msg)
 
                 self._api_token = data["data"]["token"]
                 logger.debug("Successfully acquired new API bearer token.")
             except (requests.RequestException, ValueError, KeyError) as e:
+                msg = f"Failed to get a valid Gofile API token: {e}"
                 raise ConnectionError(
-                    f"Failed to get a valid Gofile API token: {e}"
+                    msg,
                 ) from e
+
+        assert self._api_token is not None
         return self._api_token
 
     def export(self) -> Generator[Item, None, None]:
@@ -110,7 +116,10 @@ class Gofile(BasePlugin):
         try:
             logger.info(f"Fetching content for Gofile ID: {self.content_id}")
             response = self.session.get(
-                api_url, params=params, headers=headers, timeout=30
+                api_url,
+                params=params,
+                headers=headers,
+                timeout=30,
             )
             response.raise_for_status()
             data = response.json()
@@ -118,19 +127,22 @@ class Gofile(BasePlugin):
             status = data.get("status")
             if status != "ok":
                 error_msg = data.get("data", {}).get(
-                    "message", f"Unknown error: {status}"
+                    "message",
+                    f"Unknown error: {status}",
                 )
-                raise ConnectionError(f"Gofile API returned an error: {error_msg}")
+                msg = f"Gofile API returned an error: {error_msg}"
+                raise ConnectionError(msg)
 
             content_data = data.get("data")
             if not content_data:
-                raise ValueError("Gofile API returned an empty data object.")
+                msg = "Gofile API returned an empty data object."
+                raise ValueError(msg)
 
             album_title = content_data.get("name", self.content_id)
 
             if "children" not in content_data:
                 logger.warning(
-                    f"No downloadable files found in Gofile folder '{album_title}'. A password may be required."
+                    f"No downloadable files found in Gofile folder '{album_title}'. A password may be required.",
                 )
                 return
 
@@ -147,7 +159,7 @@ class Gofile(BasePlugin):
                     )
 
         except (requests.RequestException, ValueError, KeyError) as e:
-            logger.error(f"Failed to export from Gofile: {e}")
+            logger.exception(f"Failed to export from Gofile: {e}")
             raise
 
     def download_file(self, item: Item, output_dir: str) -> bool:
@@ -165,16 +177,18 @@ class Gofile(BasePlugin):
         try:
             logger.debug(f"Downloading: {item.url}")
             with self.session.get(
-                item.url, headers=headers, stream=True, timeout=180
+                item.url,
+                headers=headers,
+                stream=True,
+                timeout=180,
             ) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+                    f.writelines(response.iter_content(chunk_size=8192))
             logger.info(f"Downloaded: {item.filename}")
             return True
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False

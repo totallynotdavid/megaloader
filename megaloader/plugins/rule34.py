@@ -3,7 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 
 from collections.abc import Generator
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
 import requests
@@ -48,7 +48,8 @@ class Rule34(BasePlugin):
             self.tags = []
 
         if not self.post_id and not self.tags:
-            raise ValueError("URL must contain 'id' or 'tags' parameter")
+            msg = "URL must contain 'id' or 'tags' parameter"
+            raise ValueError(msg)
 
         self.session = requests.Session()
         self.session.headers["User-Agent"] = "Mozilla/5.0 (compatible)"
@@ -58,8 +59,10 @@ class Rule34(BasePlugin):
         self.use_api = bool(self.api_key and self.user_id)
 
     def _get_with_timeout(
-        self, url: str, params: Optional[dict[str, Any]] = None
-    ) -> Optional[requests.Response]:
+        self,
+        url: str,
+        params: dict[str, Any] | None = None,
+    ) -> requests.Response | None:
         try:
             response = self.session.get(url, params=params, timeout=30)
             response.raise_for_status()
@@ -71,7 +74,7 @@ class Rule34(BasePlugin):
     def _normalize_url(self, url: str) -> str:
         return f"https:{url}" if url.startswith("//") else url
 
-    def _extract_media_url(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_media_url(self, soup: BeautifulSoup) -> str | None:
         # Try original image link first (best quality)
         for link in soup.find_all("a"):
             if link.string and "Original image" in link.string:
@@ -97,13 +100,19 @@ class Rule34(BasePlugin):
         return None
 
     def _create_item(
-        self, file_url: str, album_title: str, file_id: Optional[str] = None
+        self,
+        file_url: str,
+        album_title: str,
+        file_id: str | None = None,
     ) -> Item:
         """Create Item with normalized URL and extracted filename."""
         file_url = self._normalize_url(file_url)
         filename = os.path.basename(unquote(urlparse(file_url).path))
         return Item(
-            url=file_url, filename=filename, album_title=album_title, file_id=file_id
+            url=file_url,
+            filename=filename,
+            album_title=album_title,
+            file_id=file_id,
         )
 
     def export(self) -> Generator[Item, None, None]:
@@ -145,7 +154,8 @@ class Rule34(BasePlugin):
             }
 
             response = self._get_with_timeout(
-                "https://api.rule34.xxx/index.php", params
+                "https://api.rule34.xxx/index.php",
+                params,
             )
             if not response:
                 break
@@ -153,7 +163,7 @@ class Rule34(BasePlugin):
             try:
                 root = ET.fromstring(response.content)
             except ET.ParseError as e:
-                logger.error(f"Failed to parse API response: {e}")
+                logger.exception(f"Failed to parse API response: {e}")
                 break
 
             posts = list(root.iter("post"))

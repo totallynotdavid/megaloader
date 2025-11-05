@@ -5,7 +5,7 @@ import tempfile
 import time
 
 from collections.abc import Generator
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -48,14 +48,14 @@ class ThothubTO(BasePlugin):
         self.session.headers.update(
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            }
+            },
         )
         logger.debug(f"Initialized Thothub plugin with URL: {self.url}")
         try:
             self.session.get("https://thothub.to/", timeout=30)
         except requests.RequestException:
             logger.warning(
-                "Failed to pre-fetch homepage, session cookies might be incomplete."
+                "Failed to pre-fetch homepage, session cookies might be incomplete.",
             )
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -185,8 +185,11 @@ class ThothubTO(BasePlugin):
         return "".join(h_list)
 
     def _get_item_from_video_page(
-        self, page_url: str, album_title: Optional[str] = None
-    ) -> Optional[Item]:
+        self,
+        page_url: str,
+        album_title: str | None = None,
+    ) -> Item | None:
+        content: str = ""
         try:
             # First: Get the video page content. All necessary data is here.
             logger.debug(f"Fetching video page to get metadata: {page_url}")
@@ -201,13 +204,14 @@ class ThothubTO(BasePlugin):
 
             if not video_id_match or not obfuscated_url_match or not license_code_match:
                 logger.error(
-                    f"Could not find video_id, video_url, or license_code on page {page_url}. The video might not be public."
+                    f"Could not find video_id, video_url, or license_code on page {page_url}. The video might not be public.",
                 )
                 return None
 
             video_id = video_id_match.group(1)
             obfuscated_url = obfuscated_url_match.group(1).replace(
-                self._OBFUSCATION_PREFIX, ""
+                self._OBFUSCATION_PREFIX,
+                "",
             )
             license_code = license_code_match.group(1)
 
@@ -250,7 +254,7 @@ class ThothubTO(BasePlugin):
                 metadata={"referer": page_url},
             )
         except requests.RequestException as e:
-            logger.error(f"Failed to process video page {page_url}: {e}")
+            logger.exception(f"Failed to process video page {page_url}: {e}")
             return None
         except Exception as e:
             logger.error(
@@ -259,7 +263,8 @@ class ThothubTO(BasePlugin):
             )
             try:
                 debug_fd, debug_path = tempfile.mkstemp(
-                    prefix="thothub_debug_", suffix=".html"
+                    prefix="thothub_debug_",
+                    suffix=".html",
                 )
                 with os.fdopen(debug_fd, "w", encoding="utf-8") as f:
                     f.write(content)
@@ -326,7 +331,7 @@ class ThothubTO(BasePlugin):
                     metadata={"referer": self.url},
                 )
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch album page {self.url}: {e}")
+            logger.exception(f"Failed to fetch album page {self.url}: {e}")
         except Exception as e:
             logger.error(
                 f"An unexpected error occurred while processing album {self.url}: {e}",
@@ -355,7 +360,7 @@ class ThothubTO(BasePlugin):
                     break
                 response.raise_for_status()
             except requests.RequestException as e:
-                logger.error(f"Failed to fetch AJAX page {page_num}: {e}")
+                logger.exception(f"Failed to fetch AJAX page {page_num}: {e}")
                 break
             html_snippet = response.text
             if not html_snippet.strip():
@@ -377,7 +382,8 @@ class ThothubTO(BasePlugin):
                     continue
                 seen_urls.add(video_page_url)
                 item = self._get_item_from_video_page(
-                    video_page_url, album_title=sanitized_model_name
+                    video_page_url,
+                    album_title=sanitized_model_name,
                 )
                 if item:
                     yield item
@@ -402,12 +408,12 @@ class ThothubTO(BasePlugin):
         if not referer:
             logger.error(f"Cannot download {item.filename}, missing referer URL.")
             return False
-        headers = self.session.headers.copy()
+        headers = dict(self.session.headers)
         headers["Referer"] = referer
         headers["Range"] = "bytes=0-"
         try:
             logger.debug(
-                f"Downloading: {item.url} to {output_path} with headers: {headers}"
+                f"Downloading: {item.url} to {output_path} with headers: {headers}",
             )
             with self.session.get(
                 item.url,
@@ -418,12 +424,11 @@ class ThothubTO(BasePlugin):
             ) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+                    f.writelines(response.iter_content(chunk_size=8192))
             logger.info(f"Downloaded: {item.filename}")
             return True
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False

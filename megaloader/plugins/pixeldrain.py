@@ -38,8 +38,8 @@ class PixelDrain(BasePlugin):
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
         )
 
     def export(self) -> Generator[Item, None, None]:
@@ -50,10 +50,13 @@ class PixelDrain(BasePlugin):
 
         # Extract viewer data from JavaScript script on the page
         match = re.search(
-            r"window\.viewer_data\s*=\s*({.*?});", response.text, re.DOTALL
+            r"window\.viewer_data\s*=\s*({.*?});",
+            response.text,
+            re.DOTALL,
         )
         if not match:
-            raise ValueError("Could not find viewer data on page")
+            msg = "Could not find viewer data on page"
+            raise ValueError(msg)
 
         data = json.loads(match.group(1))
         api_response = data.get("api_response", {})
@@ -63,7 +66,7 @@ class PixelDrain(BasePlugin):
             files = api_response["files"]
             total_size = sum(f.get("size", 0) for f in files)
             logger.info(
-                f"Found list with {len(files)} files ({self._format_size(total_size)})"
+                f"Found list with {len(files)} files ({self._format_size(total_size)})",
             )
 
             for file_data in files:
@@ -76,7 +79,7 @@ class PixelDrain(BasePlugin):
         elif "name" in api_response:
             # Single file
             logger.info(
-                f"Found single file: {api_response['name']} ({self._format_size(api_response.get('size', 0))})"
+                f"Found single file: {api_response['name']} ({self._format_size(api_response.get('size', 0))})",
             )
             yield Item(
                 url=f"https://pixeldrain.com/api/file/{api_response['id']}",
@@ -100,7 +103,10 @@ class PixelDrain(BasePlugin):
 
         try:
             with requests.get(
-                download_url, stream=True, timeout=60, headers=self.session.headers
+                download_url,
+                stream=True,
+                timeout=60,
+                headers=self.session.headers,
             ) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
@@ -112,7 +118,7 @@ class PixelDrain(BasePlugin):
             return True
 
         except Exception as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False
@@ -123,8 +129,8 @@ class PixelDrain(BasePlugin):
             proxy = self.PROXIES[self.proxy_index]
             self.proxy_index = (self.proxy_index + 1) % len(self.PROXIES)
             return f"https://{proxy}/api/file/{file_id}?download"
-        else:
-            return f"https://pixeldrain.com/api/file/{file_id}"
+
+        return f"https://pixeldrain.com/api/file/{file_id}"
 
     def _format_size(self, size_bytes: int) -> str:
         """Format file size in human readable format."""

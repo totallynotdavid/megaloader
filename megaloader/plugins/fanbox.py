@@ -35,17 +35,20 @@ class Fanbox(BasePlugin):
     def _get_creator_id_from_url(self, url: str) -> str:
         # Covers: {creator_id}.fanbox.cc, fanbox.cc/@{creator_id}, fanbox.cc/{creator_id}
         match = re.search(
-            r"//(?:www\.)?([\w-]+)\.fanbox\.cc|fanbox\.cc/(?:@)?([\w-]+)", url
+            r"//(?:www\.)?([\w-]+)\.fanbox\.cc|fanbox\.cc/(?:@)?([\w-]+)",
+            url,
         )
         if match:
             creator_id = next((group for group in match.groups() if group), None)
             if creator_id is None:
+                msg = f"Invalid Fanbox URL: Could not extract creator ID from {url}"
                 raise ValueError(
-                    f"Invalid Fanbox URL: Could not extract creator ID from {url}"
+                    msg,
                 )
             logger.debug(f"Extracted creator ID: {creator_id}")
             return creator_id
-        raise ValueError(f"Invalid Fanbox URL: Could not extract creator ID from {url}")
+        msg = f"Invalid Fanbox URL: Could not extract creator ID from {url}"
+        raise ValueError(msg)
 
     def _create_session(self) -> requests.Session:
         session = requests.Session()
@@ -55,7 +58,7 @@ class Fanbox(BasePlugin):
                 "Accept": "application/json, text/plain, */*",
                 "Origin": f"https://{self.creator_id}.fanbox.cc",
                 "Referer": f"https://{self.creator_id}.fanbox.cc/",
-            }
+            },
         )
 
         if fanbox_session_id := os.getenv("FANBOX_SESSION_ID"):
@@ -63,7 +66,7 @@ class Fanbox(BasePlugin):
             logger.info("Loaded FANBOXSESSID from environment variable")
         else:
             logger.warning(
-                "FANBOX_SESSION_ID is not set. Access will be limited to public posts only (some public posts may still be restricted by Fanbox)."
+                "FANBOX_SESSION_ID is not set. Access will be limited to public posts only (some public posts may still be restricted by Fanbox).",
             )
 
         return session
@@ -75,7 +78,7 @@ class Fanbox(BasePlugin):
             response = self.session.get(url, timeout=30)
             if response.status_code == 403:
                 logger.warning(
-                    f"Access forbidden for {url}. Content may require subscription."
+                    f"Access forbidden for {url}. Content may require subscription.",
                 )
                 return None
             if response.status_code == 404:
@@ -86,7 +89,7 @@ class Fanbox(BasePlugin):
             return response.json().get("body")
 
         except requests.RequestException as e:
-            logger.error(f"API request failed for {url}: {e}")
+            logger.exception(f"API request failed for {url}: {e}")
             return None
 
     def _sanitize_filename(self, filename: str) -> str:
@@ -99,7 +102,10 @@ class Fanbox(BasePlugin):
         return os.path.splitext(path)[1] or ".jpg"
 
     def _create_item(
-        self, url: str, filename: str, subfolder: str = ""
+        self,
+        url: str,
+        filename: str,
+        subfolder: str = "",
     ) -> Generator[Item, None, None]:
         if url in self.seen_urls:
             return
@@ -161,7 +167,7 @@ class Fanbox(BasePlugin):
 
     def _process_posts(self) -> Generator[Item, None, None]:
         page_urls = self._api_request(
-            f"/post.paginateCreator?creatorId={self.creator_id}"
+            f"/post.paginateCreator?creatorId={self.creator_id}",
         )
         if not page_urls:
             logger.info("No post pages found")
@@ -244,7 +250,7 @@ class Fanbox(BasePlugin):
                 return True
 
         except requests.RequestException as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(full_path):
                 with contextlib.suppress(OSError):
                     os.remove(full_path)

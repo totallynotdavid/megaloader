@@ -29,7 +29,10 @@ class Cyberdrop(BasePlugin):
     BASE_URL = "https://cyberdrop.cr"
 
     def __init__(
-        self, url: str, rate_limit_seconds: float = 1.0, **kwargs: Any
+        self,
+        url: str,
+        rate_limit_seconds: float = 1.0,
+        **kwargs: Any,
     ) -> None:
         super().__init__(url, **kwargs)
         self.rate_limit_seconds = rate_limit_seconds
@@ -38,7 +41,7 @@ class Cyberdrop(BasePlugin):
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Accept": "application/json, text/html, */*",
-            }
+            },
         )
         # Timestamp of the last API call. Use 0.0 for the first run.
         self._last_api_call_time: float = 0.0
@@ -75,9 +78,9 @@ class Cyberdrop(BasePlugin):
                 return None
             return data
         except requests.RequestException as e:
-            logger.error(f"Failed to get file info for ID {file_id}: {e}")
+            logger.exception(f"Failed to get file info for ID {file_id}: {e}")
         except ValueError:
-            logger.error(f"Failed to decode JSON from file info for ID {file_id}")
+            logger.exception(f"Failed to decode JSON from file info for ID {file_id}")
         finally:
             self._last_api_call_time = time.monotonic()
         return None
@@ -100,7 +103,7 @@ class Cyberdrop(BasePlugin):
             response = self.session.get(self.url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as e:
-            logger.error(f"Failed to fetch album page {self.url}: {e}")
+            logger.exception(f"Failed to fetch album page {self.url}: {e}")
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -166,8 +169,7 @@ class Cyberdrop(BasePlugin):
 
             if not direct_url:
                 logger.error(
-                    f"Could not get direct download URL for {item.filename}. "
-                    f"API response: {response_json}"
+                    f"Could not get direct download URL for {item.filename}. API response: {response_json}",
                 )
                 return False
 
@@ -175,13 +177,12 @@ class Cyberdrop(BasePlugin):
             with self.session.get(direct_url, stream=True, timeout=180) as response:
                 response.raise_for_status()
                 with open(output_path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+                    f.writelines(response.iter_content(chunk_size=8192))
 
             logger.info(f"Downloaded: {item.filename}")
             return True
         except (requests.RequestException, ValueError, KeyError) as e:
-            logger.error(f"Download failed for {item.filename}: {e}")
+            logger.exception(f"Download failed for {item.filename}: {e}")
             if os.path.exists(output_path):
                 os.remove(output_path)
             return False
