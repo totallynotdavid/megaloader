@@ -6,7 +6,7 @@ from megaloader.plugins.pixeldrain import PixelDrain
 
 @pytest.mark.integration
 class TestPixelDrainIntegration:
-    def test_single_file_parsing(self, requests_mock):
+    def test_single_file_parsing(self, requests_mock) -> None:
         url = "https://pixeldrain.com/u/testid"
 
         html = """
@@ -27,7 +27,7 @@ class TestPixelDrainIntegration:
         assert items[0].metadata is not None
         assert items[0].metadata["size"] == 204800
 
-    def test_list_parsing(self, requests_mock):
+    def test_list_parsing(self, requests_mock) -> None:
         url = "https://pixeldrain.com/l/listid"
 
         html = """
@@ -48,7 +48,7 @@ class TestPixelDrainIntegration:
         assert items[0].filename == "video.mp4"
         assert items[1].filename == "image.png"
 
-    def test_proxy_rotation(self):
+    def test_proxy_rotation(self) -> None:
         plugin = PixelDrain("https://pixeldrain.com/u/test", use_proxy=True)
 
         url1 = plugin._get_download_url("file1")
@@ -59,7 +59,7 @@ class TestPixelDrainIntegration:
         assert "file1" in url1
         assert "file2" in url2
 
-    def test_download_success(self, requests_mock, tmp_output_dir):
+    def test_download_success(self, requests_mock, tmp_output_dir) -> None:
         url = "https://pixeldrain.com/api/file/testid"
         content = b"image data here"
 

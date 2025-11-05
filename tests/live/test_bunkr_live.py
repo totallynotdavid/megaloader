@@ -6,8 +6,8 @@ from tests.test_urls import BUNKR_URLS
 @pytest.mark.live
 @pytest.mark.downloads_file
 class TestBunkrLive:
-    def test_bunkr_images_album(self):
-        """Test against real Bunkr images album with sample files"""
+    def test_bunkr_images_album(self) -> None:
+        """Test against real Bunkr images album with sample files."""
         from megaloader.plugins.bunkr import Bunkr
 
         url = BUNKR_URLS["images"]
@@ -39,8 +39,8 @@ class TestBunkrLive:
         except Exception as e:
             pytest.skip(f"Bunkr images album unavailable: {e}")
 
-    def test_bunkr_videos_album(self):
-        """Test against real Bunkr videos album with sample files"""
+    def test_bunkr_videos_album(self) -> None:
+        """Test against real Bunkr videos album with sample files."""
         from megaloader.plugins.bunkr import Bunkr
 
         url = BUNKR_URLS["videos"]

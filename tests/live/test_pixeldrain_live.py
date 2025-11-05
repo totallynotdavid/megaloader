@@ -6,8 +6,8 @@ from tests.test_urls import PIXELDRAIN_URLS
 @pytest.mark.live
 @pytest.mark.downloads_file
 class TestPixelDrainLive:
-    def test_pixeldrain_images_list(self):
-        """Test against real PixelDrain images list with sample files"""
+    def test_pixeldrain_images_list(self) -> None:
+        """Test against real PixelDrain images list with sample files."""
         from megaloader.plugins.pixeldrain import PixelDrain
 
         url = PIXELDRAIN_URLS["images"]
@@ -40,8 +40,8 @@ class TestPixelDrainLive:
         except Exception as e:
             pytest.skip(f"PixelDrain images list unavailable: {e}")
 
-    def test_pixeldrain_videos_list(self):
-        """Test against real PixelDrain videos list with sample files"""
+    def test_pixeldrain_videos_list(self) -> None:
+        """Test against real PixelDrain videos list with sample files."""
         from megaloader.plugins.pixeldrain import PixelDrain
 
         url = PIXELDRAIN_URLS["videos"]

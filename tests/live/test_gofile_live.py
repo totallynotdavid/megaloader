@@ -5,8 +5,8 @@ from tests.test_urls import GOFILE_URLS
 
 @pytest.mark.live
 class TestGofileLive:
-    def test_gofile_token_fetching(self):
-        """Test that we can fetch real Gofile tokens"""
+    def test_gofile_token_fetching(self) -> None:
+        """Test that we can fetch real Gofile tokens."""
         from megaloader.plugins.gofile import Gofile
 
         plugin = Gofile("https://gofile.io/d/test")
@@ -20,8 +20,8 @@ class TestGofileLive:
         except Exception as e:
             pytest.skip(f"Gofile API unreachable: {e}")
 
-    def test_gofile_images_album(self):
-        """Test against real Gofile images album with sample files"""
+    def test_gofile_images_album(self) -> None:
+        """Test against real Gofile images album with sample files."""
         from megaloader.plugins.gofile import Gofile
 
         url = GOFILE_URLS["images"]
@@ -54,8 +54,8 @@ class TestGofileLive:
         except Exception as e:
             pytest.skip(f"Gofile images album unavailable: {e}")
 
-    def test_gofile_videos_album(self):
-        """Test against real Gofile videos album with sample files"""
+    def test_gofile_videos_album(self) -> None:
+        """Test against real Gofile videos album with sample files."""
         from megaloader.plugins.gofile import Gofile
 
         url = GOFILE_URLS["videos"]

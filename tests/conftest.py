@@ -30,17 +30,18 @@ def tmp_output_dir(tmp_path):
     return str(d)
 
 
-def pytest_configure(config):
+def pytest_configure(config) -> None:
     config.addinivalue_line("markers", "unit: Unit tests (fast, mocked)")
     config.addinivalue_line(
-        "markers", "integration: Integration tests (mocked, realistic)"
+        "markers",
+        "integration: Integration tests (mocked, realistic)",
     )
     config.addinivalue_line("markers", "live: Live network tests (requires internet)")
     config.addinivalue_line("markers", "downloads_file: Performs actual file downloads")
 
 
-def pytest_collection_modifyitems(config, items):
-    """Skip live tests unless --run-live is passed"""
+def pytest_collection_modifyitems(config, items) -> None:
+    """Skip live tests unless --run-live is passed."""
     if config.getoption("--run-live", default=False):
         return
 
@@ -50,7 +51,10 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_live)
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser) -> None:
     parser.addoption(
-        "--run-live", action="store_true", default=False, help="run live network tests"
+        "--run-live",
+        action="store_true",
+        default=False,
+        help="run live network tests",
     )

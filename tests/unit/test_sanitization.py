@@ -21,7 +21,7 @@ class TestFilenameSanitization:
             ("normal_file.jpg", "normal_file.jpg"),
         ],
     )
-    def test_sanitize_dangerous_chars(self, bad_filename, expected):
-        """Verify filesystem-dangerous chars are replaced"""
+    def test_sanitize_dangerous_chars(self, bad_filename, expected) -> None:
+        """Verify filesystem-dangerous chars are replaced."""
         result = re.sub(self.INVALID_DIR_CHARS, "_", bad_filename).strip()
         assert result == expected

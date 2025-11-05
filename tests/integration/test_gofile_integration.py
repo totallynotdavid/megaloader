@@ -7,7 +7,7 @@ from megaloader.plugins.gofile import Gofile
 
 @pytest.mark.integration
 class TestGofileIntegration:
-    def test_token_fetching(self, requests_mock):
+    def test_token_fetching(self, requests_mock) -> None:
         plugin = Gofile("https://gofile.io/d/testid")
 
         requests_mock.get(
@@ -25,7 +25,7 @@ class TestGofileIntegration:
         assert wt == "website_token_xyz"
         assert api == "api_token_123"
 
-    def test_export_files(self, requests_mock):
+    def test_export_files(self, requests_mock) -> None:
         plugin = Gofile("https://gofile.io/d/folderid")
 
         requests_mock.get("https://gofile.io/dist/js/global.js", text='.wt = "wt"')
@@ -68,7 +68,7 @@ class TestGofileIntegration:
         assert items[0].metadata is not None
         assert items[0].metadata["size"] == 100
 
-    def test_password_hashing(self):
+    def test_password_hashing(self) -> None:
         plugin = Gofile("https://gofile.io/d/test", password="mysecret")
 
         expected = hashlib.sha256(b"mysecret").hexdigest()

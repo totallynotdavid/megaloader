@@ -8,8 +8,8 @@ from megaloader.http import download_file
 
 @pytest.mark.unit
 class TestDownloadFileUtility:
-    def test_filename_extraction_from_url(self, requests_mock):
-        """Test filename parsing from various URL formats"""
+    def test_filename_extraction_from_url(self, requests_mock) -> None:
+        """Test filename parsing from various URL formats."""
         test_cases = [
             ("https://example.com/file.txt", "file.txt"),
             (
@@ -29,7 +29,7 @@ class TestDownloadFileUtility:
             else:
                 assert result is None
 
-    def test_sanitizes_filenames(self, requests_mock, tmp_path):
+    def test_sanitizes_filenames(self, requests_mock, tmp_path) -> None:
         dangerous_urls = [
             ("https://example.com/path/file.txt", "file.txt"),  # / becomes _
             ("https://example.com/path\\file.txt", "file.txt"),  # \ handled by basename
@@ -41,8 +41,8 @@ class TestDownloadFileUtility:
             assert result is not None
             assert os.path.basename(result) == expected_filename
 
-    def test_creates_output_directory(self, requests_mock, tmp_path):
-        """Test that missing output directories are created"""
+    def test_creates_output_directory(self, requests_mock, tmp_path) -> None:
+        """Test that missing output directories are created."""
         nested_dir = tmp_path / "deep" / "nested" / "path"
         assert not nested_dir.exists()
 
@@ -54,7 +54,7 @@ class TestDownloadFileUtility:
         assert nested_dir.exists()
         assert os.path.exists(result)
 
-    def test_handles_network_errors(self, requests_mock, tmp_path):
+    def test_handles_network_errors(self, requests_mock, tmp_path) -> None:
         import requests
 
         url = "https://example.com/fail.txt"
@@ -69,8 +69,8 @@ class TestDownloadFileUtility:
         result = download_file(url, str(tmp_path))
         assert result is None
 
-    def test_skips_existing_files(self, requests_mock, tmp_path):
-        """Test that existing files are not re-downloaded"""
+    def test_skips_existing_files(self, requests_mock, tmp_path) -> None:
+        """Test that existing files are not re-downloaded."""
         url = "https://example.com/existing.txt"
         file_path = tmp_path / "existing.txt"
 
@@ -85,7 +85,7 @@ class TestDownloadFileUtility:
         # File should still have original content
         assert file_path.read_text() == "existing content"
 
-    def test_custom_headers(self, requests_mock, tmp_path):
+    def test_custom_headers(self, requests_mock, tmp_path) -> None:
         url = "https://example.com/custom.txt"
         custom_headers = {"X-Custom": "test"}
 

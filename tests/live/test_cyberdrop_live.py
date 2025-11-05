@@ -6,8 +6,8 @@ from tests.test_urls import CYBERDROP_URLS
 @pytest.mark.live
 @pytest.mark.downloads_file
 class TestCyberdropLive:
-    def test_cyberdrop_images_album(self):
-        """Test against real Cyberdrop images album with sample files"""
+    def test_cyberdrop_images_album(self) -> None:
+        """Test against real Cyberdrop images album with sample files."""
         from megaloader.plugins.cyberdrop import Cyberdrop
 
         url = CYBERDROP_URLS["images"]
@@ -44,8 +44,8 @@ class TestCyberdropLive:
             traceback.print_exc()
             pytest.skip(f"Cyberdrop images album unavailable: {e}")
 
-    def test_cyberdrop_videos_album(self):
-        """Test against real Cyberdrop videos album with sample files"""
+    def test_cyberdrop_videos_album(self) -> None:
+        """Test against real Cyberdrop videos album with sample files."""
         from megaloader.plugins.cyberdrop import Cyberdrop
 
         url = CYBERDROP_URLS["videos"]
