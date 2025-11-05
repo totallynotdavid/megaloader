@@ -25,12 +25,12 @@ jobs:
           python-version: "3.13.7"
 
       - name: Install and run ruff format check
-        uses: astral-sh/ruff-action@v3
+        uses: astral-sh/ruff-action@4ac3c5ec5652cc235ceeac069541cd5c630e7e3d
         with:
           args: "format --check --diff"
 
       - name: Run ruff check
-        uses: astral-sh/ruff-action@v3
+        uses: astral-sh/ruff-action@4ac3c5ec5652cc235ceeac069541cd5c630e7e3d
         with:
           args: "check . --config pyproject.toml"
 
