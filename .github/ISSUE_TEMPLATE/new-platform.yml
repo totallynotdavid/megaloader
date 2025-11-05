@@ -1,7 +1,7 @@
 name: new platform support
 description: request support for a new platform
-title: '[platform]: '
-labels: ['new platform', 'enhancement']
+title: "[platform]: "
+labels: ["new platform", "enhancement"]
 
 body:
   - type: input
@@ -15,7 +15,7 @@ body:
     id: domain
     attributes:
       label: Domain(s)
-      placeholder: 'example.com, alt-domain.net'
+      placeholder: "example.com, alt-domain.net"
     validations:
       required: true
 
@@ -36,7 +36,7 @@ body:
     attributes:
       label: Content types
       description: What type of content does this platform host?
-      placeholder: 'Images, videos, documents, albums, etc.'
+      placeholder: "Images, videos, documents, albums, etc."
     validations:
       required: true
 
@@ -45,7 +45,7 @@ body:
     attributes:
       label: Authentication
       description: Login requirements, API keys, or access restrictions?
-      placeholder: 'None / requires account / API key needed / etc.'
+      placeholder: "None / requires account / API key needed / etc."
     validations:
       required: false
 
@@ -53,6 +53,6 @@ body:
     id: use-case
     attributes:
       label: Why do you need this?
-      placeholder: 'Explain your use case for this platform'
+      placeholder: "Explain your use case for this platform"
     validations:
       required: true
