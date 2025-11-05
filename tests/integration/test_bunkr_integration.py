@@ -7,8 +7,8 @@ from megaloader.plugins.bunkr import Bunkr
 @pytest.mark.integration
 class TestBunkrIntegration:
     def test_album_url_parsing(self, requests_mock):
-        """Test album page parsing with realistic HTML"""
         album_url = "https://bunkr.si/a/testalbum"
+
         album_html = """
         <html><body>
         <a href="/f/file1">File 1</a>
@@ -34,8 +34,8 @@ class TestBunkrIntegration:
         assert all(item.filename == "test.jpg" for item in items)
 
     def test_single_file_url_parsing(self, requests_mock):
-        """Test single file page parsing"""
         file_url = "https://bunkr.si/f/testfile"
+
         file_html = """
         <html>
         <a class="btn btn-main" href="/download/abc123">Download</a>
@@ -52,8 +52,8 @@ class TestBunkrIntegration:
         assert items[0].filename == "myfile.zip"
 
     def test_filename_extraction_fallback(self, requests_mock):
-        """Test filename extraction from script tag fallback"""
         url = "https://bunkr.si/f/test"
+
         html = """
         <html>
         <a class="btn btn-main" href="/download/xyz">Download</a>
@@ -69,7 +69,6 @@ class TestBunkrIntegration:
         assert items[0].filename == "fallback.mp4"
 
     def test_network_error_handling(self, requests_mock):
-        """Test that network errors are handled gracefully"""
         url = "https://bunkr.si/a/error"
         requests_mock.get(url, exc=requests.ConnectionError("failed"))
 
@@ -81,7 +80,6 @@ class TestBunkrIntegration:
 @pytest.mark.integration
 class TestBunkrDownloadIntegration:
     def test_file_already_exists_skip(self, tmp_output_dir):
-        """Test that existing files are skipped"""
         import os
 
         plugin = Bunkr("https://bunkr.si/f/test")

@@ -9,11 +9,11 @@ from megaloader.plugins.cyberdrop import Cyberdrop
 @pytest.mark.integration
 class TestCyberdropIntegration:
     def test_album_export(self, requests_mock, fixture_loader):
-        """Test album page parsing"""
         album_url = "https://cyberdrop.me/a/testalbum"
+
         album_html = """
         <html><body>
-        <h1 id="title">My Album</h1>
+        <h1 id="title">An album</h1>
         <a class="file" href="/f/ID1">File 1</a>
         <a class="file" href="/f/ID2">File 2</a>
         </body></html>
@@ -36,12 +36,12 @@ class TestCyberdropIntegration:
         items = list(plugin.export())
 
         assert len(items) == 2
-        assert items[0].album_title == "My Album"
+        assert items[0].album_title == "An album"
         assert items[0].filename == "test_file.jpg"
 
     def test_single_file_export(self, requests_mock):
-        """Test single file parsing"""
         file_url = "https://cyberdrop.me/f/FILEID"
+
         api_response = {
             "name": "single.mp4",
             "auth_url": "https://api.cyberdrop.cr/auth/FILEID",
@@ -58,7 +58,6 @@ class TestCyberdropIntegration:
         assert items[0].filename == "single.mp4"
 
     def test_rate_limiting(self, requests_mock):
-        """Test that rate limiting is applied"""
         plugin = Cyberdrop("https://cyberdrop.me/f/TEST", rate_limit_seconds=0.2)
 
         requests_mock.get(
@@ -74,7 +73,6 @@ class TestCyberdropIntegration:
         assert elapsed >= 0.2
 
     def test_download_success(self, requests_mock, tmp_output_dir):
-        """Test file download"""
         auth_url = "https://api.cyberdrop.me/auth/DLTEST"
         direct_url = "https://cdn.cyberdrop.me/file/DLTEST"
         file_content = b"downloaded content"

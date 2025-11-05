@@ -7,8 +7,8 @@ from megaloader.plugins.pixeldrain import PixelDrain
 @pytest.mark.integration
 class TestPixelDrainIntegration:
     def test_single_file_parsing(self, requests_mock):
-        """Test single file viewer data parsing"""
         url = "https://pixeldrain.com/u/testid"
+
         html = """
         <html><script>
         window.viewer_data = {"type":"file","api_response":{"id":"testid","name":"photo.jpg","size":204800}};
@@ -23,11 +23,13 @@ class TestPixelDrainIntegration:
         assert len(items) == 1
         assert items[0].filename == "photo.jpg"
         assert items[0].file_id == "testid"
+
+        assert items[0].metadata is not None
         assert items[0].metadata["size"] == 204800
 
     def test_list_parsing(self, requests_mock):
-        """Test file list parsing"""
         url = "https://pixeldrain.com/l/listid"
+
         html = """
         <html><script>
         window.viewer_data = {"type":"list","api_response":{"id":"listid","files":[
@@ -47,7 +49,6 @@ class TestPixelDrainIntegration:
         assert items[1].filename == "image.png"
 
     def test_proxy_rotation(self):
-        """Test proxy URL generation"""
         plugin = PixelDrain("https://pixeldrain.com/u/test", use_proxy=True)
 
         url1 = plugin._get_download_url("file1")
@@ -59,7 +60,6 @@ class TestPixelDrainIntegration:
         assert "file2" in url2
 
     def test_download_success(self, requests_mock, tmp_output_dir):
-        """Test file download"""
         url = "https://pixeldrain.com/api/file/testid"
         content = b"image data here"
 

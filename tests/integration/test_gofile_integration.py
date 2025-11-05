@@ -8,7 +8,6 @@ from megaloader.plugins.gofile import Gofile
 @pytest.mark.integration
 class TestGofileIntegration:
     def test_token_fetching(self, requests_mock):
-        """Test website and API token fetching"""
         plugin = Gofile("https://gofile.io/d/testid")
 
         requests_mock.get(
@@ -27,7 +26,6 @@ class TestGofileIntegration:
         assert api == "api_token_123"
 
     def test_export_files(self, requests_mock):
-        """Test folder contents parsing"""
         plugin = Gofile("https://gofile.io/d/folderid")
 
         requests_mock.get("https://gofile.io/dist/js/global.js", text='.wt = "wt"')
@@ -66,10 +64,11 @@ class TestGofileIntegration:
         assert len(items) == 2
         assert items[0].filename == "file1.txt"
         assert items[0].album_title == "Test Folder"
+
+        assert items[0].metadata is not None
         assert items[0].metadata["size"] == 100
 
     def test_password_hashing(self):
-        """Test password hash generation"""
         plugin = Gofile("https://gofile.io/d/test", password="mysecret")
 
         expected = hashlib.sha256(b"mysecret").hexdigest()
