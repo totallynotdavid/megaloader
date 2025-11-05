@@ -1,5 +1,7 @@
 import pytest
 
+from tests.test_urls import BUNKR_URLS
+
 
 @pytest.mark.live
 @pytest.mark.downloads_file
@@ -8,7 +10,7 @@ class TestBunkrLive:
         """Test against real Bunkr images album with sample files"""
         from megaloader.plugins.bunkr import Bunkr
 
-        url = "https://bunkr.cr/a/xYKtNmBx"
+        url = BUNKR_URLS["images"]
 
         try:
             plugin = Bunkr(url)
@@ -41,7 +43,7 @@ class TestBunkrLive:
         """Test against real Bunkr videos album with sample files"""
         from megaloader.plugins.bunkr import Bunkr
 
-        url = "https://bunkr.cr/a/I4TiEKcm"
+        url = BUNKR_URLS["videos"]
 
         try:
             plugin = Bunkr(url)

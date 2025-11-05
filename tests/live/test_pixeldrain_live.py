@@ -1,5 +1,7 @@
 import pytest
 
+from tests.test_urls import PIXELDRAIN_URLS
+
 
 @pytest.mark.live
 @pytest.mark.downloads_file
@@ -8,7 +10,7 @@ class TestPixelDrainLive:
         """Test against real PixelDrain images list with sample files"""
         from megaloader.plugins.pixeldrain import PixelDrain
 
-        url = "https://pixeldrain.com/l/DDGtvvTU"
+        url = PIXELDRAIN_URLS["images"]
 
         try:
             plugin = PixelDrain(url)
@@ -42,7 +44,7 @@ class TestPixelDrainLive:
         """Test against real PixelDrain videos list with sample files"""
         from megaloader.plugins.pixeldrain import PixelDrain
 
-        url = "https://pixeldrain.com/l/zqoz6uFE"
+        url = PIXELDRAIN_URLS["videos"]
 
         try:
             plugin = PixelDrain(url)

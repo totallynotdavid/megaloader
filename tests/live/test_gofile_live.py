@@ -1,10 +1,12 @@
 import pytest
 
+from tests.test_urls import GOFILE_URLS
+
 
 @pytest.mark.live
 class TestGofileLive:
-    def test_gofile_tokens(self):
-        """Test that we can fetch real tokens"""
+    def test_gofile_token_fetching(self):
+        """Test that we can fetch real Gofile tokens"""
         from megaloader.plugins.gofile import Gofile
 
         plugin = Gofile("https://gofile.io/d/test")
@@ -22,7 +24,7 @@ class TestGofileLive:
         """Test against real Gofile images album with sample files"""
         from megaloader.plugins.gofile import Gofile
 
-        url = "https://gofile.io/d/tiG4yG"
+        url = GOFILE_URLS["images"]
 
         try:
             plugin = Gofile(url)
@@ -56,7 +58,7 @@ class TestGofileLive:
         """Test against real Gofile videos album with sample files"""
         from megaloader.plugins.gofile import Gofile
 
-        url = "https://gofile.io/d/xfjzT8"
+        url = GOFILE_URLS["videos"]
 
         try:
             plugin = Gofile(url)

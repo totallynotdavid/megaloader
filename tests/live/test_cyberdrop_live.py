@@ -1,5 +1,7 @@
 import pytest
 
+from tests.test_urls import CYBERDROP_URLS
+
 
 @pytest.mark.live
 @pytest.mark.downloads_file
@@ -8,7 +10,7 @@ class TestCyberdropLive:
         """Test against real Cyberdrop images album with sample files"""
         from megaloader.plugins.cyberdrop import Cyberdrop
 
-        url = "https://cyberdrop.cr/a/w4iUzGgx"
+        url = CYBERDROP_URLS["images"]
 
         try:
             plugin = Cyberdrop(url)
@@ -46,7 +48,7 @@ class TestCyberdropLive:
         """Test against real Cyberdrop videos album with sample files"""
         from megaloader.plugins.cyberdrop import Cyberdrop
 
-        url = "https://cyberdrop.cr/a/9ZwBUxsC"
+        url = CYBERDROP_URLS["videos"]
 
         try:
             plugin = Cyberdrop(url)
