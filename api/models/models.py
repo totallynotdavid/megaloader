@@ -1,5 +1,3 @@
-"""Pydantic models for Megaloader API."""
-
 from pydantic import BaseModel, Field
 
 

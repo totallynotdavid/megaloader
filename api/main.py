@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Megaloader API",
     description="Download content from supported platforms (4MB limit)",
-    version="2.0.0",
+    version="0.1.0",
 )
 
 app.add_middleware(
@@ -38,7 +38,6 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    """API info."""
     return {
         "status": "online",
         "service": "Megaloader API",
@@ -51,7 +50,6 @@ async def root():
 
 @app.post("/validate", response_model=ValidationResult)
 async def validate_url(request: URLValidation) -> ValidationResult:
-    """Validate if URL is supported."""
     url = request.url.strip()
     if not url:
         raise HTTPException(status_code=422, detail="URL cannot be empty")

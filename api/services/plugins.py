@@ -4,7 +4,7 @@ from megaloader.plugin import Item
 from megaloader.plugins import get_plugin_class
 from models import FileInfo
 
-from api.utils import MAX_FILE_COUNT, extract_domain, get_file_size
+from api.services.utils import MAX_FILE_COUNT, extract_domain, get_file_size
 
 
 logger = logging.getLogger(__name__)
