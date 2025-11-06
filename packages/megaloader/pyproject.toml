@@ -34,3 +34,11 @@ py-modules = []
 where = ["."]
 include = ["*"]
 exclude = ["tests*", "sample*", "*.egg-info"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+markers = [
+    "live: mark test as requiring live network access"
+]
+addopts = "-q"
