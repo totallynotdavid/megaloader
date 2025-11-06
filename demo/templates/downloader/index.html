@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Megaloader Demo - Download Files{% endblock %}
+
+{% block content %}
+<h1>Megaloader Demo 🚀</h1>
+<p class="subtitle">Download content from multiple file hosting platforms</p>
+
+{% if success %}
+<div class="alert alert-success">
+    ✓ {{ success }}
+</div>
+{% endif %}
+
+{% if error %}
+<div class="alert alert-error">
+    ✗ {{ error }}
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label for="url">URL to download:</label>
+        <input type="url" id="url" name="url" placeholder="https://pixeldrain.com/u/example" required>
+    </div>
+    
+    <div class="form-group">
+        <div class="checkbox-group">
+            <input type="checkbox" id="create_subdirs" name="create_subdirs" checked>
+            <label for="create_subdirs" style="margin-bottom: 0;">Create album subdirectories</label>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="checkbox-group">
+            <input type="checkbox" id="use_proxy" name="use_proxy">
+            <label for="use_proxy" style="margin-bottom: 0;">Use proxy</label>
+        </div>
+    </div>
+    
+    <button type="submit">Download</button>
+</form>
+
+<div class="plugins">
+    <h2>Supported Platforms</h2>
+    <div class="plugin-list">
+        {% for plugin in plugins %}
+        <div class="plugin-item">
+            <div class="plugin-name">{{ plugin.name }}</div>
+            <div class="plugin-domains">{{ plugin.domains }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
