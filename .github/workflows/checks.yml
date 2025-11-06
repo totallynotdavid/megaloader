@@ -3,10 +3,14 @@ name: lint and format check
 on:
   push:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "**/*.py"
+      - "**/pyproject.toml"
   pull_request:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "**/*.py"
+      - "**/pyproject.toml"
 
 permissions:
   contents: read

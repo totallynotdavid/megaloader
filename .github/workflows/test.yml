@@ -3,10 +3,16 @@ name: tests
 on:
   push:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "packages/core/**/*.py"
+      - "pyproject.toml"
+      - "packages/core/pyproject.toml"
   pull_request:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "packages/core/**/*.py"
+      - "packages/core/pyproject.toml"
+      - "pyproject.toml"
   workflow_dispatch:
 
 permissions:

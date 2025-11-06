@@ -3,10 +3,14 @@ name: CodeQL
 on:
   push:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "**/*.py"
+      - "**/pyproject.toml"
   pull_request:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "**/*.py"
+      - "**/pyproject.toml"
   schedule:
     - cron: "0 5 * * 3"
   workflow_dispatch:
