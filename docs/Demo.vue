@@ -24,92 +24,92 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const url = ref('')
-const error = ref('')
-const isDownloading = ref(false)
-const downloadResult = ref(null)
+const url = ref("");
+const error = ref("");
+const isDownloading = ref(false);
+const downloadResult = ref(null);
 
 const startDownload = async () => {
-  if (!url.value.trim() || isDownloading.value) return
+  if (!url.value.trim() || isDownloading.value) return;
 
-  isDownloading.value = true
-  downloadResult.value = null
-  error.value = ''
+  isDownloading.value = true;
+  downloadResult.value = null;
+  error.value = "";
 
   try {
-    const response = await fetch('http://localhost:8000/api/download', {
-      method: 'POST',
+    const response = await fetch("http://localhost:8000/api/download", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: url.value.trim()
-      })
-    })
+        url: url.value.trim(),
+      }),
+    });
 
     if (response.ok) {
-      const contentType = response.headers.get('content-type')
+      const contentType = response.headers.get("content-type");
 
-      if (contentType && contentType.includes('application/json')) {
+      if (contentType?.includes("application/json")) {
         // Handle preview response for large files
-        const data = await response.json()
+        const data = await response.json();
         if (data.exceeds_limit) {
           downloadResult.value = {
             success: false,
-            error: data.message
-          }
+            error: data.message,
+          };
         } else {
           downloadResult.value = {
             success: false,
-            error: 'Unexpected response format'
-          }
+            error: "Unexpected response format",
+          };
         }
       } else {
         // Handle file download
-        const blob = await response.blob()
-        const downloadUrl = window.URL.createObjectURL(blob)
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
 
         // Try to get filename from Content-Disposition header
-        const contentDisposition = response.headers.get('content-disposition')
-        let filename = 'download.zip'
+        const contentDisposition = response.headers.get("content-disposition");
+        let filename = "download.zip";
         if (contentDisposition) {
-          const matches = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
-          if (matches && matches[1]) {
-            filename = matches[1].replace(/['"]/g, '')
+          const matches = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (matches?.[1]) {
+            filename = matches[1].replace(/['"]/g, "");
           }
         }
 
-        const a = document.createElement('a')
-        a.href = downloadUrl
-        a.download = filename
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(downloadUrl)
-        document.body.removeChild(a)
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+        document.body.removeChild(a);
 
         downloadResult.value = {
           success: true,
-          message: 'Download completed successfully!'
-        }
+          message: "Download completed successfully!",
+        };
       }
     } else {
-      const data = await response.json()
+      const data = await response.json();
       downloadResult.value = {
         success: false,
-        error: data.detail || 'Download failed'
-      }
+        error: data.detail || "Download failed",
+      };
     }
   } catch (err) {
     downloadResult.value = {
       success: false,
-      error: 'Failed to connect to download service'
-    }
+      error: "Failed to connect to download service",
+    };
   } finally {
-    isDownloading.value = false
+    isDownloading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
