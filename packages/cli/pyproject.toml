@@ -7,9 +7,6 @@ license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.10"
 
-authors = [
-    { name = "DURAND Malo", email = "malo.durand@epitech.eu" },
-]
 maintainers = [
     { name = "David Duran", email = "dadch1404@gmail.com" },
 ]
