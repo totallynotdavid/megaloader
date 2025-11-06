@@ -1,0 +1,31 @@
+[project]
+name = "megaloader-cli"
+version = "0.1.0"
+description = "Command-line interface for Megaloader"
+
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+
+maintainers = [
+    { name = "David Duran", email = "dadch1404@gmail.com" },
+]
+
+dependencies = [
+    "megaloader",
+    "click>=8.1.0",
+    "rich>=13.7.0",
+]
+
+[tool.uv.sources]
+megaloader = { workspace = true }
+
+[project.scripts]
+megaloader = "megaloader_cli.main:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["megaloader_cli"]

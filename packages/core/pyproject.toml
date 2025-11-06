@@ -1,0 +1,44 @@
+[project]
+name = "megaloader"
+version = "0.1.0"
+description = "This project will make you smile. It allows you to use some download plugins for many websites such as Cyberdrop, Fanbox, GoFile, Pixiv, Rule34, Thotslife, and so on..."
+
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+    { name = "DURAND Malo", email = "malo.durand@epitech.eu" },
+]
+maintainers = [
+    { name = "David Duran", email = "dadch1404@gmail.com" },
+]
+
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "lxml>=6.0.2",
+    "requests>=2.32.5",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.package-dir]
+"" = "."
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+exclude = ["tests*", "sample*", "*.egg-info"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+markers = [
+    "live: mark test as requiring live network access"
+]
+addopts = "-q"

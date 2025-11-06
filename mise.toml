@@ -4,11 +4,16 @@ python.uv_venv_auto = true
 [tools]
 uv = "0.9.7"
 ruff = "0.14.3"
+bun = "1.3.1"
+biome = "2.3.2"
 
 [tasks.install]
 description = "Install dependencies"
 alias = "i"
-run = "uv sync --all-groups"
+run = [
+  "uv sync --all-groups",
+  "uv pip install -e packages/core -e packages/cli",
+]
 
 [tasks.update]
 description = "Update all dependencies"
@@ -20,16 +25,6 @@ description = "List outdated dependencies"
 alias = "o"
 run = "uv pip list --outdated"
 
-[tasks.export-deps]
-description = "Export dependencies to requirements.txt"
-alias = "ed"
-run = "uv export --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file requirements.txt"
-
-[tasks.export-dev]
-description = "Export dev dependencies to requirements-dev.txt"
-alias = "edd"
-run = "uv export --format requirements-txt --no-hashes --no-header --dev --no-annotate --output-file requirements-dev.txt"
-
 [tasks.format]
 description = "Lint & format (fix by default)"
 alias = "f"
@@ -38,12 +33,52 @@ run = [
   "ruff check --fix --unsafe-fixes . --config pyproject.toml",
 ]
 
+[tasks.format-docs]
+description = "Format docs with biome"
+alias = "fd"
+run = "biome format --write ."
+dir = "docs"
+
 [tasks.mypy]
 description = "Type check with mypy"
 alias = "m"
-run = "uv run mypy megaloader --config-file pyproject.toml"
+run = "uv run mypy packages/core/megaloader --config-file pyproject.toml"
 
 [tasks.test]
 description = "Run the pytest suite, including live tests"
 alias = "t"
-run = "uv run pytest --run-live"
+run = "uv run pytest packages/core/tests --run-live"
+
+[tasks.test-unit]
+description = "Run unit tests only"
+alias = "tu"
+run = "uv run pytest packages/core/tests/unit"
+
+[tasks.test-integration]
+description = "Run integration tests only"
+alias = "ti"
+run = "uv run pytest packages/core/tests/integration"
+
+[tasks.docs-serve]
+description = "Serve documentation locally"
+alias = "ds"
+run = ["bun install", "bun run docs:dev"]
+dir = "docs"
+
+[tasks.docs-build]
+description = "Build documentation"
+alias = "db"
+run = ["bun install", "bun run docs:build"]
+dir = "docs"
+
+[tasks.api-serve]
+description = "Run local API server for development"
+alias = "as"
+run = "uv run uvicorn main:app --reload"
+dir = "api"
+
+[tasks.api-deploy]
+description = "Deploy API to Vercel"
+alias = "vda"
+run = "vercel --prod"
+dir = "api"

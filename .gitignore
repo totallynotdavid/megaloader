@@ -1,6 +1,14 @@
 __pycache__
+*.egg-info/
+
 # Media Files
 downloads/
+demo/downloads/
+demo/media/
+demo/db.sqlite3
+
+# MkDocs
+docs/site/
 
 .env
 *.ps1

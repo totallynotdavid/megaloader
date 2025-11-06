@@ -18,9 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@30ce38e20653a26dd16caa082b010cec334ccf56 # v3.5.1
         with:
-          python-version: "3.13.7"
+          version: "0.9.7"
+
+      - name: Set up Python
+        run: uv python install 3.13.7
+
+      - name: Install dependencies
+        run: uv sync --group dev
 
       - name: Install and run ruff format check
         uses: astral-sh/ruff-action@4ac3c5ec5652cc235ceeac069541cd5c630e7e3d # v3.5.1
@@ -32,10 +38,5 @@ jobs:
         with:
           args: "check . --config pyproject.toml"
 
-      - name: Install dev dependencies
-        run:
-          python -m pip install --upgrade pip && python -m pip install -r
-          requirements-dev.txt
-
       - name: Run mypy
-        run: mypy megaloader --config pyproject.toml
+        run: uv run mypy --config pyproject.toml

@@ -1,0 +1,22 @@
+[project]
+name = "megaloader-api"
+version = "0.1.0"
+description = "API to demo the megaloader/core in the docs"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "megaloader",
+]
+
+[tool.uv.sources]
+megaloader = { workspace = true }
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"api" = "."}
+packages = ["api"]

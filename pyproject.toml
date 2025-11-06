@@ -1,34 +1,26 @@
-[project]
-name = "megaloader"
-version = "0.1.0"
-description = "This project will make you smile. It allows you to use some download plugins for many websites such as Cyberdrop, Fanbox, GoFile, Pixiv, Rule34, Thotslife, and so on..."
+[tool.uv.workspace]
+members = ["packages/*", "api"]
 
+[project]
+name = "megaloader-workspace"
+version = "0.1.0"
+description = "Megaloader monorepo workspace - includes core library, CLI, docs, and demo"
 license = { text = "MIT" }
 readme = "readme.md"
 requires-python = ">=3.10"
 
-authors = [
-    { name = "DURAND Malo", email = "malo.durand@epitech.eu" },
-]
 maintainers = [
     { name = "David Duran", email = "dadch1404@gmail.com" },
 ]
 
-dependencies = [
-    "beautifulsoup4>=4.14.2",
-    "lxml>=6.0.2",
-    "requests>=2.32.5",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
     "mypy>=1.18.2",
     "pytest>=8.4.2",
-    "requests-mock>=1.12.1",
+    "requests-mock>=1.12.1"
 ]
-
-[tool.setuptools]
-packages = ["megaloader"]
 
 [tool.ruff]
 fix = true
@@ -90,7 +82,7 @@ lines-between-types = 1
 lines-after-imports = 2
 
 [tool.mypy]
-files = "megaloader"
+files = ["packages/core/megaloader"]
 strict = true
 enable_error_code = [
     "ignore-without-code",

@@ -20,5 +20,5 @@ jobs:
 
       - uses: tonybaloney/pycharm-security@5c1ceeb1fb2a18478fa7076a81f9f47fd450e592 # v1.25.1
         with:
-          path: megaloader/
+          path: packages/core/megaloader/
           fail_on_warnings: "no"
