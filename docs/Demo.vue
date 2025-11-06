@@ -1,132 +1,35 @@
 <template>
   <div id="demo-app">
     <div class="demo-container">
-      <div class="test-indicator">Demo</div>
-
       <div class="input-section">
         <div class="input-group">
-          <label for="url-input">Enter a URL to check compatibility:</label>
-          <div class="url-input-container">
-            <span class="url-icon">🔗</span>
-            <input
-              id="url-input"
-              :value="url"
-              type="url"
-              placeholder="https://pixeldrain.com/u/example"
-              @input="handleInput"
-            />
-          </div>
+          <input id="url-input" v-model="url" type="url" placeholder="https://example.com/content"
+            @keyup.enter="startDownload" />
+          <button class="download-btn" @click="startDownload" :disabled="!url.trim() || isDownloading">
+            <span v-if="isDownloading" class="spinner"></span>
+            {{ isDownloading ? 'Downloading...' : 'Download' }}
+          </button>
         </div>
       </div>
 
-      <div class="result-section">
-        <div v-if="result" class="result" :class="resultClass">
-          <div v-if="result.supported && result.plugin" class="success">
-            <span class="success-icon">✅</span>
-            <span>Supported by</span>
-            <span class="plugin-badge">{{ result.plugin }}</span>
-            <div class="domain">{{ result.domain }}</div>
-            <button
-              class="download-btn"
-              @click="startDownload"
-              :disabled="isDownloading"
-            >
-              <span v-if="isDownloading" class="loading-spinner">⏳</span>
-              <span v-else>⬇️</span>
-              {{ isDownloading ? 'Downloading...' : 'Download' }}
-            </button>
-          </div>
-          <div v-else class="error">
-            <span class="error-icon">❌</span>
-            <span>Not supported</span>
-            <div class="domain">{{ result.domain }}</div>
-          </div>
-        </div>
+      <div v-if="error" class="message error">
+        {{ error }}
+      </div>
 
-        <div v-if="downloadResult" class="download-result" :class="downloadResultClass">
-          <div v-if="downloadResult.success" class="download-success">
-            <span class="success-icon">🎉</span>
-            <span>{{ downloadResult.message }}</span>
-          </div>
-          <div v-else class="download-error">
-            <span class="error-icon">❌</span>
-            <span>{{ downloadResult.error }}</span>
-          </div>
-        </div>
-
-        <div v-if="error" class="error-message">
-          ⚠️ {{ error }}
-        </div>
+      <div v-if="downloadResult" class="message" :class="downloadResult.success ? 'success' : 'error'">
+        {{ downloadResult.message || downloadResult.error }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 const url = ref('')
-const result = ref(null)
 const error = ref('')
 const isDownloading = ref(false)
 const downloadResult = ref(null)
-
-const resultClass = computed(() => {
-  if (!result.value) return {}
-  return {
-    'result-success': result.value.supported,
-    'result-error': !result.value.supported
-  }
-})
-
-const downloadResultClass = computed(() => {
-  if (!downloadResult.value) return {}
-  return {
-    'download-success': downloadResult.value.success,
-    'download-error': !downloadResult.value.success
-  }
-})
-
-function debounce(func, delay) {
-  let timeoutId
-  return (...args) => {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => func.apply(null, args), delay)
-  }
-}
-
-const handleInput = (event) => {
-  url.value = event.target.value
-  validateUrl()
-}
-
-const validateUrl = debounce(async () => {
-  if (!url.value.trim()) {
-    result.value = null
-    error.value = ''
-    return
-  }
-
-  error.value = ''
-  result.value = null
-
-  try {
-    const response = await fetch(`http://localhost:8000/api/validate-url?url=${encodeURIComponent(url.value.trim())}`)
-    const data = await response.json()
-
-    if (response.ok) {
-      result.value = {
-        supported: data.supported,
-        plugin: data.plugin,
-        domain: data.domain
-      }
-    } else {
-      error.value = data.detail || 'Validation failed'
-    }
-  } catch (err) {
-    error.value = 'Failed to connect to validation service'
-  }
-}, 300)
 
 const startDownload = async () => {
   if (!url.value.trim() || isDownloading.value) return
@@ -146,14 +49,53 @@ const startDownload = async () => {
       })
     })
 
-    const data = await response.json()
-
     if (response.ok) {
-      downloadResult.value = {
-        success: true,
-        message: data.message
+      const contentType = response.headers.get('content-type')
+
+      if (contentType && contentType.includes('application/json')) {
+        // Handle preview response for large files
+        const data = await response.json()
+        if (data.exceeds_limit) {
+          downloadResult.value = {
+            success: false,
+            error: data.message
+          }
+        } else {
+          downloadResult.value = {
+            success: false,
+            error: 'Unexpected response format'
+          }
+        }
+      } else {
+        // Handle file download
+        const blob = await response.blob()
+        const downloadUrl = window.URL.createObjectURL(blob)
+
+        // Try to get filename from Content-Disposition header
+        const contentDisposition = response.headers.get('content-disposition')
+        let filename = 'download.zip'
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
+          if (matches && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '')
+          }
+        }
+
+        const a = document.createElement('a')
+        a.href = downloadUrl
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(downloadUrl)
+        document.body.removeChild(a)
+
+        downloadResult.value = {
+          success: true,
+          message: 'Download completed successfully!'
+        }
       }
     } else {
+      const data = await response.json()
       downloadResult.value = {
         success: false,
         error: data.detail || 'Download failed'
@@ -172,25 +114,30 @@ const startDownload = async () => {
 
 <style scoped>
 .demo-container {
-  max-width: 700px;
-  margin: 2rem auto;
-  padding: 2.5rem;
-  border: 2px solid var(--vp-c-border);
+  width: 100%;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: white;
   border-radius: 12px;
-  background: var(--vp-c-bg-soft);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  position: relative;
-  overflow: hidden;
 }
 
-.demo-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--vp-c-brand), var(--vp-c-brand-light));
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
 }
 
 .input-section {
@@ -198,205 +145,114 @@ const startDownload = async () => {
 }
 
 .input-group {
-  margin-bottom: 1.5rem;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--vp-c-text-1);
-}
-
-.url-input-container {
-  position: relative;
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
 }
 
 #url-input {
-  width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
-  border: 2px solid var(--vp-c-border);
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e1e5e9;
   border-radius: 8px;
   font-size: 1rem;
-  background: var(--vp-c-bg);
-  color: var(--vp-c-text);
+  background: #fafbfc;
   transition: all 0.2s ease;
-  font-family: var(--vp-font-family-mono);
-}
-
-#url-input::placeholder {
-  color: var(--vp-c-text-3);
-  font-family: var(--vp-font-family-base);
+  font-family: ui-monospace, 'SFMono-Regular', monospace;
 }
 
 #url-input:focus {
   outline: none;
-  border-color: var(--vp-c-brand);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: var(--vp-c-bg);
+  border-color: #007acc;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
 }
 
-.url-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--vp-c-text-3);
-  font-size: 1.2rem;
-  pointer-events: none;
-}
-
-.result-section {
-  margin-top: 2rem;
-}
-
-.result {
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-top: 1rem;
-  border: 1px solid transparent;
-  position: relative;
-  overflow: hidden;
-}
-
-.result-success {
-  background: linear-gradient(135deg, var(--vp-c-success-bg), rgba(34, 197, 94, 0.1));
-  border-color: var(--vp-c-success-border);
-  color: var(--vp-c-success-text);
-}
-
-.result-error {
-  background: linear-gradient(135deg, var(--vp-c-danger-bg), rgba(239, 68, 68, 0.1));
-  border-color: var(--vp-c-danger-border);
-  color: var(--vp-c-danger-text);
-}
-
-.success-icon, .error-icon {
-  font-size: 1.5rem;
-  margin-right: 0.5rem;
-}
-
-.success, .error {
-  font-weight: 600;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-}
-
-.plugin-badge {
-  display: inline-block;
-  background: var(--vp-c-brand);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-left: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.domain {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
-  opacity: 0.8;
-  font-family: var(--vp-font-family-mono);
-  background: var(--vp-c-bg);
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid var(--vp-c-border);
+#url-input::placeholder {
+  color: #8b949e;
 }
 
 .download-btn {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  padding: 1rem 2rem;
+  background: #007acc;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .download-btn:hover:not(:disabled) {
+  background: #005999;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.3);
 }
 
 .download-btn:disabled {
-  opacity: 0.6;
+  background: #8b949e;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
-.loading-spinner {
+.spinner {
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.download-result {
-  padding: 1rem;
+.message {
+  padding: 1rem 1.5rem;
   border-radius: 8px;
-  margin-top: 1rem;
-  border: 1px solid transparent;
-}
-
-.download-success {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
-  border-color: rgba(34, 197, 94, 0.3);
-  color: var(--vp-c-text-1);
-}
-
-.download-error {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--vp-c-text-1);
-}
-
-.error-message {
-  background: linear-gradient(135deg, var(--vp-c-danger-bg), rgba(239, 68, 68, 0.1));
-  border: 1px solid var(--vp-c-danger-border);
-  color: var(--vp-c-danger-text);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   font-weight: 500;
 }
 
-.test-indicator {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--vp-c-brand);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  opacity: 0.8;
+.message.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
 }
 
-@media (max-width: 768px) {
+.message.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.icon {
+  font-size: 1.25rem;
+}
+
+@media (max-width: 640px) {
   .demo-container {
-    margin: 1rem;
-    padding: 1.5rem;
+    margin: 2rem 1rem;
+    padding: 2rem;
   }
 
-  #url-input {
-    padding: 0.875rem 0.875rem 0.875rem 2.5rem;
+  .input-group {
+    flex-direction: column;
   }
 
-  .url-icon {
-    left: 0.625rem;
+  .download-btn {
+    justify-content: center;
   }
 }
 </style>

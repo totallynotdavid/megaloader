@@ -43,7 +43,7 @@ download("https://cyberdrop.me/a/0OpiyaOV", "./downloads")
 
 ## Try It Out
 
-Test URL compatibility with our plugins:
+Test the package by downloading a file (max 4mb):
 
 <script setup>
 import DemoComponent from './Demo.vue'
