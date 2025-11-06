@@ -1,7 +1,7 @@
 [project]
 name = "megaloader-api"
 version = "0.1.0"
-description = "API to demo the megaloader/core in the docs"
+description = "FastAPI demo for Megaloader core library"
 requires-python = ">=3.10"
 
 dependencies = [

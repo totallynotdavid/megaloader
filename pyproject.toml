@@ -4,7 +4,7 @@ members = ["packages/*", "api"]
 [project]
 name = "megaloader-workspace"
 version = "0.1.0"
-description = "Megaloader monorepo workspace - includes core library, CLI, docs, and demo"
+description = "Megaloader monorepo workspace"
 license = { text = "MIT" }
 readme = "readme.md"
 requires-python = ">=3.10"
