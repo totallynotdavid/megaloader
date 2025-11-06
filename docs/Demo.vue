@@ -122,24 +122,6 @@ const startDownload = async () => {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.header h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem 0;
-}
-
-.header p {
-  color: #666;
-  font-size: 1rem;
-  margin: 0;
-}
-
 .input-section {
   margin-bottom: 2rem;
 }
@@ -235,10 +217,6 @@ const startDownload = async () => {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #dc2626;
-}
-
-.icon {
-  font-size: 1.25rem;
 }
 
 @media (max-width: 640px) {
