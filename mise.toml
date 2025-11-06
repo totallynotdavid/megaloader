@@ -9,7 +9,10 @@ bun = "1.3.1"
 [tasks.install]
 description = "Install dependencies"
 alias = "i"
-run = "uv sync --all-groups"
+run = [
+  "uv sync --all-groups",
+  "uv pip install -e packages/core -e packages/cli -e demo"
+]
 
 [tasks.update]
 description = "Update all dependencies"
@@ -32,22 +35,22 @@ run = [
 [tasks.mypy]
 description = "Type check with mypy"
 alias = "m"
-run = "uv run mypy packages/megaloader/megaloader --config-file pyproject.toml"
+run = "uv run mypy packages/core/megaloader --config-file pyproject.toml"
 
 [tasks.test]
 description = "Run the pytest suite, including live tests"
 alias = "t"
-run = "uv run pytest packages/megaloader/tests --run-live"
+run = "uv run pytest packages/core/tests --run-live"
 
 [tasks.test-unit]
 description = "Run unit tests only"
 alias = "tu"
-run = "uv run pytest packages/megaloader/tests/unit"
+run = "uv run pytest packages/core/tests/unit"
 
 [tasks.test-integration]
 description = "Run integration tests only"
 alias = "ti"
-run = "uv run pytest packages/megaloader/tests/integration"
+run = "uv run pytest packages/core/tests/integration"
 
 [tasks.docs-serve]
 description = "Serve documentation locally"
