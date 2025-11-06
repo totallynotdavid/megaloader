@@ -3,10 +3,16 @@ name: tests
 on:
   push:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "packages/core/**/*.py"
+      - "pyproject.toml"
+      - "packages/core/pyproject.toml"
   pull_request:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "packages/core/**/*.py"
+      - "packages/core/pyproject.toml"
+      - "pyproject.toml"
   workflow_dispatch:
 
 permissions:
@@ -32,16 +38,29 @@ jobs:
         run: uv sync --all-groups --all-packages
 
       - name: Run tests
-        run: uv run pytest -v --tb=short
+        run:
+          uv run pytest -v --tb=short --junitxml=junit.xml -o junit_family=legacy
 
       - name: Coverage & codecov (3.13 only)
         if: matrix.python-version == '3.13'
         run: |
           uv add --group dev pytest-cov
-          uv run pytest --cov=megaloader --cov-report=xml --cov-report=term
+          uv run pytest \
+            --cov=megaloader \
+            --cov-report=xml \
+            --cov-report=term \
+            --junitxml=junit.xml \
+            -o junit_family=legacy
         continue-on-error: true
 
       - if: matrix.python-version == '3.13'
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           files: ./coverage.xml
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          files: ./junit.xml
+          report_type: test_results
