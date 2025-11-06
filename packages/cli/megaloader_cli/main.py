@@ -9,16 +9,14 @@ import logging
 import sys
 
 from pathlib import Path
-from typing import Optional
 
 import click
 
+from megaloader import download
+from megaloader.plugins import get_plugin_class
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.progress import Progress, SpinnerColumn, TextColumn
-
-from megaloader import download
-from megaloader.plugins import get_plugin_class
 
 
 console = Console()

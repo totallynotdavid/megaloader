@@ -1,20 +1,22 @@
 """Views for the downloader app."""
 
-from django.conf import settings
-from django.shortcuts import redirect, render
-from typing import Dict, Any
+from typing import Any
 
+from django.conf import settings
+from django.shortcuts import render
 from megaloader import download
 from megaloader.plugins import PLUGIN_REGISTRY, get_plugin_class
 
 
 def index(request):
     """Display the main download form and supported platforms."""
-    context: Dict[str, Any] = {
+    context: dict[str, Any] = {
         "plugins": [
             {
                 "name": plugin_class.__name__,
-                "domains": ", ".join(domains) if isinstance(domains, tuple) else domains,
+                "domains": ", ".join(domains)
+                if isinstance(domains, tuple)
+                else domains,
             }
             for domains, plugin_class in PLUGIN_REGISTRY.items()
         ]
@@ -44,7 +46,7 @@ def index(request):
                 else:
                     context["error"] = "Download failed"
             except Exception as e:
-                context["error"] = f"Error: {str(e)}"
+                context["error"] = f"Error: {e!s}"
         else:
             context["error"] = "Please provide a URL"
 
