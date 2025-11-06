@@ -1,5 +1,3 @@
-"""URL configuration for downloader app."""
-
 from django.urls import path
 
 from demo.downloader import views

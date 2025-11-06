@@ -13,6 +13,7 @@ from pathlib import Path
 import click
 
 from megaloader import download
+from megaloader.exceptions import MegaloaderError
 from megaloader.plugins import get_plugin_class
 from rich.console import Console
 from rich.logging import RichHandler
@@ -22,7 +23,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 console = Console()
 
 
-def setup_logging(verbose: bool) -> None:
+def setup_logging(*, verbose: bool) -> None:
     """Configure logging with rich output."""
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
@@ -55,6 +56,7 @@ def cli() -> None:
 def download_url(
     url: str,
     output_dir: str,
+    *,
     verbose: bool,
     use_proxy: bool,
     no_subdirs: bool,
@@ -65,7 +67,7 @@ def download_url(
     URL: The URL to download from
     OUTPUT_DIR: Directory to save files (default: ./downloads)
     """
-    setup_logging(verbose)
+    setup_logging(verbose=verbose)
 
     try:
         # Detect plugin
@@ -106,7 +108,7 @@ def download_url(
             console.print("[red]✗[/red] Download failed")
             sys.exit(1)
 
-    except Exception as e:
+    except MegaloaderError as e:
         console.print(f"[red]✗[/red] Error: {e}")
         if verbose:
             console.print_exception()

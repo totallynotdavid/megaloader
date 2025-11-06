@@ -1,10 +1,9 @@
-"""Views for the downloader app."""
-
 from typing import Any
 
 from django.conf import settings
 from django.shortcuts import render
 from megaloader import download
+from megaloader.exceptions import MegaloaderError
 from megaloader.plugins import PLUGIN_REGISTRY, get_plugin_class
 
 
@@ -45,7 +44,7 @@ def index(request):
                     context["success"] = f"Successfully downloaded from {url}"
                 else:
                     context["error"] = "Download failed"
-            except Exception as e:
+            except MegaloaderError as e:
                 context["error"] = f"Error: {e!s}"
         else:
             context["error"] = "Please provide a URL"
