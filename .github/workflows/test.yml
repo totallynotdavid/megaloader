@@ -64,4 +64,3 @@ jobs:
         with:
           files: ./junit.xml
           report_type: test_results
-          token: ${{ secrets.CODECOV_TOKEN }}
