@@ -4,6 +4,7 @@ python.uv_venv_auto = true
 [tools]
 uv = "0.9.7"
 ruff = "0.14.3"
+bun = "1.3.1"
 
 [tasks.install]
 description = "Install dependencies"
@@ -61,19 +62,13 @@ run = "uv run pytest packages/megaloader/tests/integration"
 [tasks.docs-serve]
 description = "Serve documentation locally"
 alias = "ds"
-run = [
-  "uv sync --group docs",
-  "uv run mkdocs serve",
-]
+run = ["bun install", "bun run docs:dev"]
 dir = "docs"
 
 [tasks.docs-build]
 description = "Build documentation"
 alias = "db"
-run = [
-  "uv sync --group docs",
-  "uv run mkdocs build",
-]
+run = ["bun install", "bun run docs:build"]
 dir = "docs"
 
 [tasks.demo-run]
