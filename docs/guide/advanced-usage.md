@@ -93,7 +93,7 @@ failed = 0
 
 for i, item in enumerate(items, 1):
     print(f"[{i}/{len(items)}] {item.filename}... ", end="")
-    
+
     if plugin.download_file(item, "./downloads"):
         print("✓")
         successful += 1
@@ -120,12 +120,12 @@ for item in plugin.export():
         output_dir = Path("./downloads") / item.album_title
     else:
         output_dir = Path("./downloads/misc")
-    
+
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Add custom prefix to filename
     custom_filename = f"pixeldrain_{item.filename}"
-    
+
     # Download would need custom implementation
     # This is a concept example
     plugin.download_file(item, str(output_dir))
@@ -177,10 +177,10 @@ for item in plugin.export():
     print(f"URL: {item.url}")
     print(f"Album: {item.album_title}")
     print(f"ID: {item.file_id}")
-    
+
     if item.metadata:
         print(f"Metadata: {item.metadata}")
-    
+
     print("---")
 ```
 

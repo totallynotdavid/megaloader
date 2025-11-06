@@ -20,28 +20,28 @@ from bs4 import BeautifulSoup
 
 class MyPlugin(BasePlugin):
     """Plugin for downloading from example.com."""
-    
+
     def export(self) -> Generator[Item, None, None]:
         """
         Extract downloadable items from the URL.
-        
+
         Yields:
             Item: Each downloadable file found at the URL
         """
         # Parse the URL to get the content ID
         content_id = self._parse_url()
-        
+
         # Fetch the page
         response = requests.get(f"https://example.com/content/{content_id}")
         response.raise_for_status()
-        
+
         # Parse HTML to find download links
         soup = BeautifulSoup(response.text, 'html.parser')
-        
+
         for link in soup.find_all('a', class_='download-link'):
             file_url = link['href']
             filename = link.text.strip()
-            
+
             yield Item(
                 url=file_url,
                 filename=filename,
@@ -49,15 +49,15 @@ class MyPlugin(BasePlugin):
                 file_id=content_id,      # Optional
                 metadata={"source": "example.com"}  # Optional
             )
-    
+
     def download_file(self, item: Item, output_dir: str) -> bool:
         """
         Download a single item to the specified directory.
-        
+
         Args:
             item: The item to download (from export())
             output_dir: Directory to save the file to
-            
+
         Returns:
             bool: True if download succeeded, False otherwise
         """
@@ -65,20 +65,20 @@ class MyPlugin(BasePlugin):
             # Download the file
             response = requests.get(item.url, stream=True)
             response.raise_for_status()
-            
+
             # Save to file
             output_path = Path(output_dir) / item.filename
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             with open(output_path, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            
+
             return True
         except Exception as e:
             print(f"Error downloading {item.filename}: {e}")
             return False
-    
+
     def _parse_url(self) -> str:
         """Extract content ID from URL."""
         # Example: https://example.com/content/abc123
@@ -105,7 +105,7 @@ import requests
 
 class MySite(BasePlugin):
     """Download files from mysite.com."""
-    
+
     def __init__(self, url: str, **kwargs):
         super().__init__(url, **kwargs)
         # Custom initialization if needed
@@ -122,7 +122,7 @@ def export(self) -> Generator[Item, None, None]:
     # Fetch and parse the page
     response = self.session.get(self.url)
     data = response.json()  # or use BeautifulSoup for HTML
-    
+
     # Extract items
     for file_data in data['files']:
         yield Item(
@@ -145,15 +145,15 @@ def download_file(self, item: Item, output_dir: str) -> bool:
     try:
         output_path = Path(output_dir) / item.filename
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         response = self.session.get(item.url, stream=True)
         response.raise_for_status()
-        
+
         with open(output_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
-        
+
         return True
     except Exception:
         return False
@@ -199,10 +199,10 @@ def test_mysite_export(requests_mock):
         "https://mysite.com/file/123",
         json={"files": [{"download_url": "http://...", "name": "file.jpg"}]}
     )
-    
+
     plugin = MySite("https://mysite.com/file/123")
     items = list(plugin.export())
-    
+
     assert len(items) == 1
     assert items[0].filename == "file.jpg"
 ```
@@ -216,12 +216,12 @@ Handle authentication in `__init__`:
 ```python
 def __init__(self, url: str, **kwargs):
     super().__init__(url, **kwargs)
-    
+
     # Get token from environment
     token = os.getenv("MYSITE_TOKEN")
     if not token:
         raise ValueError("MYSITE_TOKEN environment variable required")
-    
+
     self.session = requests.Session()
     self.session.headers['Authorization'] = f'Bearer {token}'
 ```
@@ -234,17 +234,17 @@ Handle paginated results:
 def export(self) -> Generator[Item, None, None]:
     """Export with pagination support."""
     page = 1
-    
+
     while True:
         response = self.session.get(f"{self.url}?page={page}")
         data = response.json()
-        
+
         for file_data in data['files']:
             yield Item(...)
-        
+
         if not data.get('has_next_page'):
             break
-        
+
         page += 1
 ```
 
@@ -268,7 +268,7 @@ def export(self) -> Generator[Item, None, None]:
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return
-    
+
     # Process items...
 ```
 
@@ -283,7 +283,7 @@ def download_file(self, item: Item, output_dir: str) -> bool:
     """Download with rate limiting."""
     # Wait between downloads
     time.sleep(1)
-    
+
     # ... download logic
 ```
 
@@ -323,15 +323,15 @@ Document your plugin:
 class MySite(BasePlugin):
     """
     Plugin for downloading from mysite.com.
-    
+
     Supports:
         - Single files
         - Collections/albums
         - Password-protected content
-    
+
     Environment Variables:
         MYSITE_TOKEN: Authentication token (required)
-    
+
     Example:
         >>> plugin = MySite("https://mysite.com/file/123")
         >>> items = list(plugin.export())
@@ -387,9 +387,9 @@ def test_mysite_real_download():
     """Test actual download from mysite.com."""
     plugin = MySite("https://mysite.com/test-content")
     items = list(plugin.export())
-    
+
     assert len(items) > 0
-    
+
     # Test downloading first item
     success = plugin.download_file(items[0], "./test-downloads")
     assert success
@@ -405,6 +405,7 @@ def test_mysite_real_download():
 ## Examples
 
 See existing plugins for reference:
+
 - `bunkr.py` - Basic album support
 - `pixeldrain.py` - Proxy support
 - `gofile.py` - Password-protected content

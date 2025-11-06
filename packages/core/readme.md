@@ -1,6 +1,7 @@
 # Megaloader Core Library
 
-This is the core library for Megaloader, providing a plugin-based architecture for downloading content from various file hosting and media platforms.
+This is the core library for Megaloader, providing a plugin-based architecture
+for downloading content from various file hosting and media platforms.
 
 ## Installation
 

@@ -1,6 +1,7 @@
 # Contributing to Megaloader
 
-Thank you for considering contributing to Megaloader! This guide will help you get started.
+Thank you for considering contributing to Megaloader! This guide will help you
+get started.
 
 ## Getting Started
 
@@ -205,17 +206,21 @@ See [Creating Plugins](creating-plugins.md) for detailed guide.
 
 ## Getting Help
 
-- **Questions**: Use [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
-- **Bugs**: Open an [Issue](https://github.com/totallynotdavid/megaloader/issues)
+- **Questions**: Use
+  [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
+- **Bugs**: Open an
+  [Issue](https://github.com/totallynotdavid/megaloader/issues)
 - **Slack/Discord**: Coming soon
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the
+MIT License.
 
 ## Recognition
 
 Contributors are recognized in:
+
 - README.md
 - Release notes
 - GitHub contributors page

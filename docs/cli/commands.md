@@ -21,6 +21,7 @@ megaloader [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options:**
+
 - `--version`: Show version and exit
 - `--help`: Show help message
 
@@ -33,10 +34,12 @@ megaloader download-url [OPTIONS] URL [OUTPUT_DIR]
 ```
 
 **Arguments:**
+
 - `URL`: The URL to download from (required)
 - `OUTPUT_DIR`: Directory to save files (default: `./downloads`)
 
 **Options:**
+
 - `-v, --verbose`: Enable verbose logging
 - `--use-proxy`: Use proxy for downloads
 - `--no-subdirs`: Don't create album subdirectories
@@ -44,26 +47,31 @@ megaloader download-url [OPTIONS] URL [OUTPUT_DIR]
 **Examples:**
 
 Basic download:
+
 ```bash
 megaloader download-url "https://pixeldrain.com/u/file_id"
 ```
 
 Download to specific directory:
+
 ```bash
 megaloader download-url "https://cyberdrop.me/a/album" ./my-downloads
 ```
 
 Enable verbose output:
+
 ```bash
 megaloader download-url "https://bunkr.si/a/example" --verbose
 ```
 
 Use proxy:
+
 ```bash
 megaloader download-url "https://pixeldrain.com/u/file" --use-proxy
 ```
 
 Disable subdirectories:
+
 ```bash
 megaloader download-url "https://cyberdrop.me/a/album" --no-subdirs
 ```
@@ -123,16 +131,19 @@ FANBOX_SESSION_ID=your_session
 ### Basic Workflow
 
 1. List supported platforms:
+
 ```bash
 megaloader list-plugins
 ```
 
 2. Download from a supported platform:
+
 ```bash
 megaloader download-url "https://pixeldrain.com/u/example" ./downloads
 ```
 
 3. Check verbose output for debugging:
+
 ```bash
 megaloader download-url "https://bunkr.si/a/example" --verbose
 ```
@@ -172,7 +183,7 @@ foreach ($url in $urls) {
 The CLI uses Rich for formatted output:
 
 - ✓ Success messages in green
-- ✗ Error messages in red  
+- ✗ Error messages in red
 - ⚠ Warnings in yellow
 - Progress spinners during downloads
 

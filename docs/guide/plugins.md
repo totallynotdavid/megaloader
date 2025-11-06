@@ -5,6 +5,7 @@ Megaloader uses a plugin-based architecture to support multiple platforms.
 ## How Plugins Work
 
 Each plugin extends the `BasePlugin` class and implements:
+
 - `export()`: Extracts downloadable items from URLs
 - `download_file()`: Downloads a single item
 
@@ -13,6 +14,7 @@ Each plugin extends the `BasePlugin` class and implements:
 ### Core Plugins (Actively Maintained)
 
 #### Bunkr
+
 - **Domains**: bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su
 - **Supports**: Albums, single files
 - **Features**: Multiple domain mirrors
@@ -25,6 +27,7 @@ items = list(plugin.export())
 ```
 
 #### PixelDrain
+
 - **Domain**: pixeldrain.com
 - **Supports**: Lists, single files
 - **Features**: Proxy support
@@ -38,6 +41,7 @@ download(url, "./downloads", plugin_class=PixelDrain, use_proxy=True)
 ```
 
 #### Cyberdrop
+
 - **Domains**: cyberdrop.me, cyberdrop.to
 - **Supports**: Albums, single files
 
@@ -48,6 +52,7 @@ plugin = Cyberdrop("https://cyberdrop.me/a/album_id")
 ```
 
 #### GoFile
+
 - **Domain**: gofile.io
 - **Supports**: Folders (including password-protected), single files
 - **Features**: Password support via environment variables
@@ -154,7 +159,8 @@ megaloader list-plugins
 
 ## Creating Custom Plugins
 
-See [Creating Plugins](../development/creating-plugins.md) for how to create your own plugins.
+See [Creating Plugins](../development/creating-plugins.md) for how to create
+your own plugins.
 
 ## Plugin Lifecycle
 

@@ -1,6 +1,7 @@
 # A simple API
 
-FastAPI demo server that wraps the megaloader/core library. It is used in the docs to show URL validation and file downloads.
+FastAPI demo server that wraps the megaloader/core library. It is used in the
+docs to show URL validation and file downloads.
 
 Start the server by running:
 

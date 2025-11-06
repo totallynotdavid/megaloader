@@ -3,6 +3,7 @@
 ## Quick Start
 
 1. **Clone and setup:**
+
    ```bash
    git clone https://github.com/totallynotdavid/megaloader
    cd megaloader
@@ -10,6 +11,7 @@
    ```
 
 2. **Install dependencies:**
+
    ```bash
    # Using mise (recommended)
    mise install
@@ -20,6 +22,7 @@
    ```
 
 3. **Install packages:**
+
    ```bash
    # Core library
    uv pip install -e packages/megaloader
@@ -35,6 +38,7 @@
    ```
 
 4. **Verify installation:**
+
    ```bash
    # Test core library
    python -c "import megaloader; print('Success!')"
@@ -93,20 +97,26 @@ megaloader/
 ## Troubleshooting
 
 ### "Module not found" errors
+
 Make sure packages are installed in editable mode:
+
 ```bash
 uv pip install -e packages/megaloader
 uv pip install -e packages/cli
 ```
 
 ### CLI command not found
+
 Use the full path or activate the venv:
+
 ```bash
 .\.venv\Scripts\megaloader.exe --version
 ```
 
 ### Tests not found
+
 Verify pytest.ini has correct testpaths:
+
 ```ini
 testpaths = packages/megaloader/tests
 ```

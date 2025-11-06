@@ -105,6 +105,7 @@ for domains, plugin_class in PLUGIN_REGISTRY.items():
 ```
 
 Example output:
+
 ```
 Bunkr: ('bunkr.si', 'bunkr.la', 'bunkr.is', 'bunkr.ru', 'bunkr.su', 'bunkr')
 Cyberdrop: ('cyberdrop.me', 'cyberdrop.to', 'cyberdrop')
