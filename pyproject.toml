@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["packages/*", "demo"]
+members = ["packages/*", "api"]
 
 [project]
 name = "megaloader-workspace"
@@ -19,8 +19,7 @@ dependencies = []
 dev = [
     "mypy>=1.18.2",
     "pytest>=8.4.2",
-    "requests-mock>=1.12.1",
-    "ruff>=0.14.3",
+    "requests-mock>=1.12.1"
 ]
 
 [tool.ruff]

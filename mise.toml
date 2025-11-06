@@ -11,7 +11,7 @@ description = "Install dependencies"
 alias = "i"
 run = [
   "uv sync --all-groups",
-  "uv pip install -e packages/core -e packages/cli -e demo"
+  "uv pip install -e packages/core -e packages/cli"
 ]
 
 [tasks.update]
@@ -76,7 +76,14 @@ alias = "dm"
 run = "uv run python manage.py migrate"
 dir = "demo"
 
-[tasks.cli-install]
-description = "Install CLI in development mode"
-alias = "ci"
-run = "uv pip install -e packages/cli"
+[tasks.api-serve]
+description = "Run local API server for development"
+alias = "as"
+run = "uv run python local_server.py"
+dir = "api"
+
+[tasks.api-deploy]
+description = "Deploy API to Vercel"
+alias = "vda"
+run = "vercel --prod"
+dir = "api"
