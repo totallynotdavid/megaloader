@@ -11,7 +11,7 @@ description = "Install dependencies"
 alias = "i"
 run = [
   "uv sync --all-groups",
-  "uv pip install -e packages/core -e packages/cli"
+  "uv pip install -e packages/core -e packages/cli",
 ]
 
 [tasks.update]
@@ -64,22 +64,10 @@ alias = "db"
 run = ["bun install", "bun run docs:build"]
 dir = "docs"
 
-[tasks.demo-run]
-description = "Run Django demo server"
-alias = "dr"
-run = "uv run python manage.py runserver"
-dir = "demo"
-
-[tasks.demo-migrate]
-description = "Run Django migrations"
-alias = "dm"
-run = "uv run python manage.py migrate"
-dir = "demo"
-
 [tasks.api-serve]
 description = "Run local API server for development"
 alias = "as"
-run = "uv run python local_server.py"
+run = "uv run uvicorn main:app --reload"
 dir = "api"
 
 [tasks.api-deploy]
