@@ -38,6 +38,16 @@ download("https://cyberdrop.me/a/0OpiyaOV", "./downloads")
 | Thothub.to  | thothub.to                   | ⚠️ Extended |
 | Thothub.vip | thothub.vip, thothub.today   | ⚠️ Extended |
 
+## Try It Out
+
+Test URL compatibility with our plugins:
+
+<script setup>
+import DemoComponent from './Demo.vue'
+</script>
+
+<DemoComponent />
+
 ## Getting Started
 
 Check out the [Installation Guide](getting-started/installation.md) to get started, or jump straight to the [Quick Start](getting-started/quickstart.md) for examples.
