@@ -90,10 +90,10 @@ class MyPlugin(BasePlugin):
 
 ### 1. Create Plugin File
 
-Create a new file in `packages/megaloader/megaloader/plugins/`:
+Create a new file in `packages/core/megaloader/plugins/`:
 
 ```bash
-touch packages/megaloader/megaloader/plugins/mysite.py
+touch packages/core/megaloader/plugins/mysite.py
 ```
 
 ### 2. Implement BasePlugin
@@ -161,7 +161,7 @@ def download_file(self, item: Item, output_dir: str) -> bool:
 
 ### 5. Register Plugin
 
-Add your plugin to `packages/megaloader/megaloader/plugins/__init__.py`:
+Add your plugin to `packages/core/megaloader/plugins/__init__.py`:
 
 ```python
 from megaloader.plugins.mysite import MySite
@@ -181,7 +181,7 @@ PLUGIN_REGISTRY: dict[str | tuple[str, ...], type[BasePlugin]] = {
 
 ### 6. Add Tests
 
-Create test file `packages/megaloader/tests/unit/test_mysite.py`:
+Create test file `packages/core/tests/unit/test_mysite.py`:
 
 ```python
 import pytest
