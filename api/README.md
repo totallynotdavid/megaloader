@@ -1,17 +1,34 @@
-# Megaloader API
+# A simple API
 
-Simple Vercel API for URL validation using the Megaloader library.
+FastAPI demo server that wraps the megaloader/core library. It is used in the docs to show URL validation and file downloads.
+
+Start the server by running:
+
+```bash
+cd api
+uv sync
+MEGALOADER_DEV=true python api.py
+```
+
+Server listens on http://localhost:8000.
+
+You need to add this environment variables:
+
+- `CORS_ORIGINS`: comma-separated list of allowed origins  
+  default: `http://localhost:5173,http://127.0.0.1:5173`
+- `MEGALOADER_DEV`: `true` runs the full FastAPI dev server; anything else
+  deploys as a Vercel serverless function
 
 ## Endpoints
 
 ### GET /api/validate-url
 
-Validate if a URL is supported by Megaloader.
+Check if Megaloader supports the URL.
 
-**Query Parameters:**
-- `url` (required): The URL to validate
+Query: `url` (required)
 
-**Response:**
+200 OK
+
 ```json
 {
   "supported": true,
@@ -20,39 +37,34 @@ Validate if a URL is supported by Megaloader.
 }
 ```
 
-**Error Response:**
+400 Bad Request
+
+```json
+{ "detail": "Validation failed" }
+```
+
+### POST /api/download
+
+Download the file (dev mode only).
+
+Body:
+
+```json
+{ "url": "https://pixeldrain.com/u/example" }
+```
+
+200 OK
+
 ```json
 {
-  "error": "Missing url parameter"
+  "success": true,
+  "message": "Successfully downloaded from https://pixeldrain.com/u/example",
+  "plugin": "PixelDrain"
 }
 ```
 
-## Deployment to Vercel
+400 Bad Request
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Deploy: `cd api && vercel --prod`
-3. Note the deployment URL (e.g., `https://megaloader-api.vercel.app`)
-
-## Local Development
-
-```bash
-cd api
-uv sync
-uv run python -c "
-# Test the handler
-from validate_url import handler
-
-event = {'queryStringParameters': {'url': 'https://pixeldrain.com/u/test'}}
-result = handler(event, None)
-print('Status:', result['statusCode'])
-print('Body:', result['body'])
-"
-```
-
-## Integration
-
-Update the docs demo page (`docs/demo.md`) to use your deployed API URL:
-
-```javascript
-const response = await fetch(`https://your-api-url.vercel.app/api/validate-url?url=${encodeURIComponent(url.value)}`)
+```json
+{ "error": "Missing url parameter" }
 ```

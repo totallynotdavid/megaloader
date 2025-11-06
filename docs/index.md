@@ -58,7 +58,7 @@ This monorepo contains:
 
 - **Core Library** (`packages/megaloader`): The main download library
 - **CLI Tool** (`packages/cli`): Command-line interface
-- **Demo Website** (`demo/`): Django-based web interface
+- **API** (`api/`): FastAPI server for development and Vercel deployment
 
 ## Links
 
