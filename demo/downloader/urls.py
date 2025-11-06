@@ -1,6 +1,5 @@
 from django.urls import path
-
-from demo.downloader import views
+from downloader import views
 
 
 urlpatterns = [

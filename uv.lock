@@ -392,7 +392,7 @@ requires-dist = [
 
 [[package]]
 name = "megaloader-demo"
-version = "0.1.0"
+version = "0.0.0"
 source = { editable = "demo" }
 dependencies = [
     { name = "django" },
