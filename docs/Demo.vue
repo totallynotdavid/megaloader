@@ -39,7 +39,7 @@ const startDownload = async () => {
   error.value = "";
 
   try {
-    const response = await fetch("http://localhost:8000/api/download", {
+    const response = await fetch("http://localhost:8000/download", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
