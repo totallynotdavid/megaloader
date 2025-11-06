@@ -82,3 +82,7 @@ description = "Deploy API to Vercel"
 alias = "vda"
 run = "vercel --prod"
 dir = "api"
+
+[tasks.dev-cli]
+description = "Run the CLI during development"
+run = "uv run megaloader"

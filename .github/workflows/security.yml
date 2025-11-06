@@ -3,7 +3,9 @@ name: security report
 on:
   push:
     branches: ["main"]
-    paths: ["**/*.py"]
+    paths:
+      - "**/*.py"
+      - "**/pyproject.toml"
   workflow_dispatch:
 
 jobs:
@@ -20,5 +22,5 @@ jobs:
 
       - uses: tonybaloney/pycharm-security@5c1ceeb1fb2a18478fa7076a81f9f47fd450e592 # v1.25.1
         with:
-          path: packages/core/megaloader/
+          path: .
           fail_on_warnings: "no"
