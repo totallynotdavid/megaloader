@@ -33,6 +33,12 @@ run = [
   "ruff check --fix --unsafe-fixes . --config pyproject.toml",
 ]
 
+[tasks.format-docs]
+description = "Format docs with biome"
+alias = "fd"
+run = "biome format --write ."
+dir = "docs"
+
 [tasks.mypy]
 description = "Type check with mypy"
 alias = "m"
