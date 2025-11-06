@@ -1,10 +1,3 @@
-"""
-Megaloader CLI - Command-line interface for downloading content.
-
-This CLI provides a simple interface to download files from supported platforms
-using the megaloader library.
-"""
-
 import logging
 import sys
 
