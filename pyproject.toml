@@ -83,7 +83,7 @@ lines-between-types = 1
 lines-after-imports = 2
 
 [tool.mypy]
-files = "megaloader"
+files = ["packages/core/megaloader"]
 strict = true
 enable_error_code = [
     "ignore-without-code",
