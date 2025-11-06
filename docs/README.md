@@ -1,65 +1,23 @@
-# Megaloader Documentation
+# Documentation
 
-This directory contains the documentation website for Megaloader, built with MkDocs and the Material theme.
+VitePress site:
+[https://totallynotdavid.github.io/megaloader](https://totallynotdavid.github.io/megaloader)
 
-## Setup
-
-Install documentation dependencies from the workspace root:
-
-```bash
-# From project root
-uv sync --group docs
-```
-
-## Development
-
-Serve the documentation locally with live reload:
+To get started:
 
 ```bash
-cd docs
-uv run mkdocs serve
+bun install
+bun run docs:dev
 ```
 
-Or using mise from the root directory:
+The server runs at [http://localhost:5173](http://localhost:5173).
+
+To build the site:
 
 ```bash
-mise run docs-serve
+bun run docs:build
 ```
 
-Then open http://localhost:8000 in your browser.
+The output will be in `.vitepress/dist`.
 
-## Building
-
-Build the static documentation site:
-
-```bash
-mkdocs build
-```
-
-The built site will be in the `site/` directory.
-
-## Structure
-
-```
-docs/
-├── mkdocs.yml           # MkDocs configuration
-├── pyproject.toml       # Python dependencies
-├── docs/                # Documentation content
-│   ├── index.md
-│   ├── getting-started/
-│   ├── guide/
-│   ├── api/
-│   ├── cli/
-│   └── development/
-└── site/                # Built site (generated, gitignored)
-```
-
-## Deployment
-
-The documentation can be deployed to GitHub Pages:
-
-```bash
-mkdocs gh-deploy
-```
-
-This builds the site and pushes it to the `gh-pages` branch.
+Edit any `.md` file, VitePress will hot-reload changes automatically.
