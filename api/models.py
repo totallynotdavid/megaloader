@@ -32,4 +32,3 @@ class DownloadPreview(BaseModel):
     exceeds_limit: bool
     limit_mb: float = 4.0
     message: str
-    
