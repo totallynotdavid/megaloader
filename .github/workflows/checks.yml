@@ -33,12 +33,12 @@ jobs:
         run: uv sync --group dev
 
       - name: Install and run ruff format check
-        uses: astral-sh/ruff-action@4f45dfa46b407762a87df4eca6bef6504ff8cccc # v3.5.1
+        uses: astral-sh/ruff-action@e7baf99fcc269796ae85308f7bef6b06147c7f08 # v3.5.1
         with:
           args: "format --check --diff"
 
       - name: Run ruff check
-        uses: astral-sh/ruff-action@4f45dfa46b407762a87df4eca6bef6504ff8cccc # v3.5.1
+        uses: astral-sh/ruff-action@e7baf99fcc269796ae85308f7bef6b06147c7f08 # v3.5.1
         with:
           args: "check . --config pyproject.toml"
 
