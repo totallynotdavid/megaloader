@@ -35,7 +35,8 @@ class BasePlugin(ABC):
 
     def __init__(self, url: str, **options: Any) -> None:
         if not url.strip():
-            raise ValueError("URL must be a non-empty string")
+            msg = "URL must be a non-empty string"
+            raise ValueError(msg)
 
         self.url = url.strip()
         self.options = options

@@ -28,7 +28,8 @@ class Rule34(BasePlugin):
         self.tags = query.get("tags", [""])[0].split()
 
         if not self.post_id and not self.tags:
-            raise ValueError("URL must contain 'id' or 'tags' parameter")
+            msg = "URL must contain 'id' or 'tags' parameter"
+            raise ValueError(msg)
 
         # Credentials: kwargs > env vars
         self.api_key = self.options.get("api_key") or os.getenv("RULE34_API_KEY")
@@ -156,9 +157,8 @@ class Rule34(BasePlugin):
                 return str(src)
 
         # Image fallback
-        if img := soup.select_one("img#image"):
-            if src := img.get("src"):
-                return str(src)
+        if (img := soup.select_one("img#image")) and (src := img.get("src")):
+            return str(src)
 
         return None
 

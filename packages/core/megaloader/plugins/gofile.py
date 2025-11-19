@@ -26,7 +26,8 @@ class Gofile(BasePlugin):
         """Extract content ID from URL."""
         match = re.search(r"gofile\.io/(?:d|f)/([\w-]+)", url)
         if not match:
-            raise ValueError(f"Invalid Gofile URL: {url}")
+            msg = f"Invalid Gofile URL: {url}"
+            raise ValueError(msg)
         return match.group(1)
 
     def _hash_password(self, password: str | None) -> str | None:
@@ -58,7 +59,8 @@ class Gofile(BasePlugin):
 
         if data.get("status") != "ok":
             error_msg = data.get("data", {}).get("message", "Unknown error")
-            raise RuntimeError(f"Gofile API error: {error_msg}")
+            msg = f"Gofile API error: {error_msg}"
+            raise RuntimeError(msg)
 
         content = data.get("data", {})
         collection_name = content.get("name", self.content_id)
@@ -86,7 +88,8 @@ class Gofile(BasePlugin):
         if match := re.search(r'\.wt\s*=\s*"([^"]+)"', response.text):
             return match.group(1)
 
-        raise RuntimeError("Could not extract Gofile website token")
+        msg = "Could not extract Gofile website token"
+        raise RuntimeError(msg)
 
     def _create_account(self) -> str:
         """Create temporary account and return API token."""
@@ -98,4 +101,5 @@ class Gofile(BasePlugin):
         if data.get("status") == "ok":
             return data["data"]["token"]
 
-        raise RuntimeError("Failed to create Gofile guest account")
+        msg = "Failed to create Gofile guest account"
+        raise RuntimeError(msg)

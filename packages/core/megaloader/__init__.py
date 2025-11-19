@@ -58,13 +58,15 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
         ...     download_file(item.download_url, item.filename)
     """
     if not url or not url.strip():
-        raise ValueError("URL cannot be empty")
+        msg = "URL cannot be empty"
+        raise ValueError(msg)
 
     url = url.strip()
     parsed = urllib.parse.urlparse(url)
 
     if not parsed.netloc:
-        raise ValueError(f"Invalid URL: Could not parse domain from '{url}'")
+        msg = f"Invalid URL: Could not parse domain from '{url}'"
+        raise ValueError(msg)
 
     plugin_class = get_plugin_class(parsed.netloc)
     if plugin_class is None:
@@ -81,4 +83,5 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
         raise
     except Exception as e:
         logger.debug("Extraction failed for %s: %s", url, e, exc_info=True)
-        raise ExtractionError(f"Failed to extract from {url}: {e}") from e
+        msg = f"Failed to extract from {url}: {e}"
+        raise ExtractionError(msg) from e

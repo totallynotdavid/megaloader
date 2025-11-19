@@ -25,6 +25,8 @@ class DownloadItem:
     def __post_init__(self) -> None:
         """Validate required fields."""
         if not self.download_url:
-            raise ValueError("download_url cannot be empty")
+            msg = "download_url cannot be empty"
+            raise ValueError(msg)
         if not self.filename:
-            raise ValueError("filename cannot be empty")
+            msg = "filename cannot be empty"
+            raise ValueError(msg)

@@ -32,7 +32,8 @@ class Pixiv(BasePlugin):
         if match := re.search(r"users/(\d+)|member\.php\?id=(\d+)", self.url):
             return match.group(1) or match.group(2), False
 
-        raise ValueError("Invalid Pixiv URL")
+        msg = "Invalid Pixiv URL"
+        raise ValueError(msg)
 
     def _configure_session(self, session: requests.Session) -> None:
         session.headers["Referer"] = f"{self.SITE_BASE}/"
@@ -117,13 +118,12 @@ class Pixiv(BasePlugin):
                 collection_name=collection_name,
             )
 
-        if bg := profile.get("background"):
-            if bg_url := bg.get("url"):
-                yield DownloadItem(
-                    download_url=bg_url,
-                    filename=f"cover{Path(bg_url).suffix}",
-                    collection_name=collection_name,
-                )
+        if (bg := profile.get("background")) and (bg_url := bg.get("url")):
+            yield DownloadItem(
+                download_url=bg_url,
+                filename=f"cover{Path(bg_url).suffix}",
+                collection_name=collection_name,
+            )
 
         # All artworks
         all_works = self._api_request(f"/user/{user_id}/profile/all") or {}

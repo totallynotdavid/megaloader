@@ -30,7 +30,8 @@ class Fanbox(BasePlugin):
             r"//(?:www\.)?([\w-]+)\.fanbox\.cc|fanbox\.cc/(?:@)?([\w-]+)", url
         )
         if not match:
-            raise ValueError(f"Invalid Fanbox URL: {url}")
+            msg = f"Invalid Fanbox URL: {url}"
+            raise ValueError(msg)
         return next(g for g in match.groups() if g)
 
     def _configure_session(self, session: requests.Session) -> None:

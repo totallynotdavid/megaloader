@@ -28,7 +28,8 @@ class Fapello(BasePlugin):
         """Extract model name from URL."""
         match = re.search(r"fapello\.com/([a-zA-Z0-9_\-~\.]+)", url)
         if not match or not match.group(1):
-            raise ValueError("Invalid Fapello URL")
+            msg = "Invalid Fapello URL"
+            raise ValueError(msg)
         return match.group(1).split("/")[0]
 
     def _configure_session(self, session: requests.Session) -> None:
