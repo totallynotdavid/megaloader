@@ -63,7 +63,7 @@ extend-select = [
     "RUF", # ruff checks
     "SIM", # flake8-simplify
     "T10", # flake8-debugger
-    "T20", # flake8-print
+    # "T20", # flake8-print
     "TC",  # flake8-type-checking
     "TD",  # flake8-todos
     "TID", # flake8-tidy-imports
@@ -80,6 +80,10 @@ ban-relative-imports = "all"
 force-single-line = false
 lines-between-types = 1
 lines-after-imports = 2
+order-by-type = true
+relative-imports-order = "closest-to-furthest"
+extra-standard-library = ["typing"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
 [tool.mypy]
 files = ["packages/core/megaloader"]
