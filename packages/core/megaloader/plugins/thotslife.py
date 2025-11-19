@@ -1,25 +1,28 @@
 import logging
-
 from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 from bs4 import BeautifulSoup
 
-from megaloader.plugin import BasePlugin, Item
-
+from megaloader.item import DownloadItem
+from megaloader.plugin import BasePlugin
 
 logger = logging.getLogger(__name__)
 
 
 class Thotslife(BasePlugin):
-    def extract(self) -> Generator[Item, None, None]:
-        resp = self.session.get(self.url, timeout=30)
-        resp.raise_for_status()
+    """Extract media from Thotslife posts."""
 
-        soup = BeautifulSoup(resp.text, "html.parser")
+    def extract(self) -> Generator[DownloadItem, None, None]:
+        response = self.session.get(self.url, timeout=30)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        
+        # Get post title
         title_tag = soup.find("h1", class_="entry-title")
-        album_title = title_tag.text.strip() if title_tag else "thotslife_album"
+        collection_name = title_tag.text.strip() if title_tag else "thotslife_post"
 
         body = soup.find("div", itemprop="articleBody")
         if not body:
@@ -27,21 +30,35 @@ class Thotslife(BasePlugin):
 
         seen = set()
 
-        # Videos
-        for src in [s.get("src") for s in body.select("video > source[src]")]:
-            if src and src not in seen:
-                seen.add(src)
+        # Extract videos
+        for source in body.select("video > source[src]"):
+            if src := source.get("src"):
                 src_str = str(src)
-                fname = (
-                    Path(unquote(urlparse(src_str).path)).name or f"{album_title}.mp4"
-                )
-                yield Item(url=src_str, filename=fname, album=album_title)
+                if src_str not in seen:
+                    seen.add(src_str)
+                    filename = (
+                        Path(unquote(urlparse(src_str).path)).name
+                        or f"{collection_name}.mp4"
+                    )
+                    
+                    yield DownloadItem(
+                        download_url=src_str,
+                        filename=filename,
+                        collection_name=collection_name,
+                    )
 
-        # Images
-        for src in [i.get("data-src") for i in body.select("img[data-src]")]:
-            if src and src not in seen:
+        # Extract images
+        for img in body.select("img[data-src]"):
+            if src := img.get("data-src"):
                 src_str = str(src)
-                if not src_str.startswith("data:"):
-                    seen.add(src)
-                    fname = Path(unquote(urlparse(src_str).path)).name or "image.jpg"
-                    yield Item(url=src_str, filename=fname, album=album_title)
+                
+                # Skip base64 embedded images
+                if not src_str.startswith("data:") and src_str not in seen:
+                    seen.add(src_str)
+                    filename = Path(unquote(urlparse(src_str).path)).name or "image.jpg"
+                    
+                    yield DownloadItem(
+                        download_url=src_str,
+                        filename=filename,
+                        collection_name=collection_name,
+                    )

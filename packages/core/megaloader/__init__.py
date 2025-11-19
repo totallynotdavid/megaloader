@@ -1,63 +1,82 @@
 """
-Extract downloadable content metadata from
-file hosting platforms. Check the README for a full
-list of supported sites.
+Megaloader - Extract downloadable content metadata from file hosting platforms.
+
+Basic usage:
+    import megaloader as mgl
+
+    for item in mgl.extract(url):
+        print(item.url, item.filename)
+
+    # With plugin-specific options
+    items = mgl.extract(url, password="secret")
+    items = mgl.extract(url, session_id="cookie_value")
 """
 
 import logging
 import urllib.parse
-
+from collections.abc import Generator
 from typing import Any
 
 from megaloader.exceptions import ExtractionError, UnsupportedDomainError
-from megaloader.plugin import Item
+from megaloader.item import DownloadItem
 from megaloader.plugins import get_plugin_class
 
-
-# Suppress default logging unless explicitly configured
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 logger = logging.getLogger(__name__)
 
-__version__ = "0.1.0"
-__all__ = ["ExtractionError", "Item", "UnsupportedDomainError", "extract"]
+__version__ = "0.2.0"
+__all__ = ["extract", "DownloadItem", "ExtractionError", "UnsupportedDomainError"]
 
 
-def extract(url: str, **options: Any) -> list[Item]:
+def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
     """
     Extract downloadable items from a URL.
-
+    
+    Returns a generator that yields items lazily as they're discovered.
+    Network requests happen during iteration, not at call time.
+    
     Args:
-        url: The URL to extract from
-        **options: Plugin-specific options (password, etc.)
-
-    Returns:
-        List of Item objects containing download metadata
+        url: The source URL to extract from
+        **options: Plugin-specific options:
+            - password: str (Gofile)
+            - session_id: str (Fanbox, Pixiv)
+            - api_key: str (Rule34)
+            - user_id: str (Rule34)
+    
+    Yields:
+        DownloadItem: Metadata for each downloadable file
+    
+    Raises:
+        ValueError: Invalid URL format
+        UnsupportedDomainError: No plugin available for domain
+        ExtractionError: Network or parsing failure
+    
+    Example:
+        >>> for item in extract("https://pixeldrain.com/l/abc123"):
+        ...     download_file(item.download_url, item.filename)
     """
     if not url or not url.strip():
-        msg = "URL cannot be empty"
-        raise ValueError(msg)
+        raise ValueError("URL cannot be empty")
 
     url = url.strip()
-    parsed_url = urllib.parse.urlparse(url)
+    parsed = urllib.parse.urlparse(url)
 
-    if not parsed_url.netloc:
-        msg = "Invalid URL: Could not parse domain"
-        raise ValueError(msg)
+    if not parsed.netloc:
+        raise ValueError(f"Invalid URL: Could not parse domain from '{url}'")
 
-    plugin_cls = get_plugin_class(parsed_url.netloc)
-    if plugin_cls is None:
-        raise UnsupportedDomainError(parsed_url.netloc)
+    plugin_class = get_plugin_class(parsed.netloc)
+    if plugin_class is None:
+        raise UnsupportedDomainError(parsed.netloc)
+
+    logger.debug(
+        "Initializing %s for domain '%s'", plugin_class.__name__, parsed.netloc
+    )
 
     try:
-        logger.info("Extracting from %s using %s", url, plugin_cls.__name__)
-        plugin = plugin_cls(url, **options)
-        # We convert generator to list here to satisfy the "list" return type
-        # expected by consumers wanting to check len(items) immediately.
-        items = list(plugin.extract())
-        logger.info("Extracted %d items", len(items))
-        return items
-    except (UnsupportedDomainError, ValueError, TypeError):
+        plugin = plugin_class(url, **options)
+        yield from plugin.extract()
+    except (UnsupportedDomainError, ValueError):
         raise
     except Exception as e:
-        msg = f"Failed to extract items from {url}"
-        raise ExtractionError(msg) from e
+        logger.debug("Extraction failed for %s: %s", url, e, exc_info=True)
+        raise ExtractionError(f"Failed to extract from {url}: {e}") from e

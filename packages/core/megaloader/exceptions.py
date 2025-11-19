@@ -3,7 +3,7 @@ class MegaloaderError(Exception):
 
 
 class ExtractionError(MegaloaderError):
-    """Failed to extract items from URL."""
+    """Failed to extract items from URL due to network or parsing error."""
 
 
 class UnsupportedDomainError(MegaloaderError):
@@ -11,3 +11,4 @@ class UnsupportedDomainError(MegaloaderError):
 
     def __init__(self, domain: str) -> None:
         super().__init__(f"No plugin found for domain: {domain}")
+        self.domain = domain
