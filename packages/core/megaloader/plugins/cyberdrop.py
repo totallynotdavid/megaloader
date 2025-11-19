@@ -2,6 +2,7 @@ import logging
 import re
 
 from collections.abc import Generator
+from typing import Any
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
@@ -20,12 +21,12 @@ class Cyberdrop(BasePlugin):
     def _sanitize_name(self, name: str) -> str:
         return re.sub(self.INVALID_FILENAME_CHARS, "_", name).strip()
 
-    def _get_file_info(self, file_id: str) -> dict | None:
+    def _get_file_info(self, file_id: str) -> dict[str, Any] | None:
         api_url = f"{self.API_BASE_URL}/info/{file_id}"
         try:
             response = self.session.get(api_url, timeout=30)
             response.raise_for_status()
-            data = response.json()
+            data: dict[str, Any] = response.json()
             if data.get("name") and data.get("auth_url"):
                 return data
         except Exception:

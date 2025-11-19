@@ -37,7 +37,7 @@ class Pixiv(BasePlugin):
         msg = "Invalid Pixiv URL"
         raise ValueError(msg)
 
-    def _api_request(self, endpoint: str, params: dict | None = None) -> Any:
+    def _api_request(self, endpoint: str, params: dict[str, Any] | None = None) -> Any:
         try:
             resp = self.session.get(
                 f"{self.BASE_URL}/ajax{endpoint}", params=params, timeout=30

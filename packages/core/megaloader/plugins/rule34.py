@@ -104,7 +104,8 @@ class Rule34(BasePlugin):
                     continue
                 seen_urls.add(href)
 
-                post_resp = self._safe_get(urljoin("https://rule34.xxx/", href))
+                href_str = str(href)
+                post_resp = self._safe_get(urljoin("https://rule34.xxx/", href_str))
                 if post_resp and (
                     file_url := self._extract_media_url(
                         BeautifulSoup(post_resp.text, "html.parser")
@@ -113,7 +114,9 @@ class Rule34(BasePlugin):
                     yield self._create_item(file_url, album_title)
             pid += 42  # Rule34 pagination offset
 
-    def _safe_get(self, url: str, params: dict | None = None):
+    def _safe_get(
+        self, url: str, params: dict[str, Any] | None = None
+    ) -> requests.Response | None:
         try:
             r = self.session.get(url, params=params, timeout=30)
             r.raise_for_status()
@@ -125,12 +128,15 @@ class Rule34(BasePlugin):
         # Original image link
         for link in soup.find_all("a"):
             if "Original image" in str(link.string):
-                return link.get("href")
+                href = link.get("href")
+                return str(href) if href else None
         # Video/Image fallback
         if v := soup.select_one("video > source"):
-            return v.get("src")
+            src = v.get("src")
+            return str(src) if src else None
         if i := soup.select_one("img#image"):
-            return i.get("src")
+            src = i.get("src")
+            return str(src) if src else None
         return None
 
     def _create_item(self, url: str, album: str, post_id: str | None = None) -> Item:

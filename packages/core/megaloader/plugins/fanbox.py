@@ -64,12 +64,12 @@ class Fanbox(BasePlugin):
 
     def extract(self) -> Generator[Item, None, None]:
         logger.info("Starting Fanbox export for creator: %s", self.creator_id)
-        seen_urls = set()
+        seen_urls: set[str] = set()
         yield from self._process_profile(seen_urls)
         yield from self._process_posts(seen_urls)
 
     def _create_item(
-        self, url: str, filename: str, seen_urls: set, subfolder: str = ""
+        self, url: str, filename: str, seen_urls: set[str], subfolder: str = ""
     ) -> Generator[Item, None, None]:
         if url in seen_urls:
             return
@@ -82,7 +82,7 @@ class Fanbox(BasePlugin):
 
         yield Item(url=url, filename=full_name, album=self.creator_id)
 
-    def _process_profile(self, seen_urls: set) -> Generator[Item, None, None]:
+    def _process_profile(self, seen_urls: set[str]) -> Generator[Item, None, None]:
         data = self._api_request(f"/creator.get?creatorId={self.creator_id}")
         if not data:
             return
@@ -97,7 +97,7 @@ class Fanbox(BasePlugin):
                 cover, f"banner{Path(cover).suffix}", seen_urls, self.PROFILE_SUBFOLDER
             )
 
-    def _process_posts(self, seen_urls: set) -> Generator[Item, None, None]:
+    def _process_posts(self, seen_urls: set[str]) -> Generator[Item, None, None]:
         page_urls = self._api_request(
             f"/post.paginateCreator?creatorId={self.creator_id}"
         )
@@ -110,7 +110,7 @@ class Fanbox(BasePlugin):
                     yield from self._process_single_post(str(post["id"]), seen_urls)
 
     def _process_single_post(
-        self, post_id: str, seen_urls: set
+        self, post_id: str, seen_urls: set[str]
     ) -> Generator[Item, None, None]:
         info = self._api_request(f"/post.info?postId={post_id}")
         if not info:

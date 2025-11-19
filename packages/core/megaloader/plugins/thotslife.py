@@ -31,12 +31,17 @@ class Thotslife(BasePlugin):
         for src in [s.get("src") for s in body.select("video > source[src]")]:
             if src and src not in seen:
                 seen.add(src)
-                fname = Path(unquote(urlparse(src).path)).name or f"{album_title}.mp4"
-                yield Item(url=src, filename=fname, album=album_title)
+                src_str = str(src)
+                fname = (
+                    Path(unquote(urlparse(src_str).path)).name or f"{album_title}.mp4"
+                )
+                yield Item(url=src_str, filename=fname, album=album_title)
 
         # Images
         for src in [i.get("data-src") for i in body.select("img[data-src]")]:
-            if src and src not in seen and not src.startswith("data:"):
-                seen.add(src)
-                fname = Path(unquote(urlparse(src).path)).name or "image.jpg"
-                yield Item(url=src, filename=fname, album=album_title)
+            if src and src not in seen:
+                src_str = str(src)
+                if not src_str.startswith("data:"):
+                    seen.add(src)
+                    fname = Path(unquote(urlparse(src_str).path)).name or "image.jpg"
+                    yield Item(url=src_str, filename=fname, album=album_title)

@@ -44,12 +44,13 @@ class ThothubVIP(BasePlugin):
         resp.raise_for_status()
 
         soup = BeautifulSoup(resp.text, "html.parser")
-        title = (
-            soup.find("h1", class_="title").text.strip() if soup.find("h1") else "album"
-        )
+        h1_tag = soup.find("h1", class_="title")
+        title = h1_tag.text.strip() if h1_tag else "album"
 
         for link in soup.select("div.album-inner a.item.album-img[href]"):
-            full_url = urljoin(self.url, link.get("href"))
-            fname = Path(urlparse(full_url).path.strip("/")).name
-            if fname:
-                yield Item(url=full_url, filename=fname, album=title)
+            href = link.get("href")
+            if href:
+                full_url = urljoin(self.url, str(href))
+                fname = Path(urlparse(full_url).path.strip("/")).name
+                if fname:
+                    yield Item(url=full_url, filename=fname, album=title)

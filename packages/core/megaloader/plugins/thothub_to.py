@@ -52,11 +52,8 @@ class ThothubTO(BasePlugin):
             final_url = "/".join(parts) + f"?rnd={int(time.time() * 1000)}"
 
             soup = BeautifulSoup(content, "html.parser")
-            title = (
-                soup.find("h1").text.strip()
-                if soup.find("h1")
-                else f"video_{vid.group(1)}"
-            )
+            h1_tag = soup.find("h1")
+            title = h1_tag.text.strip() if h1_tag else f"video_{vid.group(1)}"
 
             return Item(
                 url=final_url,
@@ -73,13 +70,16 @@ class ThothubTO(BasePlugin):
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        title = soup.find("h1").text.strip() if soup.find("h1") else "album"
+        h1_tag = soup.find("h1")
+        title = h1_tag.text.strip() if h1_tag else "album"
         album_title = self._sanitize(title)
 
         for link in soup.select('div.block-album a.item[href*="/get_image/"]'):
-            full_url = urljoin(self.url, link.get("href"))
-            fname = Path(urlparse(full_url).path.strip("/")).name
-            yield Item(url=full_url, filename=fname, album=album_title)
+            href = link.get("href")
+            if href:
+                full_url = urljoin(self.url, str(href))
+                fname = Path(urlparse(full_url).path.strip("/")).name
+                yield Item(url=full_url, filename=fname, album=album_title)
 
     def _process_model(self) -> Generator[Item, None, None]:
         model = urlparse(self.url).path.split("/")[2]
@@ -93,10 +93,11 @@ class ThothubTO(BasePlugin):
                 break
 
             links = [
-                link["href"]
+                str(link["href"])
                 for link in BeautifulSoup(resp.text, "html.parser").select(
                     'div.item > a[href*="/videos/"]'
                 )
+                if link.get("href")
             ]
             if not links:
                 break

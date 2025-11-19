@@ -21,8 +21,8 @@ class Gofile(BasePlugin):
         if pwd := self.options.get("password"):
             self.password_hash = hashlib.sha256(pwd.encode()).hexdigest()
 
-        self._website_token = None
-        self._api_token = None
+        self._website_token: str | None = None
+        self._api_token: str | None = None
 
     def _get_content_id(self, url: str) -> str:
         match = re.search(r"gofile\.io/(?:d|f)/([\w-]+)", url)
@@ -33,7 +33,7 @@ class Gofile(BasePlugin):
 
     @property
     def website_token(self) -> str:
-        if not self._website_token:
+        if self._website_token is None:
             resp = self.session.get("https://gofile.io/dist/js/global.js", timeout=30)
             resp.raise_for_status()
             if match := re.search(r'\.wt\s*=\s*"([^"]+)"', resp.text):
@@ -45,7 +45,7 @@ class Gofile(BasePlugin):
 
     @property
     def api_token(self) -> str:
-        if not self._api_token:
+        if self._api_token is None:
             resp = self.session.post(f"{self.API_URL}/accounts", timeout=30)
             resp.raise_for_status()
             data = resp.json()
