@@ -419,7 +419,7 @@ wheels = [
 
 [[package]]
 name = "megaloader"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/core" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -458,6 +458,7 @@ source = { editable = "packages/cli" }
 dependencies = [
     { name = "click" },
     { name = "megaloader" },
+    { name = "requests" },
     { name = "rich" },
 ]
 
@@ -465,6 +466,7 @@ dependencies = [
 requires-dist = [
     { name = "click", specifier = ">=8.1.0" },
     { name = "megaloader", editable = "packages/core" },
+    { name = "requests", specifier = ">=2.32.0" },
     { name = "rich", specifier = ">=13.7.0" },
 ]
 

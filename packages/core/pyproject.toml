@@ -1,7 +1,7 @@
 [project]
 name = "megaloader"
 version = "0.1.0"
-description = "Python library for downloading content from various websites"
+description = "Python library for extracting downloadable content metadata from file hosting platforms"
 
 license = { text = "MIT" }
 readme = "readme.md"
