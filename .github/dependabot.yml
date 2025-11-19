@@ -6,6 +6,6 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: "/packages/core"
     schedule:
       interval: "weekly"
