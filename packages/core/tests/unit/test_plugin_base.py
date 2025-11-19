@@ -1,32 +1,38 @@
 import pytest
 
-from megaloader.plugin import BasePlugin, Item
+from megaloader.item import DownloadItem
+from megaloader.plugin import BasePlugin
 
 
 @pytest.mark.unit
 class TestBasePluginContract:
     def test_item_dataclass_required_fields(self) -> None:
-        """Verify Item requires url and filename."""
-        item = Item(url="http://example.com/file.txt", filename="test.txt")
-        assert item.url == "http://example.com/file.txt"
+        """Verify DownloadItem requires download_url and filename."""
+        item = DownloadItem(
+            download_url="http://example.com/file.txt", filename="test.txt"
+        )
+        assert item.download_url == "http://example.com/file.txt"
         assert item.filename == "test.txt"
-        assert item.album is None
-        assert item.id is None
-        assert item.meta is None
+        assert item.collection_name is None
+        assert item.source_id is None
+        assert item.headers == {}
+        assert item.size_bytes is None
 
     def test_item_dataclass_optional_fields(self) -> None:
-        """Verify Item optional fields work correctly."""
-        metadata = {"size": 1024, "type": "image"}
-        item = Item(
-            url="http://example.com/file.txt",
+        """Verify DownloadItem optional fields work correctly."""
+        headers = {"Referer": "http://example.com"}
+        item = DownloadItem(
+            download_url="http://example.com/file.txt",
             filename="test.txt",
-            album="Test Album",
-            id="12345",
-            meta=metadata,
+            collection_name="Test Album",
+            source_id="12345",
+            headers=headers,
+            size_bytes=1024,
         )
-        assert item.album == "Test Album"
-        assert item.id == "12345"
-        assert item.meta == metadata
+        assert item.collection_name == "Test Album"
+        assert item.source_id == "12345"
+        assert item.headers == headers
+        assert item.size_bytes == 1024
 
     def test_plugin_requires_non_empty_url(self) -> None:
         with pytest.raises(ValueError, match="URL must be a non-empty string"):
