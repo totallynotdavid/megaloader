@@ -18,7 +18,7 @@ from megaloader.plugins import get_plugin_class
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 logger = logging.getLogger(__name__)
 
-__version__ = "0.2.0"
+__version__ = "0.1.0"
 __all__ = ["ExtractionError", "Item", "UnsupportedDomainError", "extract"]
 
 
