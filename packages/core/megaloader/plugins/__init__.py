@@ -11,6 +11,7 @@ from megaloader.plugins.thothub_to import ThothubTO
 from megaloader.plugins.thothub_vip import ThothubVIP
 from megaloader.plugins.thotslife import Thotslife
 
+
 PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "bunkr.si": Bunkr,
     "bunkr.la": Bunkr,
@@ -37,15 +38,15 @@ SUBDOMAIN_SUPPORTED: set[str] = {"fanbox.cc"}
 def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     """
     Resolve domain to plugin class.
-    
+
     Resolution order:
     1. Exact match in PLUGIN_REGISTRY
     2. Subdomain match for supported domains
     3. Partial match (fallback for domain variations)
-    
+
     Args:
         domain: Normalized domain from URL (e.g., "pixiv.net")
-    
+
     Returns:
         Plugin class or None if unsupported
     """
@@ -68,4 +69,4 @@ def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     return None
 
 
-__all__ = ["get_plugin_class", "PLUGIN_REGISTRY"]
+__all__ = ["PLUGIN_REGISTRY", "get_plugin_class"]

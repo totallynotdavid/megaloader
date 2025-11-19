@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,7 @@ import requests
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +28,15 @@ class Pixiv(BasePlugin):
         """Determine if URL is artwork or user profile."""
         if match := re.search(r"artworks/(\d+)", self.url):
             return match.group(1), True
-        
+
         if match := re.search(r"users/(\d+)|member\.php\?id=(\d+)", self.url):
             return match.group(1) or match.group(2), False
-        
+
         raise ValueError("Invalid Pixiv URL")
 
     def _configure_session(self, session: requests.Session) -> None:
         session.headers["Referer"] = f"{self.SITE_BASE}/"
-        
+
         # Credentials: kwargs > env var
         session_id = self.options.get("session_id") or os.getenv("PIXIV_PHPSESSID")
         if session_id:
@@ -69,7 +71,7 @@ class Pixiv(BasePlugin):
     ) -> Generator[DownloadItem, None, None]:
         """Extract images from a single artwork."""
         pages = self._api_request(f"/illust/{artwork_id}/pages")
-        
+
         # Fallback for single-page artworks
         if not pages:
             info = self._api_request(f"/illust/{artwork_id}")
@@ -90,7 +92,7 @@ class Pixiv(BasePlugin):
 
             ext = Path(url).suffix
             filename = f"{artwork_id}_p{page_num}{ext}"
-            
+
             yield DownloadItem(
                 download_url=url,
                 filename=filename,

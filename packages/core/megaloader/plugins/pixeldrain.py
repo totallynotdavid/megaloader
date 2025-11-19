@@ -1,10 +1,12 @@
 import json
 import logging
 import re
+
 from collections.abc import Generator
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ class PixelDrain(BasePlugin):
 
     def extract(self) -> Generator[DownloadItem, None, None]:
         logger.debug("Processing PixelDrain URL: %s", self.url)
-        
+
         response = self.session.get(self.url, timeout=30)
         response.raise_for_status()
 
@@ -37,7 +39,7 @@ class PixelDrain(BasePlugin):
                     source_id=file_data["id"],
                     size_bytes=file_data.get("size"),
                 )
-        
+
         # Single file
         elif "name" in api_response:
             yield DownloadItem(

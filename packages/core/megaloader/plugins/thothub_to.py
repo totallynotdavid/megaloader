@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+
 from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -10,6 +11,7 @@ from bs4 import BeautifulSoup
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +20,7 @@ class ThothubTO(BasePlugin):
 
     def extract(self) -> Generator[DownloadItem, None, None]:
         path = urlparse(self.url).path
-        
+
         if path.startswith("/videos/"):
             if item := self._extract_video(self.url):
                 yield item
@@ -73,7 +75,7 @@ class ThothubTO(BasePlugin):
         """Extract images from album."""
         response = self.session.get(self.url)
         response.raise_for_status()
-        
+
         soup = BeautifulSoup(response.text, "html.parser")
         h1 = soup.find("h1")
         collection_name = h1.text.strip() if h1 else "album"
@@ -82,7 +84,7 @@ class ThothubTO(BasePlugin):
             if href := link.get("href"):
                 full_url = urljoin(self.url, str(href))
                 filename = Path(urlparse(full_url).path.strip("/")).name
-                
+
                 yield DownloadItem(
                     download_url=full_url,
                     filename=filename,
@@ -97,7 +99,7 @@ class ThothubTO(BasePlugin):
 
         while True:
             url = f"https://thothub.to/models/{model_name}/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from={page}"
-            
+
             response = self.session.get(url)
             if response.status_code == 404 or not response.text.strip():
                 break
@@ -116,7 +118,7 @@ class ThothubTO(BasePlugin):
                 full_url = urljoin("https://thothub.to/", link)
                 if full_url in seen:
                     continue
-                
+
                 seen.add(full_url)
                 if item := self._extract_video(full_url, model_name):
                     yield item
@@ -132,7 +134,7 @@ class ThothubTO(BasePlugin):
         k = int(f_str[: j + 1])
         length = int(f_str[j:])
         f2 = str((abs(length - k) + abs(k - length)) * 2)
-        
+
         key = ""
         for g in range(j + 1):
             for h in range(1, 5):
@@ -144,7 +146,7 @@ class ThothubTO(BasePlugin):
                 if n >= 10:
                     n -= 10
                 key += str(n)
-        
+
         return key
 
     def _deobfuscate_hash(self, h: str, key: str) -> str:
@@ -152,9 +154,9 @@ class ThothubTO(BasePlugin):
         hl = list(h)
         prefix = hl[:32]
         suffix = hl[32:]
-        
+
         for k in range(len(prefix) - 1, -1, -1):
             swap_idx = (k + sum(int(d) for d in key[k:])) % len(prefix)
             prefix[k], prefix[swap_idx] = prefix[swap_idx], prefix[k]
-        
+
         return "".join(prefix + suffix)

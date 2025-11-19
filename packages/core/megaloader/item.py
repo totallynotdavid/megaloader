@@ -1,12 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Any
 
 
 @dataclass
 class DownloadItem:
     """
     Represents a single downloadable file with metadata.
-    
+
     Attributes:
         download_url: Direct URL to download the file
         filename: Original filename (may need sanitization for filesystem)

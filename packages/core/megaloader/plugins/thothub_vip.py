@@ -1,5 +1,6 @@
 import json
 import logging
+
 from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -8,6 +9,7 @@ from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +32,13 @@ class ThothubVIP(BasePlugin):
 
         soup = BeautifulSoup(response.text, "html.parser")
         script = soup.find("script", type="application/ld+json")
-        
+
         if not script:
             return
 
         try:
             metadata = json.loads(script.get_text().strip())
-            
+
             if url := metadata.get("contentUrl"):
                 title = metadata.get("name", "video")
                 yield DownloadItem(
@@ -59,7 +61,7 @@ class ThothubVIP(BasePlugin):
             if href := link.get("href"):
                 full_url = urljoin(self.url, str(href))
                 filename = Path(urlparse(full_url).path.strip("/")).name
-                
+
                 if filename:
                     yield DownloadItem(
                         download_url=full_url,

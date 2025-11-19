@@ -1,13 +1,16 @@
 import logging
+
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from typing import Any, ClassVar
 
 import requests
+
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from megaloader.item import DownloadItem
+
 
 logger = logging.getLogger(__name__)
 
@@ -15,12 +18,12 @@ logger = logging.getLogger(__name__)
 class BasePlugin(ABC):
     """
     Base class for site-specific extractors.
-    
+
     Credential handling convention:
     1. Explicit **kwargs take precedence (e.g., password="secret")
     2. Environment variables as fallback (PLUGIN_NAME_*)
     3. Fail gracefully if required credentials missing
-    
+
     Subclasses should override _configure_session() to add:
     - Authentication headers/cookies
     - Site-specific headers (Referer, Origin)
@@ -33,7 +36,7 @@ class BasePlugin(ABC):
     def __init__(self, url: str, **options: Any) -> None:
         if not url.strip():
             raise ValueError("URL must be a non-empty string")
-        
+
         self.url = url.strip()
         self.options = options
         self._session: requests.Session | None = None
@@ -50,7 +53,7 @@ class BasePlugin(ABC):
         """Create session with retry strategy for transient failures."""
         session = requests.Session()
         session.headers.update(self.DEFAULT_HEADERS)
-        
+
         # Retry on common transient errors
         retry_strategy = Retry(
             total=3,
@@ -61,13 +64,13 @@ class BasePlugin(ABC):
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("https://", adapter)
         session.mount("http://", adapter)
-        
+
         return session
 
     def _configure_session(self, session: requests.Session) -> None:
         """
         Override to add plugin-specific headers/cookies.
-        
+
         Example:
             session.headers["Referer"] = f"https://{self.domain}/"
             if api_key := os.getenv("PLUGIN_API_KEY"):
@@ -78,13 +81,13 @@ class BasePlugin(ABC):
     def extract(self) -> Generator[DownloadItem, None, None]:
         """
         Extract downloadable items from the URL.
-        
+
         Yields items as they're discovered (lazy evaluation).
         Should handle pagination, nested galleries, etc.
-        
+
         Yields:
             DownloadItem: Each file found at the URL
-        
+
         Raises:
             ExtractionError: On network/parsing failures
         """

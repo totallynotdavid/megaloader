@@ -1,11 +1,13 @@
 import hashlib
 import logging
 import re
+
 from collections.abc import Generator
 from typing import Any
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class Gofile(BasePlugin):
         # Build API request
         api_url = f"{self.API_BASE}/contents/{self.content_id}"
         params = {"wt": website_token}
-        
+
         if self.password_hash:
             params["password"] = self.password_hash
             logger.debug("Using password protection")
@@ -51,7 +53,7 @@ class Gofile(BasePlugin):
         # Fetch content
         response = self.session.get(api_url, params=params, headers=headers, timeout=30)
         response.raise_for_status()
-        
+
         data = response.json()
 
         if data.get("status") != "ok":
@@ -80,20 +82,20 @@ class Gofile(BasePlugin):
         """Extract website token from JS file."""
         response = self.session.get("https://gofile.io/dist/js/global.js", timeout=30)
         response.raise_for_status()
-        
+
         if match := re.search(r'\.wt\s*=\s*"([^"]+)"', response.text):
             return match.group(1)
-        
+
         raise RuntimeError("Could not extract Gofile website token")
 
     def _create_account(self) -> str:
         """Create temporary account and return API token."""
         response = self.session.post(f"{self.API_BASE}/accounts", timeout=30)
         response.raise_for_status()
-        
+
         data = response.json()
-        
+
         if data.get("status") == "ok":
             return data["data"]["token"]
-        
+
         raise RuntimeError("Failed to create Gofile guest account")

@@ -1,15 +1,18 @@
 import logging
 import re
+
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urljoin, urlparse
 
 import requests
+
 from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,17 +36,17 @@ class Fapello(BasePlugin):
 
     def extract(self) -> Generator[DownloadItem, None, None]:
         logger.debug("Extracting Fapello model: %s", self.model_name)
-        
+
         page = 1
         seen_urls = set()
 
         while True:
             ajax_url = f"https://fapello.com/ajax/model/{self.model_name}/page-{page}/"
-            
+
             try:
                 response = self.session.get(ajax_url, timeout=30)
                 response.raise_for_status()
-                
+
                 if not response.text.strip():
                     break
             except Exception:
@@ -52,13 +55,13 @@ class Fapello(BasePlugin):
 
             soup = BeautifulSoup(response.text, "html.parser")
             thumbnails = soup.select('a > div > img[src*="/content/"]')
-            
+
             if not thumbnails:
                 break
 
             for img in thumbnails:
                 thumb_url = urljoin("https://fapello.com/", str(img["src"]))
-                
+
                 # Convert thumbnail to full resolution
                 full_url = re.sub(
                     r"_\d+px(\.(?:jpg|jpeg|png|mp4))$",
@@ -70,7 +73,7 @@ class Fapello(BasePlugin):
                 if full_url not in seen_urls:
                     seen_urls.add(full_url)
                     filename = Path(unquote(urlparse(full_url).path)).name
-                    
+
                     yield DownloadItem(
                         download_url=full_url,
                         filename=filename,

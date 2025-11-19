@@ -1,12 +1,14 @@
 import html
 import logging
 import re
+
 from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,7 @@ class Bunkr(BasePlugin):
 
     def extract(self) -> Generator[DownloadItem, None, None]:
         logger.debug("Processing Bunkr URL: %s", self.url)
-        
+
         response = self.session.get(self.url, allow_redirects=True, timeout=30)
         response.raise_for_status()
 
@@ -32,10 +34,12 @@ class Bunkr(BasePlugin):
         else:
             logger.warning("Unrecognized Bunkr URL format: %s", resolved_url)
 
-    def _extract_album(self, content: str, base_url: str) -> Generator[DownloadItem, None, None]:
+    def _extract_album(
+        self, content: str, base_url: str
+    ) -> Generator[DownloadItem, None, None]:
         """Extract all files from an album page."""
         file_links = re.findall(r'href="(/f/[^"]+)"', content)
-        
+
         if not file_links:
             logger.warning("No files found in album")
             return
@@ -45,11 +49,11 @@ class Bunkr(BasePlugin):
             # Skip template variables
             if "file.slug" in link or "+" in link:
                 continue
-            
+
             file_url = urljoin(base_url, link)
             if file_url in seen_urls:
                 continue
-            
+
             seen_urls.add(file_url)
             yield from self._extract_file(file_url)
 
@@ -63,7 +67,7 @@ class Bunkr(BasePlugin):
             r'<a[^>]+class="[^"]*btn-main[^"]*"[^>]+href="([^"]+)"[^>]*>Download</a>',
             response.text,
         )
-        
+
         if not download_match:
             logger.warning("No download button found for %s", file_url)
             return

@@ -1,16 +1,19 @@
 import logging
 import os
 import xml.etree.ElementTree as ET
+
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
 import requests
+
 from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +41,15 @@ class Rule34(BasePlugin):
             logger.debug("Using API extraction")
             yield from self._extract_via_api()
         else:
-            logger.debug("Using web scraping (slower, set API credentials for better performance)")
+            logger.debug(
+                "Using web scraping (slower, set API credentials for better performance)"
+            )
             yield from self._extract_via_scraper()
 
     def _extract_single_post(self) -> Generator[DownloadItem, None, None]:
         """Extract a single post by ID."""
         url = f"https://rule34.xxx/index.php?page=post&s=view&id={self.post_id}"
-        
+
         if response := self._safe_get(url):
             soup = BeautifulSoup(response.text, "html.parser")
             if media_url := self._extract_media_url(soup):
@@ -66,7 +71,7 @@ class Rule34(BasePlugin):
                 "api_key": self.api_key,
                 "user_id": self.user_id,
             }
-            
+
             response = self._safe_get("https://api.rule34.xxx/index.php", params)
             if not response:
                 break
@@ -99,14 +104,14 @@ class Rule34(BasePlugin):
                 "tags": " ".join(self.tags),
                 "pid": pid,
             }
-            
+
             response = self._safe_get("https://rule34.xxx/index.php", params)
             if not response:
                 break
 
             soup = BeautifulSoup(response.text, "html.parser")
             links = soup.select("div.image-list span.thumb > a")
-            
+
             if not links:
                 break
 
@@ -114,10 +119,10 @@ class Rule34(BasePlugin):
                 href = link.get("href")
                 if not href or href in seen_urls:
                     continue
-                
+
                 seen_urls.add(href)
                 full_url = urljoin("https://rule34.xxx/", str(href))
-                
+
                 if post_response := self._safe_get(full_url):
                     soup = BeautifulSoup(post_response.text, "html.parser")
                     if media_url := self._extract_media_url(soup):
@@ -162,7 +167,7 @@ class Rule34(BasePlugin):
     ) -> DownloadItem:
         """Create DownloadItem from URL."""
         url = f"https:{url}" if url.startswith("//") else url
-        
+
         return DownloadItem(
             download_url=url,
             filename=Path(unquote(urlparse(url).path)).name,
