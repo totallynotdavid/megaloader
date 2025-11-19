@@ -1,53 +1,54 @@
+import logging
+
 from abc import ABC, abstractmethod
 from collections.abc import Generator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
+
+import requests
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class Item:
-    """Represents a downloadable item."""
+    """Represents a downloadable item with metadata."""
 
     url: str
     filename: str
-    album_title: str | None = None
-    file_id: str | None = None
-    metadata: dict[str, Any] | None = None
+    album: str | None = None
+    id: str | None = None
+    meta: dict[str, Any] | None = field(default=None)
 
 
 class BasePlugin(ABC):
     """
     Base class for all megaloader plugins.
-
-    Plugins handle extraction and downloading of files from specific hosting services.
-    Each plugin is responsible for parsing the service's pages and generating download URLs.
     """
+
+    DEFAULT_HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    }
 
     def __init__(self, url: str, **kwargs: Any) -> None:
         if not url.strip():
-            msg = "URL must be a non-empty string"
-            raise ValueError(msg)
+            raise ValueError("URL must be a non-empty string")
         self.url = url.strip()
-        self._config = kwargs
+        self.options = kwargs
+        self.session = self._create_session()
+
+    def _create_session(self) -> requests.Session:
+        """Creates a requests session with default headers."""
+        session = requests.Session()
+        session.headers.update(self.DEFAULT_HEADERS)
+        return session
 
     @abstractmethod
-    def export(self) -> Generator[Item, None, None]:
+    def extract(self) -> Generator[Item, None, None]:
         """
         Extract downloadable items from the URL.
 
         Yields:
             Item: Each downloadable file found at the URL
-        """
-
-    @abstractmethod
-    def download_file(self, item: Item, output_dir: str) -> bool:
-        """
-        Download a single item to the specified directory.
-
-        Args:
-            item: The item to download (from export())
-            output_dir: Directory to save the file to
-
-        Returns:
-            True if download succeeded, False otherwise
         """

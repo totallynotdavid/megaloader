@@ -12,61 +12,37 @@ from megaloader.plugins.thothub_vip import ThothubVIP
 from megaloader.plugins.thotslife import Thotslife
 
 
-# Domain to plugin mapping
 PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
-    # Bunkr domains
     "bunkr.si": Bunkr,
     "bunkr.la": Bunkr,
     "bunkr.is": Bunkr,
     "bunkr.ru": Bunkr,
     "bunkr.su": Bunkr,
     "bunkr": Bunkr,
-    # Cyberdrop domains
     "cyberdrop.me": Cyberdrop,
     "cyberdrop.to": Cyberdrop,
     "cyberdrop": Cyberdrop,
-    # Fanbox domains
     "fanbox.cc": Fanbox,
-    # Fapello domains
     "fapello.com": Fapello,
-    # Gofile domains
     "gofile.io": Gofile,
-    # PixelDrain domains
     "pixeldrain.com": PixelDrain,
-    # Pixiv domains
     "pixiv.net": Pixiv,
-    # Rule34 domains
     "rule34.xxx": Rule34,
-    # Thothub[dot]to domains
     "thothub.to": ThothubTO,
-    # Thothub[dot]vip domains
     "thothub.vip": ThothubVIP,
-    # Thotslife domains
     "thotslife.com": Thotslife,
 }
 
-SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {
-    "fanbox.cc",  # Fanbox supports subdomains like {creator_id}.fanbox.cc
-}
+SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {"fanbox.cc"}
 
 
 def get_plugin_class(domain: str) -> type[BasePlugin] | None:
-    """
-    Get plugin class for a domain.
-
-    Args:
-        domain: Domain name or identifier
-
-    Returns:
-        Plugin class, or None if no plugin found
-    """
+    """Resolves a domain string to a Plugin class."""
     domain = domain.lower().strip()
 
-    # Direct match first
     if domain in PLUGIN_REGISTRY:
         return PLUGIN_REGISTRY[domain]
 
-    # Check for subdomain matches
     for supported_domain in SUBDOMAIN_SUPPORTED_DOMAINS:
         if (
             domain.endswith("." + supported_domain)
@@ -81,17 +57,4 @@ def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     return None
 
 
-__all__ = [
-    "Bunkr",
-    "Cyberdrop",
-    "Fanbox",
-    "Fapello",
-    "Gofile",
-    "PixelDrain",
-    "Pixiv",
-    "Rule34",
-    "ThothubTO",
-    "ThothubVIP",
-    "Thotslife",
-    "get_plugin_class",
-]
+__all__ = ["get_plugin_class"]

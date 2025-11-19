@@ -1,5 +1,3 @@
-import contextlib
-import hashlib
 import logging
 import os
 import re
@@ -18,246 +16,122 @@ logger = logging.getLogger(__name__)
 
 
 class Fanbox(BasePlugin):
-    """
-    Plugin for downloading content from a Fanbox creator's page.
-    Downloads all publicly available content, and with a FANBOXSESSID,
-    can also download supported paid content.
-    """
-
     BASE_API_URL = "https://api.fanbox.cc"
     PROFILE_SUBFOLDER = "profile"
 
     def __init__(self, url: str, **kwargs: Any) -> None:
+        self.creator_id = self._get_creator_id(url)
         super().__init__(url, **kwargs)
-        self.creator_id = self._get_creator_id_from_url(url)
-        self.session = self._create_session()
-        self.seen_urls: set[str] = set()
-
-    def _get_creator_id_from_url(self, url: str) -> str:
-        # Covers: {creator_id}.fanbox.cc, fanbox.cc/@{creator_id}, fanbox.cc/{creator_id}
-        match = re.search(
-            r"//(?:www\.)?([\w-]+)\.fanbox\.cc|fanbox\.cc/(?:@)?([\w-]+)",
-            url,
-        )
-        if match:
-            creator_id = next((group for group in match.groups() if group), None)
-            if creator_id is None:
-                msg = f"Invalid Fanbox URL: Could not extract creator ID from {url}"
-                raise ValueError(
-                    msg,
-                )
-            logger.debug("Extracted creator ID: %s", creator_id)
-            return creator_id
-        msg = f"Invalid Fanbox URL: Could not extract creator ID from {url}"
-        raise ValueError(msg)
 
     def _create_session(self) -> requests.Session:
-        session = requests.Session()
+        """Override to add creator-specific headers."""
+        session = super()._create_session()
         session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "application/json, text/plain, */*",
                 "Origin": f"https://{self.creator_id}.fanbox.cc",
                 "Referer": f"https://{self.creator_id}.fanbox.cc/",
-            },
+            }
         )
-
-        if fanbox_session_id := os.getenv("FANBOX_SESSION_ID"):
-            session.cookies.set("FANBOXSESSID", fanbox_session_id, domain=".fanbox.cc")
-            logger.info("Loaded FANBOXSESSID from environment variable")
-        else:
-            logger.warning(
-                "FANBOX_SESSION_ID is not set. Access will be limited to public posts only (some public posts may still be restricted by Fanbox).",
-            )
-
+        if sess_id := os.getenv("FANBOX_SESSION_ID"):
+            session.cookies.set("FANBOXSESSID", sess_id, domain=".fanbox.cc")
         return session
+
+    def _get_creator_id(self, url: str) -> str:
+        match = re.search(
+            r"//(?:www\.)?([\w-]+)\.fanbox\.cc|fanbox\.cc/(?:@)?([\w-]+)", url
+        )
+        if not match:
+            raise ValueError(f"Invalid Fanbox URL: {url}")
+        return next(g for g in match.groups() if g)
 
     def _api_request(self, endpoint: str) -> Any:
         url = endpoint if endpoint.startswith("http") else self.BASE_API_URL + endpoint
-
         try:
             response = self.session.get(url, timeout=30)
             if response.status_code == 403:
-                logger.warning(
-                    "Access forbidden for %s. Content may require subscription.",
-                    url,
-                )
+                logger.warning("Access forbidden: %s", url)
                 return None
-            if response.status_code == 404:
-                logger.warning("Content not found: %s", url)
-                return None
-
             response.raise_for_status()
             return response.json().get("body")
-
-        except requests.RequestException:
+        except Exception:
             logger.exception("API request failed for %s", url)
             return None
 
     def _sanitize_filename(self, filename: str) -> str:
-        # Replace reserved characters and limit length
         sanitized = re.sub(r'[<>:"/\\|?*]', "_", filename).strip()
         return sanitized[:150] if sanitized else "unnamed"
 
-    def _get_extension_from_url(self, url: str) -> str:
-        path = urlparse(url).path
-        return Path(path).suffix or ".jpg"
+    def extract(self) -> Generator[Item, None, None]:
+        logger.info("Starting Fanbox export for creator: %s", self.creator_id)
+        seen_urls = set()
+        yield from self._process_profile(seen_urls)
+        yield from self._process_posts(seen_urls)
 
     def _create_item(
-        self,
-        url: str,
-        filename: str,
-        subfolder: str = "",
+        self, url: str, filename: str, seen_urls: set, subfolder: str = ""
     ) -> Generator[Item, None, None]:
-        if url in self.seen_urls:
+        if url in seen_urls:
             return
-        self.seen_urls.add(url)
+        seen_urls.add(url)
 
-        full_filename = (
-            str(Path(subfolder) / self._sanitize_filename(filename))
-            if subfolder
-            else self._sanitize_filename(filename)
+        sanitized_name = self._sanitize_filename(filename)
+        full_name = (
+            str(Path(subfolder) / sanitized_name) if subfolder else sanitized_name
         )
 
-        yield Item(
-            url=url,
-            filename=full_filename,
-            album_title=self.creator_id,
-        )
+        yield Item(url=url, filename=full_name, album=self.creator_id)
 
-    def export(self) -> Generator[Item, None, None]:
-        logger.info("Starting Fanbox export for creator: %s", self.creator_id)
-
-        yield from self._process_profile()
-        yield from self._process_posts()
-
-        logger.info("Fanbox export completed")
-
-    def _process_profile(self) -> Generator[Item, None, None]:
-        logger.info("Fetching creator profile information...")
-
-        creator_info = self._api_request(f"/creator.get?creatorId={self.creator_id}")
-        if not creator_info:
-            logger.warning("Could not fetch creator profile")
+    def _process_profile(self, seen_urls: set) -> Generator[Item, None, None]:
+        data = self._api_request(f"/creator.get?creatorId={self.creator_id}")
+        if not data:
             return
 
-        assets_found = 0
+        if icon := data.get("user", {}).get("iconUrl"):
+            yield from self._create_item(
+                icon, f"avatar{Path(icon).suffix}", seen_urls, self.PROFILE_SUBFOLDER
+            )
 
-        # Avatar
-        if icon_url := creator_info.get("user", {}).get("iconUrl"):
-            filename = f"avatar{self._get_extension_from_url(icon_url)}"
-            yield from self._create_item(icon_url, filename, self.PROFILE_SUBFOLDER)
-            assets_found += 1
+        if cover := data.get("coverImageUrl"):
+            yield from self._create_item(
+                cover, f"banner{Path(cover).suffix}", seen_urls, self.PROFILE_SUBFOLDER
+            )
 
-        # Banner/cover
-        if cover_url := creator_info.get("coverImageUrl"):
-            filename = f"banner{self._get_extension_from_url(cover_url)}"
-            yield from self._create_item(cover_url, filename, self.PROFILE_SUBFOLDER)
-            assets_found += 1
-
-        # Profile images
-        for item in creator_info.get("profileItems", []):
-            if isinstance(item, dict) and (image_url := item.get("imageUrl")):
-                filename = Path(unquote(urlparse(image_url).path)).name
-                if not filename:
-                    url_hash = hashlib.md5(image_url.encode("utf-8")).hexdigest()[:8]
-                    filename = f"profile_image_{url_hash}{self._get_extension_from_url(image_url)}"
-                yield from self._create_item(image_url, filename)
-                assets_found += 1
-
-        logger.info("Found %d profile assets", assets_found)
-
-    def _process_posts(self) -> Generator[Item, None, None]:
+    def _process_posts(self, seen_urls: set) -> Generator[Item, None, None]:
         page_urls = self._api_request(
-            f"/post.paginateCreator?creatorId={self.creator_id}",
+            f"/post.paginateCreator?creatorId={self.creator_id}"
         )
         if not page_urls:
-            logger.info("No post pages found")
             return
 
-        post_ids: list[str] = []
         for page_url in page_urls:
-            posts_summary = self._api_request(page_url)
-            if posts_summary:
-                post_ids.extend(str(post["id"]) for post in posts_summary)
+            if posts := self._api_request(page_url):
+                for post in posts:
+                    yield from self._process_single_post(str(post["id"]), seen_urls)
 
-        if not post_ids:
-            logger.info("No accessible posts found")
+    def _process_single_post(
+        self, post_id: str, seen_urls: set
+    ) -> Generator[Item, None, None]:
+        info = self._api_request(f"/post.info?postId={post_id}")
+        if not info:
             return
 
-        logger.info("Processing %d posts...", len(post_ids))
-        accessible_posts = 0
+        title = self._sanitize_filename(info.get("title", f"post_{post_id}"))
+        subfolder = f"{post_id}_{title}"
+        body = info.get("body", {})
 
-        for i, post_id in enumerate(post_ids, 1):
-            logger.debug("Processing post %d/%d (ID: %s)", i, len(post_ids), post_id)
-            items_yielded = False
-            for item in self._process_single_post(post_id):
-                yield item
-                items_yielded = True
-            if items_yielded:
-                accessible_posts += 1
-
-        logger.info(
-            "Successfully processed %d/%d posts",
-            accessible_posts,
-            len(post_ids),
-        )
-
-    def _process_single_post(self, post_id: str) -> Generator[Item, None, None]:
-        post_info = self._api_request(f"/post.info?postId={post_id}")
-        if not post_info:
+        if not body:
+            if cover := info.get("coverImageUrl"):
+                yield from self._create_item(
+                    cover, f"cover{Path(cover).suffix}", seen_urls, subfolder
+                )
             return
 
-        post_title = self._sanitize_filename(post_info.get("title", f"post_{post_id}"))
-        post_subfolder = f"{post_id}_{post_title}"
-        post_body = post_info.get("body", {})
+        for img in body.get("imageMap", {}).values():
+            if url := img.get("originalUrl"):
+                fname = Path(unquote(urlparse(url).path)).name or "image.jpg"
+                yield from self._create_item(url, fname, seen_urls, subfolder)
 
-        # Handle posts without body content (cover image only)
-        if not post_body:
-            if cover_url := post_info.get("coverImageUrl"):
-                filename = f"cover{self._get_extension_from_url(cover_url)}"
-                yield from self._create_item(cover_url, filename, post_subfolder)
-            return
-
-        # Process images from imageMap
-        for image_id, image_data in post_body.get("imageMap", {}).items():
-            if url := image_data.get("originalUrl"):
-                filename = Path(unquote(urlparse(url).path)).name
-                if not filename:
-                    filename = f"image_{image_id}{self._get_extension_from_url(url)}"
-                yield from self._create_item(url, filename, post_subfolder)
-
-        # Process files from fileMap
-        for file_id, file_data in post_body.get("fileMap", {}).items():
-            if url := file_data.get("url"):
-                name = file_data.get("name", f"file_{file_id}")
-                extension = file_data.get("extension", "")
-                filename = f"{name}.{extension}" if extension else name
-                yield from self._create_item(url, filename, post_subfolder)
-
-    def download_file(self, item: Item, output_dir: str) -> bool:
-        full_path = str(Path(output_dir) / item.filename)
-        Path(full_path).parent.mkdir(parents=True, exist_ok=True)
-
-        if Path(full_path).exists() and Path(full_path).stat().st_size > 0:
-            logger.debug("File already exists: %s", item.filename)
-            return True
-
-        try:
-            with self.session.get(item.url, stream=True, timeout=180) as response:
-                response.raise_for_status()
-
-                with Path(full_path).open("wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        if chunk:
-                            f.write(chunk)
-
-                logger.info("Downloaded: %s", item.filename)
-                return True
-
-        except requests.RequestException:
-            logger.exception("Download failed for %s", item.filename)
-            if Path(full_path).exists():
-                with contextlib.suppress(OSError):
-                    Path(full_path).unlink()
-            return False
+        for f in body.get("fileMap", {}).values():
+            if url := f.get("url"):
+                fname = f"{f.get('name')}.{f.get('extension')}"
+                yield from self._create_item(url, fname, seen_urls, subfolder)

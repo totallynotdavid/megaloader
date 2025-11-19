@@ -6,8 +6,6 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urljoin, urlparse
 
-import requests
-
 from bs4 import BeautifulSoup
 
 from megaloader.plugin import BasePlugin, Item
@@ -17,119 +15,51 @@ logger = logging.getLogger(__name__)
 
 
 class Fapello(BasePlugin):
-    # Regex to remove thumbnail suffixes like _300px from image URLs
-    _THUMBNAIL_SUFFIX_RE = re.compile(r"_\d+px(\.(?:jpg|jpeg|png|mp4))$", re.IGNORECASE)
-
     def __init__(self, url: str, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
-        self.session = requests.Session()
-        self.session.headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                "Referer": "https://fapello.com/",
-            },
-        )
+        self.session.headers.update({"Referer": "https://fapello.com/"})
         self.model = self._get_model_from_url(url)
 
     def _get_model_from_url(self, url: str) -> str:
-        """Extracts the model name from a Fapello URL."""
         match = re.search(r"fapello\.com/([a-zA-Z0-9_\-~\.]+)", url)
-        if not match:
-            msg = "Invalid Fapello URL provided. Could not find model name."
-            raise ValueError(msg)
-        model_name = match.group(1).split("/")[0]
-        if not model_name:
-            msg = "Invalid Fapello URL provided. Model name is empty."
-            raise ValueError(msg)
-        logger.debug("Found model name: %s", model_name)
-        return model_name
+        if not match or not match.group(1):
+            raise ValueError("Invalid Fapello URL")
+        return match.group(1).split("/")[0]
 
-    def _get_full_res_url(self, thumb_url: str) -> str:
-        """Converts a thumbnail URL to a full-resolution URL."""
-        return self._THUMBNAIL_SUFFIX_RE.sub(r"\1", thumb_url)
-
-    def export(self) -> Generator[Item, None, None]:
-        """
-        Scrapes all media from a model's profile by iterating through their
-        AJAX-loaded pages of thumbnails.
-        """
+    def extract(self) -> Generator[Item, None, None]:
         logger.info("Starting export for Fapello model: %s", self.model)
-        page_num = 1
+        page = 1
         seen_urls = set()
 
         while True:
-            ajax_url = f"https://fapello.com/ajax/model/{self.model}/page-{page_num}/"
-            logger.debug("Fetching page: %s", ajax_url)
-
+            ajax_url = f"https://fapello.com/ajax/model/{self.model}/page-{page}/"
             try:
                 response = self.session.get(ajax_url, timeout=30)
                 response.raise_for_status()
-            except requests.RequestException:
-                logger.exception(
-                    "Failed to fetch page %d for model %s",
-                    page_num,
-                    self.model,
+                if not response.text.strip():
+                    break
+            except Exception:
+                logger.exception("Error fetching page %d", page)
+                break
+
+            soup = BeautifulSoup(response.text, "html.parser")
+            thumbs = soup.select('a > div > img[src*="/content/"]')
+            if not thumbs:
+                break
+
+            for img in thumbs:
+                thumb_url = urljoin("https://fapello.com/", str(img["src"]))
+                # Convert thumb URL to full resolution by removing suffixes like _300px
+                full_url = re.sub(
+                    r"_\d+px(\.(?:jpg|jpeg|png|mp4))$",
+                    r"\1",
+                    thumb_url,
+                    flags=re.IGNORECASE,
                 )
-                break
 
-            content = response.text.strip()
-            if not content:
-                logger.info("Reached the last page of content (empty response).")
-                break
+                if full_url not in seen_urls:
+                    seen_urls.add(full_url)
+                    filename = Path(unquote(urlparse(full_url).path)).name
+                    yield Item(url=full_url, filename=filename, album=self.model)
 
-            soup = BeautifulSoup(content, "html.parser")
-            # Find all img tags within links, as they are the media thumbnails
-            thumb_elements = soup.select('a > div > img[src*="/content/"]')
-
-            if not thumb_elements:
-                if page_num == 1:
-                    logger.warning(
-                        "No media found on the first page for model: %s. The model may not exist or has no content.",
-                        self.model,
-                    )
-                else:
-                    logger.info("Reached the last page of content (no media found).")
-                break
-
-            logger.info(
-                "Found %d media items on page %d",
-                len(thumb_elements),
-                page_num,
-            )
-
-            for thumb_img in thumb_elements:
-                thumb_url = urljoin("https://fapello.com/", str(thumb_img["src"]))
-                full_res_url = self._get_full_res_url(thumb_url)
-
-                if full_res_url in seen_urls:
-                    continue
-                seen_urls.add(full_res_url)
-
-                filename = Path(unquote(urlparse(full_res_url).path)).name
-                yield Item(url=full_res_url, filename=filename, album_title=self.model)
-            page_num += 1
-
-    def download_file(self, item: Item, output_dir: str) -> bool:
-        """Downloads a single file from Fapello."""
-        Path(output_dir).mkdir(parents=True, exist_ok=True)
-        output_path = Path(output_dir) / item.filename
-
-        if output_path.exists():
-            logger.info("File already exists: %s", item.filename)
-            return True
-
-        try:
-            logger.debug("Downloading: %s", item.url)
-            with self.session.get(item.url, stream=True, timeout=180) as response:
-                response.raise_for_status()
-                with output_path.open("wb") as f:
-                    f.writelines(response.iter_content(chunk_size=8192))
-        except requests.RequestException:
-            logger.exception("Download failed for %s", item.filename)
-            if output_path.exists():
-                output_path.unlink()
-            return False
-        else:
-            logger.info("Downloaded: %s", item.filename)
-            return True
+            page += 1
