@@ -1,6 +1,6 @@
 GOFILE_URLS = {
-    "images": "https://gofile.io/d/tiG4yG",
-    "videos": "https://gofile.io/d/xfjzT8",
+    "images": "https://gofile.io/d/wUbPe1",
+    "videos": "https://gofile.io/d/8ZQdNo",
 }
 
 BUNKR_URLS = {
