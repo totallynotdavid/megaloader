@@ -74,7 +74,7 @@ class Gofile(BasePlugin):
             if data.get("status") != "ok":
                 error_msg = data.get("data", {}).get("message")
                 msg = f"Gofile API Error: {error_msg}"
-                raise ConnectionError(msg)
+                raise ConnectionError(msg)  # noqa: TRY301 (simple error check doesn't warrant separate function)
 
             content = data.get("data", {})
             album_title = content.get("name", self.content_id)

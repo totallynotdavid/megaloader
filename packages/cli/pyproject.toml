@@ -30,3 +30,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["megaloader_cli"]
+
+[tool.ruff.lint]
+# FBT001: Boolean positional args are idiomatic for Click CLI handlers
+# where flags like --verbose naturally produce boolean parameters
+ignore = ["FBT001"]
