@@ -1,14 +1,3 @@
-"""
-Test URLs for live site monitoring.
-
-These URLs should be:
-1. Publicly accessible (no auth required unless marked)
-2. Relatively stable (won't be deleted soon)
-3. Small/fast to process (for quick CI runs)
-
-Update these if test albums get deleted or rate-limited.
-"""
-
 BUNKR_URLS = {
     "images": "https://bunkr.si/a/xYKtNmBx",
     "videos": "https://bunkr.si/a/I4TiEKcm",
