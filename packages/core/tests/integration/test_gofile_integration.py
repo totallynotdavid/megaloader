@@ -59,14 +59,14 @@ class TestGofileIntegration:
             },
         )
 
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 2
         assert items[0].filename == "file1.txt"
-        assert items[0].album_title == "Test Folder"
+        assert items[0].album == "Test Folder"
 
-        assert items[0].metadata is not None
-        assert items[0].metadata["size"] == 100
+        assert items[0].meta is not None
+        assert items[0].meta["size"] == 100
 
     def test_password_hashing(self) -> None:
         plugin = Gofile("https://gofile.io/d/test", password="mysecret")

@@ -15,7 +15,7 @@ class TestCyberdropLive:
 
         try:
             plugin = Cyberdrop(url)
-            items = list(plugin.export())
+            items = list(plugin.extract())
 
             assert len(items) == 6  # 6 sample images
             filenames = [item.filename for item in items]
@@ -38,7 +38,7 @@ class TestCyberdropLive:
             for item in items:
                 assert item.filename
                 assert item.url
-                assert item.file_id
+                assert item.id
         except requests.RequestException as e:
             import traceback
 
@@ -53,7 +53,7 @@ class TestCyberdropLive:
 
         try:
             plugin = Cyberdrop(url)
-            items = list(plugin.export())
+            items = list(plugin.extract())
 
             assert len(items) == 4  # 4 sample videos
             filenames = [item.filename for item in items]
@@ -74,6 +74,6 @@ class TestCyberdropLive:
             for item in items:
                 assert item.filename
                 assert item.url
-                assert item.file_id
+                assert item.id
         except requests.RequestException as e:
             pytest.skip(f"Cyberdrop videos album unavailable: {e}")

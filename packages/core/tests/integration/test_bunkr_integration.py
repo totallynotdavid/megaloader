@@ -28,7 +28,7 @@ class TestBunkrIntegration:
         requests_mock.get("https://bunkr.si/f/file2", text=file_html)
 
         plugin = Bunkr(album_url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 2
         assert all(item.filename == "test.jpg" for item in items)
@@ -46,7 +46,7 @@ class TestBunkrIntegration:
         requests_mock.get(file_url, text=file_html)
 
         plugin = Bunkr(file_url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 1
         assert items[0].filename == "myfile.zip"
@@ -64,7 +64,7 @@ class TestBunkrIntegration:
         requests_mock.get(url, text=html)
 
         plugin = Bunkr(url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert items[0].filename == "fallback.mp4"
 
@@ -74,27 +74,4 @@ class TestBunkrIntegration:
 
         plugin = Bunkr(url)
         with pytest.raises(requests.ConnectionError):
-            list(plugin.export())
-
-
-@pytest.mark.integration
-class TestBunkrDownloadIntegration:
-    def test_file_already_exists_skip(self, tmp_output_dir) -> None:
-        from pathlib import Path
-
-        plugin = Bunkr("https://bunkr.si/f/test")
-
-        existing = Path(tmp_output_dir) / "exists.txt"
-        with existing.open("w") as f:
-            f.write("original")
-
-        result = plugin._download_file_direct(
-            "https://example.com/file",
-            "exists.txt",
-            tmp_output_dir,
-            "https://bunkr.si/f/test",
-        )
-
-        assert result is True
-        with existing.open() as f:
-            assert f.read() == "original"
+            list(plugin.extract())

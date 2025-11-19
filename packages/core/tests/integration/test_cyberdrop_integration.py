@@ -1,8 +1,5 @@
-import time
-
 import pytest
 
-from megaloader.plugin import Item
 from megaloader.plugins.cyberdrop import Cyberdrop
 
 
@@ -35,13 +32,13 @@ class TestCyberdropIntegration:
         )
 
         plugin = Cyberdrop(album_url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 2
-        assert items[0].album_title == "An album"
+        assert items[0].album == "An album"
         assert items[0].filename == "test_file.jpg"
 
-    def test_single_file_export(self, requests_mock) -> None:
+    def test_single_file_extract(self, requests_mock) -> None:
         file_url = "https://cyberdrop.me/f/FILEID"
 
         api_response = {
@@ -55,44 +52,7 @@ class TestCyberdropIntegration:
         )
 
         plugin = Cyberdrop(file_url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 1
         assert items[0].filename == "single.mp4"
-
-    def test_rate_limiting(self, requests_mock) -> None:
-        plugin = Cyberdrop("https://cyberdrop.me/f/TEST", rate_limit_seconds=0.2)
-
-        requests_mock.get(
-            "https://api.cyberdrop.cr/api/file/info/TEST",
-            json={"name": "file.txt", "auth_url": "https://api.cyberdrop.cr/auth/TEST"},
-        )
-
-        start = time.monotonic()
-        plugin._get_file_info("TEST")
-        plugin._get_file_info("TEST")
-        elapsed = time.monotonic() - start
-
-        assert elapsed >= 0.2
-
-    def test_download_success(self, requests_mock, tmp_output_dir) -> None:
-        auth_url = "https://api.cyberdrop.me/auth/DLTEST"
-        direct_url = "https://cdn.cyberdrop.me/file/DLTEST"
-        file_content = b"downloaded content"
-
-        requests_mock.get(auth_url, json={"url": direct_url})
-        requests_mock.get(direct_url, content=file_content)
-
-        plugin = Cyberdrop("https://cyberdrop.me/f/DLTEST")
-        item = Item(url=auth_url, filename="test.bin", file_id="DLTEST")
-
-        result = plugin.download_file(item, tmp_output_dir)
-
-        assert result is True
-
-        from pathlib import Path
-
-        path = Path(tmp_output_dir) / "test.bin"
-        assert path.exists()
-        with path.open("rb") as f:
-            assert f.read() == file_content

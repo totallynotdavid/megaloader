@@ -1,6 +1,5 @@
 import pytest
 
-from megaloader.plugin import Item
 from megaloader.plugins.pixeldrain import PixelDrain
 
 
@@ -18,14 +17,14 @@ class TestPixelDrainIntegration:
         requests_mock.get(url, text=html)
 
         plugin = PixelDrain(url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 1
         assert items[0].filename == "photo.jpg"
-        assert items[0].file_id == "testid"
+        assert items[0].id == "testid"
 
-        assert items[0].metadata is not None
-        assert items[0].metadata["size"] == 204800
+        assert items[0].meta is not None
+        assert items[0].meta["size"] == 204800
 
     def test_list_parsing(self, requests_mock) -> None:
         url = "https://pixeldrain.com/l/listid"
@@ -42,39 +41,8 @@ class TestPixelDrainIntegration:
         requests_mock.get(url, text=html)
 
         plugin = PixelDrain(url)
-        items = list(plugin.export())
+        items = list(plugin.extract())
 
         assert len(items) == 2
         assert items[0].filename == "video.mp4"
         assert items[1].filename == "image.png"
-
-    def test_proxy_rotation(self) -> None:
-        plugin = PixelDrain("https://pixeldrain.com/u/test", use_proxy=True)
-
-        url1 = plugin._get_download_url("file1")
-        url2 = plugin._get_download_url("file2")
-
-        assert "sriflix.my" in url1
-        assert "sriflix.my" in url2
-        assert "file1" in url1
-        assert "file2" in url2
-
-    def test_download_success(self, requests_mock, tmp_output_dir) -> None:
-        url = "https://pixeldrain.com/api/file/testid"
-        content = b"image data here"
-
-        requests_mock.get(url, content=content)
-
-        plugin = PixelDrain("https://pixeldrain.com/u/test")
-        item = Item(url=url, filename="test.jpg", file_id="testid")
-
-        result = plugin.download_file(item, tmp_output_dir)
-
-        assert result is True
-
-        from pathlib import Path
-
-        path = Path(tmp_output_dir) / "test.jpg"
-        assert path.exists()
-        with path.open("rb") as f:
-            assert f.read() == content

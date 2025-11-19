@@ -29,7 +29,7 @@ class TestGofileLive:
 
         try:
             plugin = Gofile(url)
-            items = list(plugin.export())
+            items = list(plugin.extract())
 
             assert len(items) == 6  # 6 sample images
             filenames = [item.filename for item in items]
@@ -49,9 +49,9 @@ class TestGofileLive:
             for item in items:
                 assert item.filename
                 assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size") is not None
+                assert item.id
+                assert item.meta is not None
+                assert item.meta.get("size") is not None
         except requests.RequestException as e:
             pytest.skip(f"Gofile images album unavailable: {e}")
 
@@ -63,7 +63,7 @@ class TestGofileLive:
 
         try:
             plugin = Gofile(url)
-            items = list(plugin.export())
+            items = list(plugin.extract())
 
             assert len(items) == 4  # 4 sample videos
             filenames = [item.filename for item in items]
@@ -81,8 +81,8 @@ class TestGofileLive:
             for item in items:
                 assert item.filename
                 assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size") is not None
+                assert item.id
+                assert item.meta is not None
+                assert item.meta.get("size") is not None
         except requests.RequestException as e:
             pytest.skip(f"Gofile videos album unavailable: {e}")

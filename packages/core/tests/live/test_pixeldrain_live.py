@@ -15,7 +15,7 @@ class TestPixelDrainLive:
 
         try:
             plugin = PixelDrain(url)
-            items = list(plugin.export())
+            items = list(plugin.extract())
 
             assert len(items) == 6  # 6 sample images
             filenames = [item.filename for item in items]
@@ -35,9 +35,9 @@ class TestPixelDrainLive:
             for item in items:
                 assert item.filename
                 assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size", 0) > 0
+                assert item.id
+                assert item.meta is not None
+                assert item.meta.get("size", 0) > 0
         except requests.RequestException as e:
             pytest.skip(f"PixelDrain images list unavailable: {e}")
 
@@ -49,7 +49,7 @@ class TestPixelDrainLive:
 
         try:
             plugin = PixelDrain(url)
-            items = list(plugin.export())
+            items = list(plugin.extract())
 
             assert len(items) == 4  # 4 sample videos
             filenames = [item.filename for item in items]
@@ -67,8 +67,8 @@ class TestPixelDrainLive:
             for item in items:
                 assert item.filename
                 assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size", 0) > 0
+                assert item.id
+                assert item.meta is not None
+                assert item.meta.get("size", 0) > 0
         except requests.RequestException as e:
             pytest.skip(f"PixelDrain videos list unavailable: {e}")
