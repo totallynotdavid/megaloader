@@ -6,22 +6,12 @@ from megaloader.plugins.bunkr import Bunkr
 
 @pytest.mark.integration
 class TestBunkrIntegration:
-    def test_album_url_parsing(self, requests_mock) -> None:
+    def test_album_url_parsing(self, requests_mock, fixture_loader) -> None:
         album_url = "https://bunkr.si/a/testalbum"
 
-        album_html = """
-        <html><body>
-        <a href="/f/file1">File 1</a>
-        <a href="/f/file2">File 2</a>
-        </body></html>
-        """
+        album_html = fixture_loader("bunkr/album.html")
 
-        file_html = """
-        <html>
-        <a class="btn btn-main" href="/download/xyz">Download</a>
-        <meta property="og:title" content="test.jpg">
-        </html>
-        """
+        file_html = fixture_loader("bunkr/file.html")
 
         requests_mock.get(album_url, text=album_html)
         requests_mock.get("https://bunkr.si/f/file1", text=file_html)
@@ -33,15 +23,10 @@ class TestBunkrIntegration:
         assert len(items) == 2
         assert all(item.filename == "test.jpg" for item in items)
 
-    def test_single_file_url_parsing(self, requests_mock) -> None:
+    def test_single_file_url_parsing(self, requests_mock, fixture_loader) -> None:
         file_url = "https://bunkr.si/f/testfile"
 
-        file_html = """
-        <html>
-        <a class="btn btn-main" href="/download/abc123">Download</a>
-        <meta property="og:title" content="myfile.zip">
-        </html>
-        """
+        file_html = fixture_loader("bunkr/file.html")
 
         requests_mock.get(file_url, text=file_html)
 
@@ -49,17 +34,12 @@ class TestBunkrIntegration:
         items = list(plugin.extract())
 
         assert len(items) == 1
-        assert items[0].filename == "myfile.zip"
+        assert items[0].filename == "test.jpg"
 
-    def test_filename_extraction_fallback(self, requests_mock) -> None:
+    def test_filename_extraction_fallback(self, requests_mock, fixture_loader) -> None:
         url = "https://bunkr.si/f/test"
 
-        html = """
-        <html>
-        <a class="btn btn-main" href="/download/xyz">Download</a>
-        <script>var ogname = "fallback.mp4";</script>
-        </html>
-        """
+        html = fixture_loader("bunkr/fallback.html")
 
         requests_mock.get(url, text=html)
 

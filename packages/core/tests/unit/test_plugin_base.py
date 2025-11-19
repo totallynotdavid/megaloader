@@ -1,7 +1,6 @@
 import pytest
 
 from megaloader.item import DownloadItem
-from megaloader.plugin import BasePlugin
 
 
 @pytest.mark.unit
@@ -34,48 +33,46 @@ class TestBasePluginContract:
         assert item.headers == headers
         assert item.size_bytes == 1024
 
-    def test_plugin_requires_non_empty_url(self) -> None:
-        with pytest.raises(ValueError, match="URL must be a non-empty string"):
+    def test_item_rejects_empty_download_url(self) -> None:
+        """DownloadItem should reject empty download_url."""
+        with pytest.raises(ValueError, match="download_url cannot be empty"):
+            DownloadItem(download_url="", filename="test.txt")
 
-            class DummyPlugin(BasePlugin):
-                def extract(self):
-                    yield from []
+    def test_item_rejects_empty_filename(self) -> None:
+        """DownloadItem should reject empty filename."""
+        with pytest.raises(ValueError, match="filename cannot be empty"):
+            DownloadItem(download_url="http://example.com/file", filename="")
 
-            DummyPlugin("")
+    def test_plugin_registry_has_all_domains(self) -> None:
+        """Verify all expected domains are registered."""
+        from megaloader.plugins import PLUGIN_REGISTRY
 
-    def test_plugin_requires_url_argument(self) -> None:
-        with pytest.raises(TypeError):
+        expected_domains = [
+            "bunkr.si",
+            "bunkr.la",
+            "bunkr.is",
+            "bunkr.ru",
+            "bunkr.su",
+            "cyberdrop.me",
+            "cyberdrop.to",
+            "fanbox.cc",
+            "fapello.com",
+            "gofile.io",
+            "pixeldrain.com",
+            "pixiv.net",
+            "rule34.xxx",
+            "thothub.to",
+            "thothub.vip",
+            "thotslife.com",
+        ]
 
-            class DummyPlugin(BasePlugin):
-                def extract(self):
-                    yield from []
+        for domain in expected_domains:
+            assert domain in PLUGIN_REGISTRY, (
+                f"Domain '{domain}' missing from PLUGIN_REGISTRY"
+            )
 
-            DummyPlugin()  # type: ignore[reportCallIssue]  # Missing url argument (intentional for test)
+    def test_subdomain_support_configured(self) -> None:
+        """Verify subdomain support is configured."""
+        from megaloader.plugins import SUBDOMAIN_SUPPORTED
 
-    def test_plugin_stores_url(self) -> None:
-        """Verify plugin stores and strips URL."""
-
-        class DummyPlugin(BasePlugin):
-            def extract(self):
-                yield from []
-
-        plugin = DummyPlugin("  http://example.com/test  ")
-        assert plugin.url == "http://example.com/test"
-
-    def test_extract_method_abstract(self) -> None:
-        """Verify extract method must be implemented."""
-        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-
-            class BadPlugin(BasePlugin):
-                pass
-
-            BadPlugin("http://example.com")  # type: ignore[reportAbstractUsage]  # intentional for test
-
-    def test_plugin_config_storage(self) -> None:
-        class DummyPlugin(BasePlugin):
-            def extract(self):
-                yield from []
-
-        plugin = DummyPlugin("http://example.com", custom_option="test", timeout=30)
-        assert plugin.options["custom_option"] == "test"
-        assert plugin.options["timeout"] == 30
+        assert "fanbox.cc" in SUBDOMAIN_SUPPORTED

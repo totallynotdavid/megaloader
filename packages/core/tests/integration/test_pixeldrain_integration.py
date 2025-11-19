@@ -21,10 +21,8 @@ class TestPixelDrainIntegration:
 
         assert len(items) == 1
         assert items[0].filename == "photo.jpg"
-        assert items[0].id == "testid"
-
-        assert items[0].meta is not None
-        assert items[0].meta["size"] == 204800
+        assert items[0].source_id == "testid"
+        assert items[0].size_bytes == 204800
 
     def test_list_parsing(self, requests_mock) -> None:
         url = "https://pixeldrain.com/l/listid"

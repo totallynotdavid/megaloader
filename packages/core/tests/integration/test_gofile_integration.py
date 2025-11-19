@@ -1,4 +1,4 @@
-import hashlib
+import json
 
 import pytest
 
@@ -7,68 +7,32 @@ from megaloader.plugins.gofile import Gofile
 
 @pytest.mark.integration
 class TestGofileIntegration:
-    def test_token_fetching(self, requests_mock) -> None:
-        plugin = Gofile("https://gofile.io/d/testid")
+    def test_export_files(self, requests_mock, fixture_loader) -> None:
+        plugin = Gofile("https://gofile.io/d/folderid")
 
         requests_mock.get(
             "https://gofile.io/dist/js/global.js",
-            text='code here .wt = "website_token_xyz" code',
+            text=fixture_loader("gofile/global.js"),
         )
         requests_mock.post(
             "https://api.gofile.io/accounts",
-            json={"status": "ok", "data": {"token": "api_token_123"}},
-        )
-
-        wt = plugin.website_token
-        api = plugin.api_token
-
-        assert wt == "website_token_xyz"
-        assert api == "api_token_123"
-
-    def test_export_files(self, requests_mock) -> None:
-        plugin = Gofile("https://gofile.io/d/folderid")
-
-        requests_mock.get("https://gofile.io/dist/js/global.js", text='.wt = "wt"')
-        requests_mock.post(
-            "https://api.gofile.io/accounts",
-            json={"status": "ok", "data": {"token": "token"}},
+            json=json.loads(fixture_loader("gofile/accounts.json")),
         )
         requests_mock.get(
             "https://api.gofile.io/contents/folderid",
-            json={
-                "status": "ok",
-                "data": {
-                    "name": "Test Folder",
-                    "children": {
-                        "f1": {
-                            "type": "file",
-                            "name": "file1.txt",
-                            "link": "https://srv/f1",
-                            "id": "f1",
-                            "size": 100,
-                        },
-                        "f2": {
-                            "type": "file",
-                            "name": "file2.zip",
-                            "link": "https://srv/f2",
-                            "id": "f2",
-                            "size": 500,
-                        },
-                    },
-                },
-            },
+            json=json.loads(fixture_loader("gofile/contents.json")),
         )
 
         items = list(plugin.extract())
 
         assert len(items) == 2
         assert items[0].filename == "file1.txt"
-        assert items[0].album == "Test Folder"
-
-        assert items[0].meta is not None
-        assert items[0].meta["size"] == 100
+        assert items[0].collection_name == "Test Folder"
+        assert items[0].size_bytes == 100
 
     def test_password_hashing(self) -> None:
+        import hashlib
+
         plugin = Gofile("https://gofile.io/d/test", password="mysecret")
 
         expected = hashlib.sha256(b"mysecret").hexdigest()

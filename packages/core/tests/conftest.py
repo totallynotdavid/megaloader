@@ -31,12 +31,12 @@ def tmp_output_dir(tmp_path):
 
 
 def pytest_configure(config) -> None:
-    config.addinivalue_line("markers", "unit: Unit tests (fast, mocked)")
-    config.addinivalue_line(
-        "markers",
-        "integration: Integration tests (mocked, realistic)",
-    )
-    config.addinivalue_line("markers", "live: Live network tests (requires internet)")
+    config.addinivalue_line("markers", "unit: Unit tests (fast, no network)")
+    config.addinivalue_line("markers", "integration: Integration tests (mocked)")
+    config.addinivalue_line("markers", "live: Live tests against real sites")
+    config.addinivalue_line("markers", "smoke: Quick sanity checks (always run)")
+    config.addinivalue_line("markers", "auth: Tests requiring authentication")
+    config.addinivalue_line("markers", "slow: Tests taking >10 seconds")
     config.addinivalue_line("markers", "downloads_file: Performs actual file downloads")
 
 
@@ -45,7 +45,7 @@ def pytest_collection_modifyitems(config, items) -> None:
     if config.getoption("--run-live", default=False):
         return
 
-    skip_live = pytest.mark.skip(reason="need --run-live option to run")
+    skip_live = pytest.mark.skip(reason="use --run-live to run")
     for item in items:
         if "live" in item.keywords:
             item.add_marker(skip_live)
@@ -56,5 +56,5 @@ def pytest_addoption(parser) -> None:
         "--run-live",
         action="store_true",
         default=False,
-        help="run live network tests",
+        help="run tests against real sites",
     )

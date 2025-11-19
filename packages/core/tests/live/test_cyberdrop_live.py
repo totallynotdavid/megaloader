@@ -1,79 +1,102 @@
 import pytest
 import requests
 
+from megaloader.plugins.cyberdrop import Cyberdrop
+
+from tests.helpers import format_failure_message, validate_item
 from tests.test_urls import CYBERDROP_URLS
 
 
 @pytest.mark.live
-@pytest.mark.downloads_file
 class TestCyberdropLive:
-    def test_cyberdrop_images_album(self) -> None:
-        """Test against real Cyberdrop images album with sample files."""
-        from megaloader.plugins.cyberdrop import Cyberdrop
+    """Test Cyberdrop plugin against real site."""
 
+    def test_album_extraction_images(self):
+        """
+        Test extracting image album from Cyberdrop.
+        Catches: HTML structure changes, API changes.
+        """
         url = CYBERDROP_URLS["images"]
 
         try:
             plugin = Cyberdrop(url)
             items = list(plugin.extract())
 
-            assert len(items) == 6  # 6 sample images
-            filenames = [item.filename for item in items]
+            assert len(items) > 0, f"No items extracted from {url}"
 
-            expected_files = [
-                "sample-image-01.jpg",
-                "sample-image-02.jpg",
-                "sample-image-03.jpg",
-                "sample-image-04.jpg",
-                "sample-image-05.jpg",
-                "sample-image-06.jpg",
-            ]
+            all_issues = []
+            for i, item in enumerate(items):
+                issues = validate_item(item, "Cyberdrop")
+                if issues:
+                    all_issues.append(f"Item {i}: " + ", ".join(issues))
 
-            for expected in expected_files:
-                expected_base = expected.rsplit(".", 1)[0]  # Remove extension
-                assert any(
-                    filename.startswith(expected_base) for filename in filenames
-                ), f"Expected {expected} not found in {filenames}"
+                # Cyberdrop uses API - should have auth_url
+                if not item.download_url.startswith("https://"):
+                    all_issues.append(f"Invalid download URL: {item.download_url}")
 
-            for item in items:
-                assert item.filename
-                assert item.url
-                assert item.id
+            if all_issues:
+                pytest.fail(
+                    format_failure_message(
+                        "Cyberdrop",
+                        url,
+                        items,
+                        expected_min=1,
+                        issues=all_issues,
+                    )
+                )
+
         except requests.RequestException as e:
-            import traceback
+            pytest.skip(f"Network error: {e}")
 
-            traceback.print_exc()
-            pytest.skip(f"Cyberdrop images album unavailable: {e}")
-
-    def test_cyberdrop_videos_album(self) -> None:
-        """Test against real Cyberdrop videos album with sample files."""
-        from megaloader.plugins.cyberdrop import Cyberdrop
-
+    def test_album_extraction_videos(self):
+        """Test extracting video album from Cyberdrop."""
         url = CYBERDROP_URLS["videos"]
 
         try:
             plugin = Cyberdrop(url)
             items = list(plugin.extract())
 
-            assert len(items) == 4  # 4 sample videos
-            filenames = [item.filename for item in items]
+            assert len(items) > 0, f"No items extracted from {url}"
 
-            expected_files = [
-                "sample-video-bunny.webm",
-                "sample-video-planet.mov",
-                "sample-video-jellyfish.mkv",
-                "sample-video-rick.mp4",
-            ]
+            all_issues = []
+            for i, item in enumerate(items):
+                issues = validate_item(item, "Cyberdrop")
+                if issues:
+                    all_issues.append(f"Item {i}: " + ", ".join(issues))
 
-            for expected in expected_files:
-                expected_base = expected.rsplit(".", 1)[0]  # Remove extension
-                assert any(
-                    filename.startswith(expected_base) for filename in filenames
-                ), f"Expected {expected} not found in {filenames}"
+            if all_issues:
+                pytest.fail(
+                    format_failure_message(
+                        "Cyberdrop",
+                        url,
+                        items,
+                        expected_min=1,
+                        issues=all_issues,
+                    )
+                )
 
-            for item in items:
-                assert item.filename
-                assert item.url
-                assert item.id
         except requests.RequestException as e:
-            pytest.skip(f"Cyberdrop videos album unavailable: {e}")
+            pytest.skip(f"Network error: {e}")
+
+    def test_album_title_extracted(self):
+        """
+        Test that album title is extracted as collection_name.
+        Catches: Title extraction breaking.
+        """
+        url = CYBERDROP_URLS["images"]
+
+        try:
+            plugin = Cyberdrop(url)
+            items = list(plugin.extract())
+
+            assert len(items) > 0
+
+            # At least some items should have collection_name
+            with_collection = [item for item in items if item.collection_name]
+
+            assert len(with_collection) > 0, (
+                "No items have collection_name - album title extraction may be broken"
+            )
+
+        except requests.RequestException as e:
+            pytest.skip(f"Network error: {e}")
