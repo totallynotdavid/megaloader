@@ -77,7 +77,7 @@ def download_file(
         progress.console.print(f"[green]✓[/green] Downloaded: {item.filename}")
         return True
 
-    except Exception as e:
+    except (requests.RequestException, OSError) as e:
         progress.console.print(f"[red]✗[/red] Failed: {item.filename} ({e})")
         if output_path.exists():
             output_path.unlink()

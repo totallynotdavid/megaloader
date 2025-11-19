@@ -34,13 +34,15 @@ def extract(url: str, **options: Any) -> list[Item]:
         List of Item objects containing download metadata
     """
     if not url or not url.strip():
-        raise ValueError("URL cannot be empty")
+        msg = "URL cannot be empty"
+        raise ValueError(msg)
 
     url = url.strip()
     parsed_url = urllib.parse.urlparse(url)
 
     if not parsed_url.netloc:
-        raise ValueError("Invalid URL: Could not parse domain")
+        msg = "Invalid URL: Could not parse domain"
+        raise ValueError(msg)
 
     plugin_cls = get_plugin_class(parsed_url.netloc)
     if plugin_cls is None:

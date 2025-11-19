@@ -23,7 +23,8 @@ class Fapello(BasePlugin):
     def _get_model_from_url(self, url: str) -> str:
         match = re.search(r"fapello\.com/([a-zA-Z0-9_\-~\.]+)", url)
         if not match or not match.group(1):
-            raise ValueError("Invalid Fapello URL")
+            msg = "Invalid Fapello URL"
+            raise ValueError(msg)
         return match.group(1).split("/")[0]
 
     def extract(self) -> Generator[Item, None, None]:

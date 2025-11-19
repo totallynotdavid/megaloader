@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
+import requests
+
 from bs4 import BeautifulSoup
 
 from megaloader.plugin import BasePlugin, Item
@@ -23,7 +25,8 @@ class Rule34(BasePlugin):
         self.tags = query.get("tags", [""])[0].split()
 
         if not self.post_id and not self.tags:
-            raise ValueError("URL must contain 'id' or 'tags'")
+            msg = "URL must contain 'id' or 'tags'"
+            raise ValueError(msg)
 
         self.api_key = os.getenv("RULE34_API_KEY")
         self.user_id = os.getenv("RULE34_USER_ID")
@@ -102,11 +105,12 @@ class Rule34(BasePlugin):
                 seen_urls.add(href)
 
                 post_resp = self._safe_get(urljoin("https://rule34.xxx/", href))
-                if post_resp:
-                    if file_url := self._extract_media_url(
+                if post_resp and (
+                    file_url := self._extract_media_url(
                         BeautifulSoup(post_resp.text, "html.parser")
-                    ):
-                        yield self._create_item(file_url, album_title)
+                    )
+                ):
+                    yield self._create_item(file_url, album_title)
             pid += 42  # Rule34 pagination offset
 
     def _safe_get(self, url: str, params: dict | None = None):
@@ -114,7 +118,7 @@ class Rule34(BasePlugin):
             r = self.session.get(url, params=params, timeout=30)
             r.raise_for_status()
             return r
-        except Exception:
+        except requests.RequestException:
             return None
 
     def _extract_media_url(self, soup: BeautifulSoup) -> str | None:
@@ -129,8 +133,11 @@ class Rule34(BasePlugin):
             return i.get("src")
         return None
 
-    def _create_item(self, url: str, album: str, id: str | None = None) -> Item:
+    def _create_item(self, url: str, album: str, post_id: str | None = None) -> Item:
         url = f"https:{url}" if url.startswith("//") else url
         return Item(
-            url=url, filename=Path(unquote(urlparse(url).path)).name, album=album, id=id
+            url=url,
+            filename=Path(unquote(urlparse(url).path)).name,
+            album=album,
+            id=post_id,
         )

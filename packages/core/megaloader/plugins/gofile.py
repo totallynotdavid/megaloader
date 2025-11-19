@@ -27,7 +27,8 @@ class Gofile(BasePlugin):
     def _get_content_id(self, url: str) -> str:
         match = re.search(r"gofile\.io/(?:d|f)/([\w-]+)", url)
         if not match:
-            raise ValueError("Invalid Gofile URL")
+            msg = "Invalid Gofile URL"
+            raise ValueError(msg)
         return match.group(1)
 
     @property
@@ -38,7 +39,8 @@ class Gofile(BasePlugin):
             if match := re.search(r'\.wt\s*=\s*"([^"]+)"', resp.text):
                 self._website_token = match.group(1)
             else:
-                raise RuntimeError("Could not find website token")
+                msg = "Could not find website token"
+                raise RuntimeError(msg)
         return self._website_token
 
     @property
@@ -50,7 +52,8 @@ class Gofile(BasePlugin):
             if data.get("status") == "ok":
                 self._api_token = data["data"]["token"]
             else:
-                raise ConnectionError("Failed to create Gofile account")
+                msg = "Failed to create Gofile account"
+                raise ConnectionError(msg)
         return self._api_token
 
     def extract(self) -> Generator[Item, None, None]:
@@ -69,9 +72,9 @@ class Gofile(BasePlugin):
             data = response.json()
 
             if data.get("status") != "ok":
-                raise ConnectionError(
-                    f"Gofile API Error: {data.get('data', {}).get('message')}"
-                )
+                error_msg = data.get("data", {}).get("message")
+                msg = f"Gofile API Error: {error_msg}"
+                raise ConnectionError(msg)
 
             content = data.get("data", {})
             album_title = content.get("name", self.content_id)

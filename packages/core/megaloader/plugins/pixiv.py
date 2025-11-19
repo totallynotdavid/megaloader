@@ -34,7 +34,8 @@ class Pixiv(BasePlugin):
             return match.group(1), True
         if match := re.search(r"users/(\d+)|member\.php\?id=(\d+)", self.url):
             return match.group(1) or match.group(2), False
-        raise ValueError("Invalid Pixiv URL")
+        msg = "Invalid Pixiv URL"
+        raise ValueError(msg)
 
     def _api_request(self, endpoint: str, params: dict | None = None) -> Any:
         try:

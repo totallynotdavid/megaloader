@@ -20,7 +20,8 @@ class PixelDrain(BasePlugin):
             r"window\.viewer_data\s*=\s*({.*?});", response.text, re.DOTALL
         )
         if not match:
-            raise ValueError("Could not find viewer data on page")
+            msg = "Could not find viewer data on page"
+            raise ValueError(msg)
 
         data = json.loads(match.group(1))
         api_response = data.get("api_response", {})

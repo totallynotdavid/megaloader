@@ -3,7 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 import requests
 
@@ -27,13 +27,14 @@ class BasePlugin(ABC):
     Base class for all megaloader plugins.
     """
 
-    DEFAULT_HEADERS = {
+    DEFAULT_HEADERS: ClassVar[dict[str, str]] = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     }
 
     def __init__(self, url: str, **kwargs: Any) -> None:
         if not url.strip():
-            raise ValueError("URL must be a non-empty string")
+            msg = "URL must be a non-empty string"
+            raise ValueError(msg)
         self.url = url.strip()
         self.options = kwargs
         self.session = self._create_session()

@@ -93,16 +93,16 @@ class ThothubTO(BasePlugin):
                 break
 
             links = [
-                l["href"]
-                for l in BeautifulSoup(resp.text, "html.parser").select(
+                link["href"]
+                for link in BeautifulSoup(resp.text, "html.parser").select(
                     'div.item > a[href*="/videos/"]'
                 )
             ]
             if not links:
                 break
 
-            for l in links:
-                full = urljoin("https://thothub.to/", l)
+            for link in links:
+                full = urljoin("https://thothub.to/", link)
                 if full in seen:
                     continue
                 seen.add(full)
@@ -119,14 +119,14 @@ class ThothubTO(BasePlugin):
         )
         j = len(f_str) // 2
         k = int(f_str[: j + 1])
-        l = int(f_str[j:])
-        f2 = str((abs(l - k) + abs(k - l)) * 2)
+        length = int(f_str[j:])
+        f2 = str((abs(length - k) + abs(k - length)) * 2)
         key = ""
         for g in range(j + 1):
             for h in range(1, 5):
                 try:
                     d = int(code[g + h])
-                except:
+                except (IndexError, ValueError):
                     d = 0
                 n = d + int(f2[g % len(f2)])
                 if n >= 10:
@@ -140,6 +140,6 @@ class ThothubTO(BasePlugin):
         suffix = hl[32:]
         # Shuffle logic on prefix
         for k in range(len(prefix) - 1, -1, -1):
-            l = (k + sum(int(d) for d in key[k:])) % len(prefix)
-            prefix[k], prefix[l] = prefix[l], prefix[k]
+            swap_idx = (k + sum(int(d) for d in key[k:])) % len(prefix)
+            prefix[k], prefix[swap_idx] = prefix[swap_idx], prefix[k]
         return "".join(prefix + suffix)
