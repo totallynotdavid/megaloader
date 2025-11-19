@@ -39,7 +39,8 @@ jobs:
 
       - name: Run tests
         run:
-          uv run pytest -v --tb=short --junitxml=junit.xml -o junit_family=legacy
+          uv run pytest -v --tb=short --junitxml=junit.xml -o
+          junit_family=legacy
 
       - name: Coverage & codecov (3.13 only)
         if: matrix.python-version == '3.13'
