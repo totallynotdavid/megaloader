@@ -61,7 +61,7 @@ class Pixiv(BasePlugin):
             response.raise_for_status()
             data = response.json()
             return data.get("body") if not data.get("error") else None
-        except Exception:
+        except (requests.RequestException, ValueError):
             logger.debug("Pixiv API error: %s", endpoint, exc_info=True)
             return None
 

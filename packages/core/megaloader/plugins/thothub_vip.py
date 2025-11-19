@@ -45,7 +45,7 @@ class ThothubVIP(BasePlugin):
                     download_url=urljoin(self.url, url),
                     filename=f"{title}.mp4",
                 )
-        except Exception:
+        except (json.JSONDecodeError, AttributeError):
             logger.debug("Failed to parse JSON-LD", exc_info=True)
 
     def _extract_album(self) -> Generator[DownloadItem, None, None]:

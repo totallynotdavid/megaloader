@@ -6,6 +6,8 @@ from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
+import requests
+
 from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
@@ -67,7 +69,7 @@ class ThothubTO(BasePlugin):
                 collection_name=collection_name,
                 headers={"Referer": url},
             )
-        except Exception:
+        except (requests.RequestException, ValueError, AttributeError):
             logger.debug("Video extraction failed", exc_info=True)
             return None
 

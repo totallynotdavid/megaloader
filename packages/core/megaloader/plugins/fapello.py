@@ -50,7 +50,7 @@ class Fapello(BasePlugin):
 
                 if not response.text.strip():
                     break
-            except Exception:
+            except requests.RequestException:
                 logger.debug("Failed to fetch page %d", page, exc_info=True)
                 break
 

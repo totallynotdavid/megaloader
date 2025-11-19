@@ -72,7 +72,7 @@ class Fanbox(BasePlugin):
 
             response.raise_for_status()
             return response.json().get("body")
-        except Exception:
+        except (requests.RequestException, ValueError):
             logger.debug("API request failed: %s", url, exc_info=True)
             return None
 

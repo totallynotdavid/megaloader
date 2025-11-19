@@ -68,7 +68,7 @@ class BasePlugin(ABC):
 
         return session
 
-    def _configure_session(self, session: requests.Session) -> None:
+    def _configure_session(self, session: requests.Session) -> None:  # noqa: B027
         """
         Override to add plugin-specific headers/cookies.
 

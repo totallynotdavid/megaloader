@@ -147,14 +147,12 @@ class Rule34(BasePlugin):
         """Extract media URL from post page."""
         # Original image link
         for link in soup.find_all("a"):
-            if "Original image" in str(link.string):
-                if href := link.get("href"):
-                    return str(href)
+            if "Original image" in str(link.string) and (href := link.get("href")):
+                return str(href)
 
         # Video source
-        if video := soup.select_one("video > source"):
-            if src := video.get("src"):
-                return str(src)
+        if (video := soup.select_one("video > source")) and (src := video.get("src")):
+            return str(src)
 
         # Image fallback
         if (img := soup.select_one("img#image")) and (src := img.get("src")):

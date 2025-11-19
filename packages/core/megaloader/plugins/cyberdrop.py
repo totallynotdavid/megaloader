@@ -5,6 +5,8 @@ from collections.abc import Generator
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
+import requests
+
 from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
@@ -86,8 +88,8 @@ class Cyberdrop(BasePlugin):
             data = response.json()
 
             if data.get("name") and data.get("auth_url"):
-                return data
-        except Exception:
+                return data  # type: ignore [no-any-return]
+        except (requests.RequestException, ValueError):
             logger.debug("Failed to fetch file info for %s", file_id, exc_info=True)
 
         return None

@@ -99,7 +99,7 @@ class Gofile(BasePlugin):
         data = response.json()
 
         if data.get("status") == "ok":
-            return data["data"]["token"]
+            return data["data"]["token"]  # type: ignore [no-any-return]
 
         msg = "Failed to create Gofile guest account"
         raise RuntimeError(msg)
