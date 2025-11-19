@@ -1,8 +1,7 @@
 import click
 
 from megaloader.plugins import PLUGIN_REGISTRY
-
-from megaloader_cli.runner import process_download, process_extraction
+from megaloader_cli.commands import download_command, extract_command
 from megaloader_cli.utils import console, setup_logging
 
 
@@ -11,6 +10,11 @@ from megaloader_cli.utils import console, setup_logging
 def cli() -> None:
     """
     Megaloader - Extract and download content from file hosting platforms.
+
+    Examples:
+      megaloader extract https://pixeldrain.com/l/abc123
+      megaloader download https://gofile.io/d/xyz456 ./downloads
+      megaloader plugins
     """
 
 
@@ -25,10 +29,12 @@ def cli() -> None:
 @click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
 def extract_cmd(url: str, output_json: bool, verbose: bool) -> None:
     """
-    Extract metadata from a URL (Dry Run).
+    Extract metadata from URL without downloading (dry run).
+
+    Shows what would be downloaded including filenames, sizes, and URLs.
     """
     setup_logging(verbose)
-    process_extraction(url, output_json)
+    extract_command(url, output_json)
 
 
 @cli.command(name="download")
@@ -36,27 +42,51 @@ def extract_cmd(url: str, output_json: bool, verbose: bool) -> None:
 @click.argument("output_dir", type=click.Path(), default="./downloads")
 @click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
 @click.option(
-    "--no-subdirs", is_flag=True, help="Flatten structure (don't create album folders)"
+    "--flat",
+    is_flag=True,
+    help="Save all files to output_dir (no collection subfolders)",
 )
-@click.option("--filter", "pattern", help="Glob pattern to filter files (e.g. *.jpg)")
+@click.option(
+    "--filter",
+    "pattern",
+    help="Filter files by glob pattern (e.g., *.jpg, *.mp4)",
+)
+@click.option(
+    "--password",
+    help="Password for protected content (Gofile)",
+)
 def download_cmd(
-    url: str, output_dir: str, verbose: bool, no_subdirs: bool, pattern: str | None
+    url: str,
+    output_dir: str,
+    verbose: bool,
+    flat: bool,
+    pattern: str | None,
+    password: str | None,
 ) -> None:
     """
-    Download content from a URL to OUTPUT_DIR.
+    Download content from URL to OUTPUT_DIR.
+
+    By default, files are organized into subfolders by collection.
+    Use --flat to disable this behavior.
     """
     setup_logging(verbose)
-    process_download(url, output_dir, no_subdirs, pattern)
+
+    options = {}
+    if password:
+        options["password"] = password
+
+    download_command(url, output_dir, flat, pattern, options)
 
 
 @cli.command(name="plugins")
 def list_plugins_cmd() -> None:
-    """List supported websites."""
+    """List all supported websites and domains."""
     console.print("\n[bold]Supported Platforms:[/bold]\n")
-    # Sorting for better UX
+
     for domain in sorted(PLUGIN_REGISTRY.keys()):
         plugin = PLUGIN_REGISTRY[domain]
         console.print(f"  • [cyan]{domain:<20}[/cyan] ({plugin.__name__})")
+
     console.print()
 
 
