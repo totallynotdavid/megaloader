@@ -15,8 +15,8 @@ from rich.progress import (
     TransferSpeedColumn,
 )
 
-from .io import download_item
-from .utils import console, sanitize_filename
+from megaloader_cli.io import download_item
+from megaloader_cli.utils import console, sanitize_filename
 
 
 def resolve_plugin_name(url: str) -> str | None:

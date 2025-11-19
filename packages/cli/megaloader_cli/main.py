@@ -2,8 +2,8 @@ import click
 
 from megaloader.plugins import PLUGIN_REGISTRY
 
-from .runner import process_download, process_extraction
-from .utils import console, setup_logging
+from megaloader_cli.runner import process_download, process_extraction
+from megaloader_cli.utils import console, setup_logging
 
 
 @click.group()
