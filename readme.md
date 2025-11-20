@@ -8,8 +8,6 @@ Python library and CLI for extracting downloadable content from file hosting
 platforms. Supports 11 platforms through a plugin architecture with automatic
 URL detection.
 
-## Installation
-
 Install the core library for programmatic use:
 
 ```bash
@@ -25,10 +23,10 @@ pip install megaloader-cli
 The packages are independent. Install both if you need library integration and
 command-line access.
 
-## Using the library
+## Usage
 
-The library provides an `extract` function that detects the platform and
-extracts file metadata:
+**Using the library**: The library provides an `extract` function that detects
+the platform and extracts file metadata:
 
 ```python
 from megaloader import extract
@@ -40,9 +38,8 @@ for item in extract("https://pixeldrain.com/l/abc123"):
 Read the [core library documentation](packages/core/readme.md) for API details,
 supported platforms, authentication, and download implementation.
 
-## Using the CLI
-
-The CLI extracts metadata and downloads files directly from the terminal:
+**Using the CLI**: The CLI extracts metadata and downloads files directly from
+the terminal:
 
 ```bash
 megaloader download https://pixeldrain.com/l/abc123 ./downloads
@@ -58,8 +55,20 @@ extended platforms on best-effort basis. Core platforms receive priority for bug
 fixes and feature development. Extended platforms work as of November 2025 but
 may break without immediate fixes.
 
-Core platforms are Bunkr, PixelDrain, Cyberdrop, and GoFile. Extended platforms
-are Fanbox, Pixiv, Rule34, ThotsLife, ThotHub.VIP, ThotHub.TO, and Fapello.
+| Platform    | Domain(s)                                 | Supports                                                               | Priority |
+| ----------- | ----------------------------------------- | ---------------------------------------------------------------------- | -------- |
+| Bunkr       | bunkr.{si,la,is,ru,su}                    | Albums, single files                                                   | Core     |
+| PixelDrain  | pixeldrain.com                            | Lists, single files, [proxy support](#pixeldrain-proxy-support)        | Core     |
+| Cyberdrop   | cyberdrop.{me,to,cr}                      | Albums, single files                                                   | Core     |
+| GoFile      | gofile.io                                 | Folders ([password-protected](#gofile-password-support)), single files | Core     |
+| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator} | Creator content, [authentication](.env.example)                        | Extended |
+| Pixiv       | pixiv.net                                 | Artworks, galleries, [authentication](.env.example)                    | Extended |
+| Rule34      | rule34.xxx                                | Tags, posts, [API support](.env.example)                               | Extended |
+| ThotsLife   | thotslife.com                             | Albums, blog posts                                                     | Extended |
+| ThotHub.VIP | thothub.vip                               | Videos, albums                                                         | Extended |
+| ThotHub.TO  | thothub.to                                | Videos, albums                                                         | Extended |
+| Fapello     | fapello.com                               | Model profiles                                                         | Extended |
+
 Platform-specific features like authentication are documented in the core
 library readme.
 
