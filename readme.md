@@ -67,8 +67,8 @@ in the core library readme.
 ## Development
 
 This monorepo uses uv workspaces. The core library lives in
-`[packages/core/](packages/core/)` and the CLI in
-`[packages/cli/](packages/cli/)`. Both are published independently to PyPI.
+[`packages/core/`](packages/core/) and the CLI in
+[`packages/cli/`](packages/cli/). Both are published independently to PyPI.
 Development tools are configured at the root.
 
 Clone the repository and install dependencies:
