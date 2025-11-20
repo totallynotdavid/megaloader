@@ -7,16 +7,42 @@ from tests.test_urls import CYBERDROP_URLS
 
 
 @pytest.mark.live
-def test_cyberdrop():
-    """Test Cyberdrop extraction works."""
+def test_cyberdrop_album_images():
+    """Test Cyberdrop album extraction with images."""
     url = CYBERDROP_URLS["images"]
 
     plugin = Cyberdrop(url)
     items = list(plugin.extract())
 
-    # Basic assertions
     assert len(items) > 0, f"No items extracted from {url}"
 
-    # Validate each item
     for item in items:
         assert_valid_item(item)
+
+
+@pytest.mark.live
+def test_cyberdrop_album_videos():
+    """Test Cyberdrop album extraction with videos."""
+    url = CYBERDROP_URLS["videos"]
+
+    plugin = Cyberdrop(url)
+    items = list(plugin.extract())
+
+    assert len(items) > 0, f"No items extracted from {url}"
+
+    for item in items:
+        assert_valid_item(item)
+
+
+@pytest.mark.live
+def test_cyberdrop_single_file():
+    """Test Cyberdrop single file extraction."""
+    url = CYBERDROP_URLS["single_file"]
+
+    plugin = Cyberdrop(url)
+    items = list(plugin.extract())
+
+    assert len(items) == 1, (
+        f"Expected exactly 1 item from single file URL, got {len(items)}"
+    )
+    assert_valid_item(items[0])

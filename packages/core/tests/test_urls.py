@@ -25,6 +25,31 @@ FAPELLO_URLS = {
     "model": "https://fapello.com/narabask/",
 }
 
+FANBOX_URLS = {
+    "creator": "https://hasya.fanbox.cc/",
+}
+
 PIXIV_URLS = {
     "artwork": "https://www.pixiv.net/en/artworks/51400046",
+}
+
+RULE34_URLS = {
+    "tags": "https://rule34.xxx/index.php?page=post&s=list&tags=blame!+vest",
+    "single_post": "https://rule34.xxx/index.php?page=post&s=view&id=15121890",
+}
+
+THOTHUB_TO_URLS = {
+    "model": "https://thothub.to/models/dakota-tyler/",
+    "album": "https://thothub.to/albums/42718/yurasweb/",
+    "single_video": "https://thothub.to/videos/726266/roses-are-rosie/",
+}
+
+THOTHUB_VIP_URLS = {
+    "model": "https://thothub.vip/models/inkyung/",
+    "album": "https://thothub.vip/album/14055/the-sexy-asian-office-manager/",
+    "single_video": "https://thothub.vip/video/147988/sophie-rain-striptease-non-nude-e0f0e5e/",
+}
+
+THOTSLIFE_URLS = {
+    "post": "https://thotslife.com/belle-delphine-chihiro-cosplay-outdoor-onlyfans-set-leaked/",
 }

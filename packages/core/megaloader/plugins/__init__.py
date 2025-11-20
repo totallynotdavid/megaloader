@@ -26,6 +26,7 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "pixeldrain.com": PixelDrain,
     "pixiv.net": Pixiv,
     "rule34.xxx": Rule34,
+    "thothub.ch": ThothubTO,
     "thothub.to": ThothubTO,
     "thothub.vip": ThothubVIP,
     "thotslife.com": Thotslife,
