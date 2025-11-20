@@ -13,9 +13,7 @@ def test_thotslife_post():
     plugin = Thotslife(url)
     items = list(plugin.extract())
 
-    # Basic assertions
     assert len(items) > 0, f"No items extracted from {url}"
 
-    # Validate each item
     for item in items:
         assert_valid_item(item)
