@@ -1,103 +1,123 @@
-# For contributors
+# Contributing
 
-We welcome contributions ranging from bug fixes to new platform support. The
-development workflow emphasizes code quality through automated tooling and
-comprehensive type checking.
+## Setup
 
-The project includes several automated tasks that maintain code quality and
-consistency. These tools are configured in [pyproject.toml](../pyproject.toml)
-([ruff](../pyproject.toml?plain=1#L32) and
-[mypy](../pyproject.toml?plain=1#L69)) and can be executed through mise:
+Clone the repository and install dependencies. The project uses uv for
+dependency management:
 
 ```bash
-mise run fix     # Format code and apply automated fixes via ruff
-mise run mypy    # Run comprehensive type checking
-mise run export  # Update requirements.txt from pyproject.toml
+git clone https://github.com/totallynotdavid/megaloader
+cd megaloader
+uv sync
 ```
 
-All contributions must pass the automated CI pipeline, which includes type
-safety verification, code style enforcement, and security scanning through
-CodeQL. Running `mise run mypy` and `mise run fix` locally ensures your changes
-will partially pass the automated checks.
+Python 3.13+ is recommended for reproducibility. The project includes mise
+configuration for automated tool setup. If you prefer automated environment
+management, run:
 
-### Creating new plugins
+```bash
+mise install
+mise run install
+```
 
-New platform plugins should follow established patterns for consistency and
-maintainability. The basic structure requires inheriting from `BasePlugin` and
-implementing the two core methods, with registration in the
-[domain registry](../megaloader/plugins/__init__.py?plain=1#L16) for automatic
-URL detection.
+## Testing
+
+Run the full test suite including live API tests:
+
+```bash
+uv run pytest
+```
+
+Run unit tests only to skip slow integration tests:
+
+```bash
+uv run pytest -m "not integration"
+```
+
+Format the code and run type checks before committing:
+
+```bash
+uv run ruff format .
+uv run ruff check --fix .
+uv run mypy packages/core
+```
+
+If you have mise installed, you can instead run:
+
+```bash
+mise run format
+mise run mypy
+mise run test
+```
+
+## Creating plugins
+
+Plugins inherit from `BasePlugin` and implement the `extract()` method. This
+method yields `DownloadItem` objects containing file metadata:
 
 ```python
+from megaloader.plugin import BasePlugin
+from megaloader.item import DownloadItem
+from collections.abc import Generator
+from typing import Any
+
 class NewPlatformPlugin(BasePlugin):
     def __init__(self, url: str, **kwargs: Any) -> None:
         super().__init__(url, **kwargs)
-        # Initialize HTTP session, configure headers, handle authentication
+        self.session.headers.update({"User-Agent": "..."})
 
-    def export(self) -> Generator[Item, None, None]:
-        # Parse platform URLs and extract file information
-        # Handle pagination, albums, and individual files
-        # Yield Item objects with complete download metadata
-        pass
+    def extract(self) -> Generator[DownloadItem, None, None]:
+        response = self.session.get(self.url)
+        response.raise_for_status()
 
-    def download_file(self, item: Item, output_dir: str) -> bool:
-        # Execute actual file download and storage
-        # Handle platform-specific download logic
-        # Return success/failure status for error handling
-        return True
+        # Parse response and extract file information
+        yield DownloadItem(
+            filename="example.jpg",
+            download_url="https://...",
+            size_bytes=1024,
+        )
 ```
 
-Register your plugin in the domain mapping located in
-[`megaloader/plugins/__init__.py`](../megaloader/plugins/__init__.py) to enable
-automatic URL detection.
+Register your plugin in `packages/core/megaloader/plugins/__init__.py` by adding
+a domain mapping to `PLUGIN_REGISTRY`:
 
-### Technical details
+```python
+PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
+    "newplatform.com": NewPlatformPlugin,
+}
+```
 
-The runtime maintains a minimal dependency footprint with three core libraries:
+For subdomain support like `creator.fanbox.cc`, add the base domain to
+`SUBDOMAIN_SUPPORTED_DOMAINS`.
 
-- `requests` handles HTTP operations and session management,
-- `beautifulsoup4` provides HTML parsing capabilities, and
-- `lxml` serves as the high-performance parser backend.
+Handle network errors broadly. Individual failures should be logged without
+stopping the entire extraction:
 
-Development dependencies include `ruff` for code formatting and linting, plus
-`mypy` for static type checking. The complete dependency tree is available in
-[requirements.txt](../requirements.txt).
+```python
+try:
+    response = self.session.get(url)
+    response.raise_for_status()
+except requests.RequestException as e:
+    logger.warning(f"Failed to fetch {url}: {e}")
+    return
+```
 
-Configuration management centralizes around [pyproject.toml](../pyproject.toml),
-which contains settings for all tools including ruff, mypy, and packaging
-metadata. The [mise.toml](../mise.toml) file provides development environment
-automation with exact tool versions and task orchestration for consistent
-development experiences.
+## Dependencies
 
-## Submitting contributions
+Keep runtime dependencies minimal. The core library depends on requests,
+beautifulsoup4, and lxml. Avoid adding additional dependencies unless necessary.
 
-To ensure a smooth process, please follow these steps:
+Development dependencies include ruff for formatting, mypy for type checking,
+and pytest for testing. Their configurations are set in the root pyproject.toml.
 
-1.  Start by **forking the repository** and creating a new branch for your
-    feature or bug fix; all work should be done in a dedicated feature branch.
-2.  Always **run the quality checks** using `mise run fix` and `mise run mypy`
-    to ensure your code meets the project's standards.
-3.  Before opening a PR (pull request), please **test your changes** thoroughly.
-    This is especially critical if you're adding a new plugin. (A tests module
-    to automate this is planned for the future).
-4.  Once your work is ready, you can **submit a PR (pull request)**. Please
-    include a clear description of the problem it addresses and the solution
-    you've implemented.
+## Submitting changes
 
-### Pull request guidelines
+Create a feature branch from main. Keep pull requests focused on a single
+feature or fix. Run format and type checks before committing. Test thoroughly,
+especially for new plugins.
 
-PRs should remain focused, addressing a single feature or bug fix at a time. Use
-descriptive commit messages and provide enough context in the pull request
-description to make the review process straightforward. Update any affected
-documentation, particularly if your changes alter the public API or development
-workflow.
+Write clear commit messages and PR descriptions. Explain what problem you're
+solving and how. Update documentation for public API changes.
 
-To discuss design choices, integrations, or open questions, please use
-[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
-
-### Reporting bugs
-
-Bug reports should be submitted through
-[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
-rather than GitHub Issues. Include your Python version, complete error messages,
-stack traces, problematic URLs, and DEBUG-level logging output.
+Use GitHub Discussions for design questions before starting large changes. When
+reporting bugs, include your Python version, error messages, and relevant URLs.
