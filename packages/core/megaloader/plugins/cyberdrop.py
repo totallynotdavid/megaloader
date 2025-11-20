@@ -56,27 +56,31 @@ class Cyberdrop(BasePlugin):
             file_url = urljoin(self.SITE_BASE, str(link["href"]))
 
             if match := re.search(r"/f/(\w+)", file_url):
-                file_id = match.group(1)
-
-                if item_data := self._fetch_file_info(file_id):
-                    yield DownloadItem(
-                        download_url=item_data["auth_url"],
-                        filename=item_data["name"],
-                        collection_name=collection_name,
-                        source_id=file_id,
-                    )
+                yield from self._process_file(match.group(1), collection_name)
 
     def _extract_file(self) -> Generator[DownloadItem, None, None]:
         """Extract a single file."""
         if match := re.search(r"/f/(\w+)", self.url):
-            file_id = match.group(1)
+            yield from self._process_file(match.group(1))
 
-            if item_data := self._fetch_file_info(file_id):
-                yield DownloadItem(
-                    download_url=item_data["auth_url"],
-                    filename=item_data["name"],
-                    source_id=file_id,
-                )
+    def _process_file(
+        self, file_id: str, collection_name: str | None = None
+    ) -> Generator[DownloadItem, None, None]:
+        """Process a single file ID and yield download item."""
+        item_data = self._fetch_file_info(file_id)
+        if not item_data:
+            return
+
+        direct_url = self._fetch_direct_url(item_data["auth_url"])
+        if not direct_url:
+            return
+
+        yield DownloadItem(
+            download_url=direct_url,
+            filename=item_data["name"],
+            collection_name=collection_name,
+            source_id=file_id,
+        )
 
     def _fetch_file_info(self, file_id: str) -> dict[str, Any] | None:
         """Get file metadata from API."""
@@ -88,8 +92,22 @@ class Cyberdrop(BasePlugin):
             data = response.json()
 
             if data.get("name") and data.get("auth_url"):
-                return data  # type: ignore [no-any-return]
+                return data
         except (requests.RequestException, ValueError):
             logger.debug("Failed to fetch file info for %s", file_id, exc_info=True)
+
+        return None
+
+    def _fetch_direct_url(self, auth_url: str) -> str | None:
+        """Get direct CDN URL from auth endpoint."""
+        try:
+            response = self.session.get(auth_url, timeout=30)
+            response.raise_for_status()
+            data = response.json()
+
+            if url := data.get("url"):
+                return url
+        except Exception:
+            logger.debug("Failed to fetch direct URL from %s", auth_url, exc_info=True)
 
         return None
