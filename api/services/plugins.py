@@ -30,7 +30,7 @@ def get_items_info(
 ) -> tuple[list[Item], int, list[FileInfo]]:
     """Get items from plugin and calculate total size."""
     plugin = plugin_class(url)
-    items = list(plugin.export())
+    items = list(plugin.extract())
 
     if not items:
         msg = "No downloadable items found"
@@ -46,8 +46,8 @@ def get_items_info(
 
     for item in items:
         headers = None
-        if hasattr(item, "metadata") and item.metadata and "referer" in item.metadata:
-            headers = {"Referer": item.metadata["referer"]}
+        if hasattr(item, "meta") and item.meta and "referer" in item.meta:
+            headers = {"Referer": item.meta["referer"]}
 
         size = get_file_size(item.url, headers)
         total_size += size

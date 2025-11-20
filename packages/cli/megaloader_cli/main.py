@@ -1,123 +1,91 @@
-import logging
-import sys
-
-from pathlib import Path
-
 import click
+from megaloader.plugins import PLUGIN_REGISTRY
 
-from megaloader import download
-from megaloader.exceptions import MegaloaderError
-from megaloader.plugins import get_plugin_class
-from rich.console import Console
-from rich.logging import RichHandler
-from rich.progress import Progress, SpinnerColumn, TextColumn
-
-
-console = Console()
-
-
-def setup_logging(*, verbose: bool) -> None:
-    """Configure logging with rich output."""
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(message)s",
-        handlers=[RichHandler(console=console, rich_tracebacks=True)],
-    )
+from megaloader_cli.commands import download_command, extract_command
+from megaloader_cli.utils import console, setup_logging
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="megaloader")
+@click.version_option(prog_name="megaloader")
 def cli() -> None:
     """
-    Megaloader - Download content from multiple file hosting platforms.
+    Megaloader: Extract and download content from file hosting platforms.
 
-    Supports platforms like Bunkr, Cyberdrop, GoFile, PixelDrain, and more.
+    Examples:
+      megaloader extract https://pixeldrain.com/l/abc123
+      megaloader download https://gofile.io/d/xyz456 ./downloads
+      megaloader plugins
     """
 
 
-@cli.command()
+@cli.command(name="extract")
+@click.argument("url")
+@click.option(
+    "--json",
+    "output_json",
+    is_flag=True,
+    help="Output JSON instead of human-readable text",
+)
+@click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
+def extract_cmd(url: str, output_json: bool, verbose: bool) -> None:
+    """
+    Extract metadata from URL without downloading (dry run).
+
+    Shows what would be downloaded including filenames, sizes, and URLs.
+    """
+    setup_logging(verbose)
+    extract_command(url, output_json)
+
+
+@cli.command(name="download")
 @click.argument("url")
 @click.argument("output_dir", type=click.Path(), default="./downloads")
-@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
-@click.option("--use-proxy", is_flag=True, help="Use proxy for downloads")
+@click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
 @click.option(
-    "--no-subdirs",
+    "--flat",
     is_flag=True,
-    help="Don't create album subdirectories",
+    help="Save all files to output_dir (no collection subfolders)",
 )
-def download_url(
+@click.option(
+    "--filter",
+    "pattern",
+    help="Filter files by glob pattern (e.g., *.jpg, *.mp4)",
+)
+@click.option(
+    "--password",
+    help="Password for protected content (Gofile)",
+)
+def download_cmd(
     url: str,
     output_dir: str,
-    *,
     verbose: bool,
-    use_proxy: bool,
-    no_subdirs: bool,
+    flat: bool,
+    pattern: str | None,
+    password: str | None,
 ) -> None:
     """
-    Download content from a URL.
+    Download content from URL to OUTPUT_DIR.
 
-    URL: The URL to download from
-    OUTPUT_DIR: Directory to save files (default: ./downloads)
+    By default, files are organized into subfolders by collection.
+    Use --flat to disable this behavior.
     """
-    setup_logging(verbose=verbose)
+    setup_logging(verbose)
 
-    try:
-        # Detect plugin
-        plugin_class = get_plugin_class(url)
-        if plugin_class:
-            console.print(
-                f"[green]✓[/green] Detected platform: {plugin_class.__name__}"
-            )
-        else:
-            console.print(f"[yellow]⚠[/yellow] Using automatic detection for: {url}")
+    options = {}
+    if password:
+        options["password"] = password
 
-        # Create output directory
-        output_path = Path(output_dir)
-        output_path.mkdir(parents=True, exist_ok=True)
-
-        # Download
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
-            task = progress.add_task("Downloading...", total=None)
-
-            success = download(
-                url,
-                str(output_path),
-                plugin_class=plugin_class,
-                use_proxy=use_proxy,
-                create_album_subdirs=not no_subdirs,
-            )
-
-            progress.update(task, completed=True)
-
-        if success:
-            console.print(f"[green]✓[/green] Download completed: {output_path}")
-            sys.exit(0)
-        else:
-            console.print("[red]✗[/red] Download failed")
-            sys.exit(1)
-
-    except MegaloaderError as e:
-        console.print(f"[red]✗[/red] Error: {e}")
-        if verbose:
-            console.print_exception()
-        sys.exit(1)
+    download_command(url, output_dir, flat, pattern, options)
 
 
-@cli.command()
-def list_plugins() -> None:
-    """List all available plugins and supported platforms."""
-    from megaloader.plugins import PLUGIN_REGISTRY
+@cli.command(name="plugins")
+def list_plugins_cmd() -> None:
+    """List all supported websites and domains."""
+    console.print("\n[bold]Supported Platforms:[/bold]\n")
 
-    console.print("\n[bold]Available Plugins:[/bold]\n")
-
-    for domains, plugin_class in PLUGIN_REGISTRY.items():
-        domain_list = ", ".join(domains) if isinstance(domains, tuple) else domains
-        console.print(f"  • [cyan]{plugin_class.__name__}[/cyan]: {domain_list}")
+    for domain in sorted(PLUGIN_REGISTRY.keys()):
+        plugin = PLUGIN_REGISTRY[domain]
+        console.print(f"  • [cyan]{domain:<20}[/cyan] ({plugin.__name__})")
 
     console.print()
 

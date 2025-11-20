@@ -32,22 +32,16 @@ dir = "packages/core"
 
 [tasks.format]
 description = "Lint & format (fix by default)"
-alias = "f"
-run = [
-  "ruff format . --config pyproject.toml",
-  "ruff check --fix --unsafe-fixes . --config pyproject.toml",
-]
+run = ["ruff format", "ruff check --fix"]
 
 [tasks.format-docs]
 description = "Format docs with biome"
-alias = "fd"
 run = "biome format --write ."
 dir = "docs"
 
 [tasks.mypy]
-description = "Type check with mypy"
-alias = "m"
-run = "uv run mypy packages/core/megaloader --config-file pyproject.toml"
+description = "Type check with lint"
+run = "uv run mypy packages/core/megaloader"
 
 [tasks.test]
 description = "Run the pytest suite, including live tests"

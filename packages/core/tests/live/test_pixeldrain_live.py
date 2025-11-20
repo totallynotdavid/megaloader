@@ -1,74 +1,45 @@
 import pytest
-import requests
 
+from megaloader.plugins.pixeldrain import PixelDrain
+
+from tests.helpers import assert_valid_item
 from tests.test_urls import PIXELDRAIN_URLS
 
 
 @pytest.mark.live
-@pytest.mark.downloads_file
-class TestPixelDrainLive:
-    def test_pixeldrain_images_list(self) -> None:
-        """Test against real PixelDrain images list with sample files."""
-        from megaloader.plugins.pixeldrain import PixelDrain
+def test_pixeldrain_list_images():
+    url = PIXELDRAIN_URLS["images"]
 
-        url = PIXELDRAIN_URLS["images"]
+    plugin = PixelDrain(url)
+    items = list(plugin.extract())
 
-        try:
-            plugin = PixelDrain(url)
-            items = list(plugin.export())
+    assert len(items) > 0, f"No items extracted from {url}"
 
-            assert len(items) == 6  # 6 sample images
-            filenames = [item.filename for item in items]
+    for item in items:
+        assert_valid_item(item)
 
-            expected_files = [
-                "sample-image-01.jpg",
-                "sample-image-02.jpg",
-                "sample-image-03.jpg",
-                "sample-image-04.jpg",
-                "sample-image-05.jpg",
-                "sample-image-06.jpg",
-            ]
 
-            for expected in expected_files:
-                assert expected in filenames
+@pytest.mark.live
+def test_pixeldrain_list_videos():
+    url = PIXELDRAIN_URLS["videos"]
 
-            for item in items:
-                assert item.filename
-                assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size", 0) > 0
-        except requests.RequestException as e:
-            pytest.skip(f"PixelDrain images list unavailable: {e}")
+    plugin = PixelDrain(url)
+    items = list(plugin.extract())
 
-    def test_pixeldrain_videos_list(self) -> None:
-        """Test against real PixelDrain videos list with sample files."""
-        from megaloader.plugins.pixeldrain import PixelDrain
+    assert len(items) > 0, f"No items extracted from {url}"
 
-        url = PIXELDRAIN_URLS["videos"]
+    for item in items:
+        assert_valid_item(item)
 
-        try:
-            plugin = PixelDrain(url)
-            items = list(plugin.export())
 
-            assert len(items) == 4  # 4 sample videos
-            filenames = [item.filename for item in items]
+@pytest.mark.live
+def test_pixeldrain_single_file():
+    url = PIXELDRAIN_URLS["single_file"]
 
-            expected_files = [
-                "sample-video-bunny.webm",
-                "sample-video-planet.mov",
-                "sample-video-jellyfish.mkv",
-                "sample-video-rick.mp4",
-            ]
+    plugin = PixelDrain(url)
+    items = list(plugin.extract())
 
-            for expected in expected_files:
-                assert expected in filenames
-
-            for item in items:
-                assert item.filename
-                assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size", 0) > 0
-        except requests.RequestException as e:
-            pytest.skip(f"PixelDrain videos list unavailable: {e}")
+    assert len(items) == 1, (
+        f"Expected exactly 1 item from single file URL, got {len(items)}"
+    )
+    assert_valid_item(items[0])

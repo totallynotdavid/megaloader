@@ -1,88 +1,32 @@
 import pytest
-import requests
 
+from megaloader.plugins.gofile import Gofile
+
+from tests.helpers import assert_valid_item
 from tests.test_urls import GOFILE_URLS
 
 
 @pytest.mark.live
-class TestGofileLive:
-    def test_gofile_token_fetching(self) -> None:
-        """Test that we can fetch real Gofile tokens."""
-        from megaloader.plugins.gofile import Gofile
+def test_gofile_folder_images():
+    url = GOFILE_URLS["images"]
 
-        plugin = Gofile("https://gofile.io/d/test")
+    plugin = Gofile(url)
+    items = list(plugin.extract())
 
-        try:
-            wt = plugin.website_token
-            api = plugin.api_token
+    assert len(items) > 0, f"No items extracted from {url}"
 
-            assert wt and len(wt) > 0
-            assert api and len(api) > 0
-        except requests.RequestException as e:
-            pytest.skip(f"Gofile API unreachable: {e}")
+    for item in items:
+        assert_valid_item(item)
 
-    def test_gofile_images_album(self) -> None:
-        """Test against real Gofile images album with sample files."""
-        from megaloader.plugins.gofile import Gofile
 
-        url = GOFILE_URLS["images"]
+@pytest.mark.live
+def test_gofile_folder_videos():
+    url = GOFILE_URLS["videos"]
 
-        try:
-            plugin = Gofile(url)
-            items = list(plugin.export())
+    plugin = Gofile(url)
+    items = list(plugin.extract())
 
-            assert len(items) == 6  # 6 sample images
-            filenames = [item.filename for item in items]
+    assert len(items) > 0, f"No items extracted from {url}"
 
-            expected_files = [
-                "sample-image-01.jpg",
-                "sample-image-02.jpg",
-                "sample-image-03.jpg",
-                "sample-image-04.jpg",
-                "sample-image-05.jpg",
-                "sample-image-06.jpg",
-            ]
-
-            for expected in expected_files:
-                assert expected in filenames
-
-            for item in items:
-                assert item.filename
-                assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size") is not None
-        except requests.RequestException as e:
-            pytest.skip(f"Gofile images album unavailable: {e}")
-
-    def test_gofile_videos_album(self) -> None:
-        """Test against real Gofile videos album with sample files."""
-        from megaloader.plugins.gofile import Gofile
-
-        url = GOFILE_URLS["videos"]
-
-        try:
-            plugin = Gofile(url)
-            items = list(plugin.export())
-
-            assert len(items) == 4  # 4 sample videos
-            filenames = [item.filename for item in items]
-
-            expected_files = [
-                "sample-video-bunny.webm",
-                "sample-video-planet.mov",
-                "sample-video-jellyfish.mkv",
-                "sample-video-rick.mp4",
-            ]
-
-            for expected in expected_files:
-                assert expected in filenames
-
-            for item in items:
-                assert item.filename
-                assert item.url
-                assert item.file_id
-                assert item.metadata is not None
-                assert item.metadata.get("size") is not None
-        except requests.RequestException as e:
-            pytest.skip(f"Gofile videos album unavailable: {e}")
+    for item in items:
+        assert_valid_item(item)

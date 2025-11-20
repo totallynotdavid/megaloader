@@ -12,86 +12,63 @@ from megaloader.plugins.thothub_vip import ThothubVIP
 from megaloader.plugins.thotslife import Thotslife
 
 
-# Domain to plugin mapping
 PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
-    # Bunkr domains
     "bunkr.si": Bunkr,
     "bunkr.la": Bunkr,
     "bunkr.is": Bunkr,
     "bunkr.ru": Bunkr,
     "bunkr.su": Bunkr,
-    "bunkr": Bunkr,
-    # Cyberdrop domains
+    "cyberdrop.cr": Cyberdrop,
     "cyberdrop.me": Cyberdrop,
     "cyberdrop.to": Cyberdrop,
-    "cyberdrop": Cyberdrop,
-    # Fanbox domains
     "fanbox.cc": Fanbox,
-    # Fapello domains
     "fapello.com": Fapello,
-    # Gofile domains
     "gofile.io": Gofile,
-    # PixelDrain domains
     "pixeldrain.com": PixelDrain,
-    # Pixiv domains
     "pixiv.net": Pixiv,
-    # Rule34 domains
     "rule34.xxx": Rule34,
-    # Thothub[dot]to domains
+    "thothub.ch": ThothubTO,
     "thothub.to": ThothubTO,
-    # Thothub[dot]vip domains
     "thothub.vip": ThothubVIP,
-    # Thotslife domains
     "thotslife.com": Thotslife,
 }
 
-SUBDOMAIN_SUPPORTED_DOMAINS: set[str] = {
-    "fanbox.cc",  # Fanbox supports subdomains like {creator_id}.fanbox.cc
-}
+# Domains that support subdomains (e.g., creator.fanbox.cc)
+SUBDOMAIN_SUPPORTED: set[str] = {"fanbox.cc"}
 
 
 def get_plugin_class(domain: str) -> type[BasePlugin] | None:
     """
-    Get plugin class for a domain.
+    Resolve domain to plugin class.
+
+    Resolution order:
+    1. Exact match in PLUGIN_REGISTRY
+    2. Subdomain match for supported domains
+    3. Partial match (fallback for domain variations)
 
     Args:
-        domain: Domain name or identifier
+        domain: Normalized domain from URL (e.g., "pixiv.net")
 
     Returns:
-        Plugin class, or None if no plugin found
+        Plugin class or None if unsupported
     """
     domain = domain.lower().strip()
 
-    # Direct match first
+    # Exact match
     if domain in PLUGIN_REGISTRY:
         return PLUGIN_REGISTRY[domain]
 
-    # Check for subdomain matches
-    for supported_domain in SUBDOMAIN_SUPPORTED_DOMAINS:
-        if (
-            domain.endswith("." + supported_domain)
-            and supported_domain in PLUGIN_REGISTRY
-        ):
-            return PLUGIN_REGISTRY[supported_domain]
+    # Subdomain support (e.g., creator.fanbox.cc -> fanbox.cc)
+    for base_domain in SUBDOMAIN_SUPPORTED:
+        if domain.endswith(f".{base_domain}") and base_domain in PLUGIN_REGISTRY:
+            return PLUGIN_REGISTRY[base_domain]
 
-    for key, plugin_cls in PLUGIN_REGISTRY.items():
-        if key in domain:
-            return plugin_cls
+    # Partial match fallback (e.g., www.pixiv.net -> pixiv.net)
+    for registered_domain, plugin_class in PLUGIN_REGISTRY.items():
+        if registered_domain in domain:
+            return plugin_class
 
     return None
 
 
-__all__ = [
-    "Bunkr",
-    "Cyberdrop",
-    "Fanbox",
-    "Fapello",
-    "Gofile",
-    "PixelDrain",
-    "Pixiv",
-    "Rule34",
-    "ThothubTO",
-    "ThothubVIP",
-    "Thotslife",
-    "get_plugin_class",
-]
+__all__ = ["PLUGIN_REGISTRY", "get_plugin_class"]

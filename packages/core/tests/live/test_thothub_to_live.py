@@ -1,17 +1,16 @@
 import pytest
 
-from megaloader.plugins.cyberdrop import Cyberdrop
+from megaloader.plugins.thothub_to import ThothubTO
 
 from tests.helpers import assert_valid_item
-from tests.test_urls import CYBERDROP_URLS
+from tests.test_urls import THOTHUB_TO_URLS
 
 
 @pytest.mark.live
-def test_cyberdrop_album_images():
-    """Test Cyberdrop album extraction with images."""
-    url = CYBERDROP_URLS["images"]
+def test_thothub_to_model():
+    url = THOTHUB_TO_URLS["model"]
 
-    plugin = Cyberdrop(url)
+    plugin = ThothubTO(url)
     items = list(plugin.extract())
 
     assert len(items) > 0, f"No items extracted from {url}"
@@ -21,10 +20,10 @@ def test_cyberdrop_album_images():
 
 
 @pytest.mark.live
-def test_cyberdrop_album_videos():
-    url = CYBERDROP_URLS["videos"]
+def test_thothub_to_album():
+    url = THOTHUB_TO_URLS["album"]
 
-    plugin = Cyberdrop(url)
+    plugin = ThothubTO(url)
     items = list(plugin.extract())
 
     assert len(items) > 0, f"No items extracted from {url}"
@@ -34,13 +33,13 @@ def test_cyberdrop_album_videos():
 
 
 @pytest.mark.live
-def test_cyberdrop_single_file():
-    url = CYBERDROP_URLS["single_file"]
+def test_thothub_to_single_video():
+    url = THOTHUB_TO_URLS["single_video"]
 
-    plugin = Cyberdrop(url)
+    plugin = ThothubTO(url)
     items = list(plugin.extract())
 
     assert len(items) == 1, (
-        f"Expected exactly 1 item from single file URL, got {len(items)}"
+        f"Expected exactly 1 item from single video URL, got {len(items)}"
     )
     assert_valid_item(items[0])
