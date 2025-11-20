@@ -32,7 +32,7 @@ for item in extract("https://pixeldrain.com/l/abc123"):
 CLI usage:
 
 ```bash
-megaloader download https://pixeldrain.com/l/abc123 ./downloads
+megaloader download https://pixeldrain.com/l/abc123
 ```
 
 More detailed information is available in the package-specific documentation:
