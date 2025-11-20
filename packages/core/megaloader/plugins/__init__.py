@@ -18,6 +18,7 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "bunkr.is": Bunkr,
     "bunkr.ru": Bunkr,
     "bunkr.su": Bunkr,
+    "cyberdrop.cr": Cyberdrop,
     "cyberdrop.me": Cyberdrop,
     "cyberdrop.to": Cyberdrop,
     "fanbox.cc": Fanbox,
