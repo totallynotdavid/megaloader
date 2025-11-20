@@ -8,25 +8,19 @@ Python library and CLI for extracting downloadable content from file hosting
 platforms. Supports 11 platforms through a plugin architecture with automatic
 URL detection.
 
-Install the core library for programmatic use:
+Megaloader is available as two independent packages:
 
 ```bash
-pip install megaloader
+pip install megaloader          # core library
+pip install megaloader-cli      # terminal CLI
 ```
 
-Install the CLI tool for terminal usage:
-
-```bash
-pip install megaloader-cli
-```
-
-The packages are independent. Install both if you need library integration and
-command-line access.
+Install one or both depending on whether you need API integration, command-line
+tools, or both.
 
 ## Usage
 
-**Using the library**: The library provides an `extract` function that detects
-the platform and extracts file metadata:
+Library usage:
 
 ```python
 from megaloader import extract
@@ -35,18 +29,16 @@ for item in extract("https://pixeldrain.com/l/abc123"):
     print(f"{item.filename} - {item.download_url}")
 ```
 
-Read the [core library documentation](packages/core/readme.md) for API details,
-supported platforms, authentication, and download implementation.
-
-**Using the CLI**: The CLI extracts metadata and downloads files directly from
-the terminal:
+CLI usage:
 
 ```bash
 megaloader download https://pixeldrain.com/l/abc123 ./downloads
 ```
 
-Read the [CLI documentation](packages/cli/readme.md) for command reference and
-usage patterns.
+More detailed information is available in the package-specific documentation:
+
+- Core library: [packages/core/readme.md](packages/core/readme.md)
+- CLI: [packages/cli/readme.md](packages/cli/readme.md)
 
 ## Supported platforms
 
@@ -55,22 +47,22 @@ extended platforms on best-effort basis. Core platforms receive priority for bug
 fixes and feature development. Extended platforms work as of November 2025 but
 may break without immediate fixes.
 
-| Platform    | Domain(s)                                 | Supports                                                               | Priority |
-| ----------- | ----------------------------------------- | ---------------------------------------------------------------------- | -------- |
-| Bunkr       | bunkr.{si,la,is,ru,su}                    | Albums, single files                                                   | Core     |
-| PixelDrain  | pixeldrain.com                            | Lists, single files, [proxy support](#pixeldrain-proxy-support)        | Core     |
-| Cyberdrop   | cyberdrop.{me,to,cr}                      | Albums, single files                                                   | Core     |
-| GoFile      | gofile.io                                 | Folders ([password-protected](#gofile-password-support)), single files | Core     |
-| Fanbox      | {creator}.fanbox.cc, fanbox.cc/@{creator} | Creator content, [authentication](.env.example)                        | Extended |
-| Pixiv       | pixiv.net                                 | Artworks, galleries, [authentication](.env.example)                    | Extended |
-| Rule34      | rule34.xxx                                | Tags, posts, [API support](.env.example)                               | Extended |
-| ThotsLife   | thotslife.com                             | Albums, blog posts                                                     | Extended |
-| ThotHub.VIP | thothub.vip                               | Videos, albums                                                         | Extended |
-| ThotHub.TO  | thothub.to                                | Videos, albums                                                         | Extended |
-| Fapello     | fapello.com                               | Model profiles                                                         | Extended |
+| Platform    | Domains                | Supports                                      | Status   |
+| ----------- | ---------------------- | --------------------------------------------- | -------- |
+| Bunkr       | bunkr.{si,la,is,ru,su} | Albums, single files                          | Core     |
+| PixelDrain  | pixeldrain.com         | Lists, files, proxy support                   | Core     |
+| Cyberdrop   | cyberdrop.{me,to,cr}   | Albums, single files                          | Core     |
+| GoFile      | gofile.io              | Folders (including password-protected), files | Core     |
+| Fanbox      | {creator}.fanbox.cc    | Creator content, authentication               | Extended |
+| Pixiv       | pixiv.net              | Artworks, galleries, authentication           | Extended |
+| Rule34      | rule34.xxx             | Tags, posts, API                              | Extended |
+| ThotsLife   | thotslife.com          | Albums, posts                                 | Extended |
+| ThotHub.VIP | thothub.vip            | Videos, albums                                | Extended |
+| ThotHub.TO  | thothub.to             | Videos, albums                                | Extended |
+| Fapello     | fapello.com            | Model profiles                                | Extended |
 
-Platform-specific features like authentication are documented in the core
-library readme.
+Additional notes on authentication and platform-specific features are documented
+in the core library readme.
 
 ## Development
 
@@ -79,7 +71,7 @@ This monorepo uses uv workspaces. The core library lives in
 `[packages/cli/](packages/cli/)`. Both are published independently to PyPI.
 Development tools are configured at the root.
 
-Clone and install dependencies:
+Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/totallynotdavid/megaloader
@@ -96,9 +88,9 @@ uv run mypy packages/core   # mise run mypy
 uv run pytest               # mise run test, mise run test-unit, mise run test-integration
 ```
 
-The project includes mise configuration for automatic tool management. Run
-`mise install` then `mise run install` to set up the environment. See
-[mise.toml](mise.toml) for more details or run `mise tasks`.
+The project includes mise configuration for automatic tool management. Use
+`mise install` followed by `mise run install` to set up the environment. See
+[mise.toml](mise.toml) or run `mise tasks` for details.
 
 See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for plugin development
 guidelines.
@@ -110,5 +102,5 @@ repository was later deleted or made private. Current maintainer
 [@totallynotdavid](https://github.com/totallynotdavid) rebuilt the codebase from
 scratch to fix platform changes and modernize the architecture.
 
-Report issues and discuss features through
+Feature discussions and issue reports take place on
 [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
