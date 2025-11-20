@@ -10,7 +10,6 @@ from tests.test_urls import RULE34_URLS
 
 @pytest.mark.live
 def test_rule34_tags_scraping():
-    """Test Rule34 tags search using scraping mode (no auth)."""
     url = RULE34_URLS["tags"]
 
     plugin = Rule34(url)
@@ -24,7 +23,6 @@ def test_rule34_tags_scraping():
 
 @pytest.mark.live
 def test_rule34_single_post():
-    """Test Rule34 single post extraction."""
     url = RULE34_URLS["single_post"]
 
     plugin = Rule34(url)
@@ -38,7 +36,6 @@ def test_rule34_single_post():
 
 @pytest.mark.live
 def test_rule34_tags_api():
-    """Test Rule34 tags search using API mode (requires credentials)."""
     api_key = os.getenv("RULE34_API_KEY")
     user_id = os.getenv("RULE34_USER_ID")
 

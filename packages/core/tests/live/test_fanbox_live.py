@@ -8,7 +8,6 @@ from tests.test_urls import FANBOX_URLS
 
 @pytest.mark.live
 def test_fanbox_creator():
-    """Test Fanbox creator page extraction."""
     url = FANBOX_URLS["creator"]
 
     plugin = Fanbox(url)

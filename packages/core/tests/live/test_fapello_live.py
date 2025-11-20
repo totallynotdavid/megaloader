@@ -8,7 +8,6 @@ from tests.test_urls import FAPELLO_URLS
 
 @pytest.mark.live
 def test_fapello_model():
-    """Test Fapello model page extraction."""
     url = FAPELLO_URLS["model"]
 
     plugin = Fapello(url)

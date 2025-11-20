@@ -8,7 +8,6 @@ from tests.test_urls import THOTSLIFE_URLS
 
 @pytest.mark.live
 def test_thotslife_post():
-    """Test Thotslife post extraction works."""
     url = THOTSLIFE_URLS["post"]
 
     plugin = Thotslife(url)

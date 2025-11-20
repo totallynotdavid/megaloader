@@ -8,7 +8,6 @@ from tests.test_urls import THOTHUB_TO_URLS
 
 @pytest.mark.live
 def test_thothub_to_model():
-    """Test Thothub.to model page extraction."""
     url = THOTHUB_TO_URLS["model"]
 
     plugin = ThothubTO(url)
@@ -22,7 +21,6 @@ def test_thothub_to_model():
 
 @pytest.mark.live
 def test_thothub_to_album():
-    """Test Thothub.to album extraction."""
     url = THOTHUB_TO_URLS["album"]
 
     plugin = ThothubTO(url)
@@ -36,7 +34,6 @@ def test_thothub_to_album():
 
 @pytest.mark.live
 def test_thothub_to_single_video():
-    """Test Thothub.to single video extraction."""
     url = THOTHUB_TO_URLS["single_video"]
 
     plugin = ThothubTO(url)

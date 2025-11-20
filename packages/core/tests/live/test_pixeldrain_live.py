@@ -8,7 +8,6 @@ from tests.test_urls import PIXELDRAIN_URLS
 
 @pytest.mark.live
 def test_pixeldrain_list_images():
-    """Test PixelDrain list extraction with images."""
     url = PIXELDRAIN_URLS["images"]
 
     plugin = PixelDrain(url)
@@ -22,7 +21,6 @@ def test_pixeldrain_list_images():
 
 @pytest.mark.live
 def test_pixeldrain_list_videos():
-    """Test PixelDrain list extraction with videos."""
     url = PIXELDRAIN_URLS["videos"]
 
     plugin = PixelDrain(url)
@@ -36,7 +34,6 @@ def test_pixeldrain_list_videos():
 
 @pytest.mark.live
 def test_pixeldrain_single_file():
-    """Test PixelDrain single file extraction."""
     url = PIXELDRAIN_URLS["single_file"]
 
     plugin = PixelDrain(url)

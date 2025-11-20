@@ -8,7 +8,6 @@ from tests.test_urls import BUNKR_URLS
 
 @pytest.mark.live
 def test_bunkr_album_images():
-    """Test Bunkr album extraction with images."""
     url = BUNKR_URLS["images"]
 
     plugin = Bunkr(url)
@@ -22,7 +21,6 @@ def test_bunkr_album_images():
 
 @pytest.mark.live
 def test_bunkr_album_videos():
-    """Test Bunkr album extraction with videos."""
     url = BUNKR_URLS["videos"]
 
     plugin = Bunkr(url)
@@ -36,7 +34,6 @@ def test_bunkr_album_videos():
 
 @pytest.mark.live
 def test_bunkr_single_file():
-    """Test Bunkr single file extraction."""
     url = BUNKR_URLS["single_file"]
 
     plugin = Bunkr(url)

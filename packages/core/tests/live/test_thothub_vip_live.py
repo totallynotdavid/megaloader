@@ -8,7 +8,6 @@ from tests.test_urls import THOTHUB_VIP_URLS
 
 @pytest.mark.live
 def test_thothub_vip_album():
-    """Test Thothub.vip album extraction."""
     url = THOTHUB_VIP_URLS["album"]
 
     plugin = ThothubVIP(url)
@@ -22,7 +21,6 @@ def test_thothub_vip_album():
 
 @pytest.mark.live
 def test_thothub_vip_single_video():
-    """Test Thothub.vip single video extraction."""
     url = THOTHUB_VIP_URLS["single_video"]
 
     plugin = ThothubVIP(url)

@@ -8,7 +8,6 @@ from tests.test_urls import PIXIV_URLS
 
 @pytest.mark.live
 def test_pixiv_artwork():
-    """Test Pixiv artwork extraction."""
     url = PIXIV_URLS["artwork"]
 
     plugin = Pixiv(url)

@@ -22,7 +22,6 @@ def test_cyberdrop_album_images():
 
 @pytest.mark.live
 def test_cyberdrop_album_videos():
-    """Test Cyberdrop album extraction with videos."""
     url = CYBERDROP_URLS["videos"]
 
     plugin = Cyberdrop(url)
@@ -36,7 +35,6 @@ def test_cyberdrop_album_videos():
 
 @pytest.mark.live
 def test_cyberdrop_single_file():
-    """Test Cyberdrop single file extraction."""
     url = CYBERDROP_URLS["single_file"]
 
     plugin = Cyberdrop(url)
