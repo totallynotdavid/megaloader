@@ -9,12 +9,6 @@ console = Console()
 
 
 def setup_logging(verbose: bool) -> None:
-    """
-    Configure logging for CLI.
-
-    Args:
-        verbose: If True, show DEBUG logs. Otherwise show WARNING only.
-    """
     level = logging.DEBUG if verbose else logging.WARNING
 
     logging.basicConfig(
@@ -34,7 +28,6 @@ def setup_logging(verbose: bool) -> None:
 def sanitize_for_filesystem(name: str) -> str:
     """
     Sanitize a string to be safe for use as a filename or directory name.
-
     Removes/replaces characters that are invalid on Windows/Unix filesystems.
 
     Args:
@@ -42,10 +35,6 @@ def sanitize_for_filesystem(name: str) -> str:
 
     Returns:
         Safe string (e.g., "Video_ Title_")
-
-    Example:
-        >>> sanitize_for_filesystem('An album: part 1/2')
-        'An album_ part 1_2'
     """
     # Replace invalid characters with underscore
     sanitized = re.sub(r'[<>:"/\\|?*]', "_", name)

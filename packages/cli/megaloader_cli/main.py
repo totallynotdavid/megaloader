@@ -1,6 +1,6 @@
 import click
-
 from megaloader.plugins import PLUGIN_REGISTRY
+
 from megaloader_cli.commands import download_command, extract_command
 from megaloader_cli.utils import console, setup_logging
 
@@ -9,7 +9,7 @@ from megaloader_cli.utils import console, setup_logging
 @click.version_option(prog_name="megaloader")
 def cli() -> None:
     """
-    Megaloader - Extract and download content from file hosting platforms.
+    Megaloader: Extract and download content from file hosting platforms.
 
     Examples:
       megaloader extract https://pixeldrain.com/l/abc123

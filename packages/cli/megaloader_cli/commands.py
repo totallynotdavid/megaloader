@@ -1,3 +1,4 @@
+import dataclasses
 import sys
 from fnmatch import fnmatch
 from pathlib import Path
@@ -189,9 +190,6 @@ def _get_plugin_name(url: str) -> str | None:
 
 
 def _print_json(url: str, items: list[mgl.DownloadItem]) -> None:
-    """Output items as JSON."""
-    import dataclasses
-
     data = {
         "source": url,
         "count": len(items),
@@ -201,7 +199,6 @@ def _print_json(url: str, items: list[mgl.DownloadItem]) -> None:
 
 
 def _print_human_readable(items: list[mgl.DownloadItem]) -> None:
-    """Output items in human-readable format."""
     console.print(f"\n[bold]Found {len(items)} files:[/bold]\n")
 
     for i, item in enumerate(items, 1):
