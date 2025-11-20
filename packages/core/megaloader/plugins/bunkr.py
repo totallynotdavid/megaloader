@@ -89,7 +89,6 @@ class Bunkr(BasePlugin):
 
         filename = self._extract_filename(response.text) or f"bunkr_file_{file_id}"
 
-        # Get direct CDN URL via API
         if direct_url := self._fetch_direct_url(file_id, filename):
             yield DownloadItem(
                 download_url=direct_url,
