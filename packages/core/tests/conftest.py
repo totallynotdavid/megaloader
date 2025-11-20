@@ -1,24 +1,4 @@
-import pathlib
-
 import pytest
-
-
-HERE = pathlib.Path(__file__).parent
-FIXTURES = HERE / "fixtures"
-
-
-@pytest.fixture
-def fixture_loader():
-    """Reads a file from the fixtures directory."""
-
-    def _load(name: str) -> str:
-        path = FIXTURES / name
-        if not path.exists():
-            msg = f"Fixture {name} not found at {path}"
-            raise FileNotFoundError(msg)
-        return path.read_text(encoding="utf-8")
-
-    return _load
 
 
 def pytest_configure(config) -> None:

@@ -5,9 +5,9 @@ BUNKR_URLS = {
 }
 
 CYBERDROP_URLS = {
-    "images": "https://cyberdrop.me/a/w4iUzGgx",
-    "videos": "https://cyberdrop.me/a/9ZwBUxsC",
-    "single_file": "https://cyberdrop.me/f/7rw3VENyC62mB",  # first item from first album (images)
+    "images": "https://cyberdrop.cr/a/w4iUzGgx",
+    "videos": "https://cyberdrop.cr/a/9ZwBUxsC",
+    "single_file": "https://cyberdrop.cr/f/7rw3VENyC62mB",  # first item from first album (images)
 }
 
 GOFILE_URLS = {
