@@ -110,7 +110,7 @@ async def validate_endpoint(request: URLValidation, req: Request) -> ValidationR
     return ValidationResult(supported=supported, domain=domain, plugin=plugin)
 
 
-@app.post("/download")
+@app.post("/download", response_model=None)
 async def download_endpoint(
     request: DownloadRequest, req: Request
 ) -> DownloadPreview | Response:
