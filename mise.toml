@@ -33,8 +33,7 @@ run = ["ruff format", "ruff check --fix"]
 
 [tasks.lint]
 description = "Run type checking"
-run = "uv run mypy"
-dir = "packages/core"
+run = "uv run mypy ."
 
 [tasks.check]
 description = "Quick pre-push checks: format, lint, test-unit"
