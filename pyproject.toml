@@ -16,12 +16,7 @@ maintainers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = [
-    "mypy>=1.18.2",
-    "pytest>=8.4.2",
-    "requests-mock>=1.12.1",
-    "types-requests>=2.32.0",
-]
+dev = []
 
 [tool.pytest.ini_options]
 testpaths = ["packages/core/tests"]
