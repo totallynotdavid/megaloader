@@ -1,18 +1,20 @@
 name: tests
 
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - "packages/core/**/*.py"
-      - "pyproject.toml"
-      - "packages/core/pyproject.toml"
-  pull_request:
-    branches: ["main"]
-    paths:
-      - "packages/core/**/*.py"
-      - "packages/core/pyproject.toml"
-      - "pyproject.toml"
+  schedule:
+    - cron: "0 5 * * 1" # Run at 05:00 UTC every Monday
+  # push:
+  #   branches: ["main"]
+  #   paths:
+  #     - "pyproject.toml"
+  #     - "packages/core/**/*.py"
+  #     - "packages/core/pyproject.toml"
+  # pull_request:
+  #   branches: ["main"]
+  #   paths:
+  #     - "pyproject.toml"
+  #     - "packages/core/**/*.py"
+  #     - "packages/core/pyproject.toml"
   workflow_dispatch:
 
 permissions:
