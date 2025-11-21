@@ -15,6 +15,8 @@ from api.config import (
 )
 
 
+# ruff: noqa: TRY301 (FastAPI idiom: raise HTTPException directly)
+
 logger = logging.getLogger(__name__)
 
 
