@@ -5,6 +5,8 @@ from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
+import requests
+
 from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
@@ -81,7 +83,7 @@ class ThothubVIP(BasePlugin):
                     filename=f"{title}.mp4",
                     collection_name=collection_name,
                 )
-        except Exception:
+        except (requests.RequestException, ValueError, KeyError):
             logger.debug("Failed to fetch video from %s", video_url, exc_info=True)
 
         return None
@@ -91,7 +93,7 @@ class ThothubVIP(BasePlugin):
         try:
             response = self.session.get(album_url, timeout=30)
             response.raise_for_status()
-        except Exception:
+        except requests.RequestException:
             logger.debug("Failed to fetch album from %s", album_url, exc_info=True)
             return
 
