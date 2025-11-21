@@ -36,6 +36,6 @@ jobs:
 
       - uses: astral-sh/ruff-action@e7baf99fcc269796ae85308f7bef6b06147c7f08 # v3.5.1
         with:
-          args: "check . --config pyproject.toml"
+          args: "check"
 
-      - run: uv run mypy --config pyproject.toml
+      - run: uv run mypy
