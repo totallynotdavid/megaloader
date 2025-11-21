@@ -1,4 +1,5 @@
 import click
+
 from megaloader.plugins import PLUGIN_REGISTRY
 
 from megaloader_cli.commands import download_command, extract_command

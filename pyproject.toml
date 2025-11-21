@@ -16,12 +16,15 @@ maintainers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = [
-    "mypy>=1.18.2",
-    "pytest>=8.4.2",
-    "requests-mock>=1.12.1",
-    "types-requests>=2.32.0",
+dev = []
+
+[tool.pytest.ini_options]
+testpaths = ["packages/core/tests"]
+python_files = ["test_*.py"]
+markers = [
+    "live: mark test as requiring live network access"
 ]
+addopts = "-q"
 
 [tool.ruff]
 fix = true
@@ -85,5 +88,3 @@ order-by-type = true
 relative-imports-order = "closest-to-furthest"
 extra-standard-library = ["typing"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
-
-

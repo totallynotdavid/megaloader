@@ -1,10 +1,12 @@
 import dataclasses
 import sys
+
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
 import megaloader as mgl
+
 from megaloader.exceptions import MegaloaderError
 from megaloader.plugins import get_plugin_class
 from rich.progress import (

@@ -4,7 +4,7 @@ from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
@@ -27,7 +27,7 @@ class Thotslife(BasePlugin):
         collection_name = title_tag.text.strip() if title_tag else "thotslife_post"
 
         body = soup.find("div", itemprop="articleBody")
-        if not body:
+        if not isinstance(body, Tag):
             return
 
         seen = set()
