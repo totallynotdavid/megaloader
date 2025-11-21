@@ -15,11 +15,12 @@ maintainers = [
 
 dependencies = []
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "mypy>=1.18.2",
     "pytest>=8.4.2",
-    "requests-mock>=1.12.1"
+    "requests-mock>=1.12.1",
+    "types-requests>=2.32.0",
 ]
 
 [tool.ruff]
@@ -85,15 +86,4 @@ relative-imports-order = "closest-to-furthest"
 extra-standard-library = ["typing"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
-[tool.mypy]
-files = ["packages/core/megaloader"]
-strict = true
-enable_error_code = [
-    "ignore-without-code",
-    "redundant-expr",
-    "truthy-bool",
-]
 
-[[tool.mypy.overrides]]
-module = ["requests.*", "bs4.*"]
-ignore_missing_imports = true

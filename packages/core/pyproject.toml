@@ -42,3 +42,16 @@ markers = [
     "live: mark test as requiring live network access"
 ]
 addopts = "-q"
+
+[tool.mypy]
+files = ["megaloader"]
+strict = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+
+[[tool.mypy.overrides]]
+module = ["requests.*", "bs4.*"]
+ignore_missing_imports = true
