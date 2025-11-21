@@ -36,7 +36,7 @@ def validate_url(domain: str) -> tuple[bool, str | None]:
         return is_allowed, plugin_name
 
     except Exception:
-        logger.error("Plugin detection failed", exc_info=True)
+        logger.exception("Plugin detection failed")
         return False, None
 
 

@@ -42,7 +42,7 @@ def create_file_response(file_path: Path) -> Response:
         logger.info(
             "File response created",
             extra={
-                "filename": file_path.name,
+                "file_name": file_path.name,
                 "bytes": len(content),
                 "type": content_type,
             },
@@ -55,7 +55,7 @@ def create_file_response(file_path: Path) -> Response:
         )
 
     except Exception:
-        logger.error("Failed to create file response", exc_info=True)
+        logger.exception("Failed to create file response")
         raise
 
 
@@ -70,7 +70,7 @@ def create_zip(files: list[Path], filename: str) -> Response:
         raise ValueError(msg)
 
     try:
-        logger.debug("Creating ZIP", extra={"count": len(files), "name": filename})
+        logger.debug("Creating ZIP", extra={"count": len(files), "zip_name": filename})
 
         zip_buffer = BytesIO()
         files_added = 0
@@ -85,14 +85,18 @@ def create_zip(files: list[Path], filename: str) -> Response:
 
         if files_added == 0:
             msg = "No valid files to create ZIP"
-            raise ValueError(msg)
+            raise ValueError(msg)  # noqa: TRY301
 
         zip_buffer.seek(0)
         zip_content = zip_buffer.getvalue()
 
         logger.info(
             "ZIP created",
-            extra={"files": files_added, "bytes": len(zip_content), "name": filename},
+            extra={
+                "files": files_added,
+                "bytes": len(zip_content),
+                "zip_name": filename,
+            },
         )
 
         return Response(
@@ -102,5 +106,5 @@ def create_zip(files: list[Path], filename: str) -> Response:
         )
 
     except Exception:
-        logger.error("Failed to create ZIP", exc_info=True)
+        logger.exception("Failed to create ZIP")
         raise

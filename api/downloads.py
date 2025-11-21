@@ -20,7 +20,7 @@ def create_temp_dir() -> Path:
         logger.info("Temp directory created", extra={"path": str(temp_dir)})
         return temp_dir
     except OSError:
-        logger.error("Failed to create temp directory", exc_info=True)
+        logger.exception("Failed to create temp directory")
         raise
 
 
@@ -30,7 +30,7 @@ def cleanup_temp(temp_dir: Path) -> None:
             shutil.rmtree(temp_dir)
             logger.debug("Temp directory cleaned", extra={"path": str(temp_dir)})
     except Exception:
-        logger.error("Cleanup failed", exc_info=True)
+        logger.exception("Cleanup failed")
 
 
 def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
@@ -44,7 +44,7 @@ def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        logger.debug("Starting download", extra={"filename": item.filename})
+        logger.debug("Starting download", extra={"file_name": item.filename})
 
         response = requests.get(
             item.download_url,
@@ -63,15 +63,13 @@ def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
 
         logger.debug(
             "Download complete",
-            extra={"filename": item.filename, "bytes": bytes_downloaded},
+            extra={"file_name": item.filename, "bytes": bytes_downloaded},
         )
 
         return output_path
 
     except Exception:
-        logger.error(
-            "Download failed", exc_info=True, extra={"filename": item.filename}
-        )
+        logger.exception("Download failed", extra={"file_name": item.filename})
 
         if output_path.exists():
             output_path.unlink()

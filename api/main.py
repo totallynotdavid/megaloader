@@ -48,12 +48,13 @@ app.add_middleware(
 
 
 @app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error(
         "Unhandled exception",
-        exc_info=True,
         extra={
-            "client_ip": request.client.host if request.client else UNKNOWN_CLIENT,
+            "client_ip": request.client.host
+            if request.client is not None
+            else UNKNOWN_CLIENT,
             "url": str(request.url),
             "method": request.method,
         },
@@ -84,7 +85,7 @@ async def validate_endpoint(request: URLValidation, req: Request) -> ValidationR
     2. Domain whitelist validation
     3. Plugin availability check
     """
-    client_ip = req.client.host or UNKNOWN_CLIENT
+    client_ip = req.client.host if req.client is not None else UNKNOWN_CLIENT
 
     await check_rate_limit(client_ip)
 
@@ -125,7 +126,7 @@ async def download_endpoint(
 
     Returns preview if size >4MB, otherwise downloads files.
     """
-    client_ip = req.client.host or UNKNOWN_CLIENT
+    client_ip = req.client.host if req.client is not None else UNKNOWN_CLIENT
 
     url = request.url.strip()
     if not url:
@@ -156,7 +157,7 @@ async def download_endpoint(
     try:
         total_size, file_infos = get_items_with_sizes(items)
     except Exception as e:
-        logger.error("Size calculation failed", exc_info=True)
+        logger.exception("Size calculation failed")
         raise HTTPException(500, "Unable to verify file sizes") from e
 
     # Return preview if exceeds limit
@@ -197,7 +198,7 @@ async def download_endpoint(
         return create_zip(downloaded, f"{domain}_download.zip")
 
     except Exception as e:
-        logger.error("Download failed", exc_info=True)
+        logger.exception("Download failed")
         raise HTTPException(500, "Download failed") from e
 
     finally:

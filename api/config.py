@@ -26,7 +26,7 @@ CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_STR.split(",")]
 
 # Logging
 LOG_LEVEL = os.getenv("API_LOG_LEVEL", "INFO")
-LOG_FORMAT: Literal["json", "text"] = os.getenv("API_LOG_FORMAT", "json")  # type: ignore
+LOG_FORMAT: Literal["json", "text"] = os.getenv("API_LOG_FORMAT", "json")  # type: ignore[assignment]
 
 # Environment detection
 IS_PRODUCTION = "VERCEL" in os.environ or os.getenv("ENV") == "production"

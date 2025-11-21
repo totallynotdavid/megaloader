@@ -50,7 +50,7 @@ def validate_domain_whitelist(url: str) -> str:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Domain validation failed", exc_info=True)
+        logger.exception("Domain validation failed")
         raise HTTPException(400, "Invalid URL format") from e
 
 
@@ -118,5 +118,5 @@ async def check_rate_limit(client_ip: str) -> None:
     except HTTPException:
         raise
     except Exception:
-        logger.error("Rate limit check failed, allowing request", exc_info=True)
+        logger.exception("Rate limit check failed, allowing request")
         return
