@@ -91,7 +91,7 @@ class Cyberdrop(BasePlugin):
             response.raise_for_status()
             data = response.json()
 
-            if data.get("name") and data.get("auth_url"):
+            if isinstance(data, dict) and data.get("name") and data.get("auth_url"):
                 return data
         except (requests.RequestException, ValueError):
             logger.debug("Failed to fetch file info for %s", file_id, exc_info=True)
@@ -105,9 +105,12 @@ class Cyberdrop(BasePlugin):
             response.raise_for_status()
             data = response.json()
 
-            if url := data.get("url"):
-                return url
-        except Exception:
+            if isinstance(data, dict):
+                url = data.get("url")
+                if isinstance(url, str):
+                    return url
+
+        except (requests.RequestException, ValueError, KeyError):
             logger.debug("Failed to fetch direct URL from %s", auth_url, exc_info=True)
 
         return None
