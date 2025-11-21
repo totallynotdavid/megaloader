@@ -7,81 +7,77 @@ ruff = "0.14.5"
 bun = "1.3.2"
 biome = "2.3.6"
 
-[tasks.install]
-description = "Install dependencies"
-alias = "i"
-run = [
-  "uv sync --all-groups",
-  "uv pip install -e packages/core -e packages/cli",
-]
+# Dependencies
+[tasks.sync]
+description = "Install all workspace dependencies"
+run = "uv sync --all-packages --extra dev"
 
 [tasks.update]
 description = "Update all dependencies"
 alias = "u"
-run = "uv sync -U"
+run = "uv sync --all-packages --extra dev -U"
 
 [tasks.outdated]
 description = "List outdated dependencies"
-alias = "o"
 run = "uv pip list --outdated"
 
 [tasks.export-deps]
-description = "Export production dependencies for core"
+description = "Export production dependencies for core package"
 run = "uv export --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file requirements.txt"
 dir = "packages/core"
 
+# Code quality
 [tasks.format]
-description = "Lint & format (fix by default)"
+description = "Format and fix linting issues"
 run = ["ruff format", "ruff check --fix"]
 
-[tasks.format-docs]
-description = "Format docs with biome"
-run = "biome format --write ."
-dir = "docs"
+[tasks.lint]
+description = "Run type checking"
+run = "uv run mypy"
+dir = "packages/core"
 
-[tasks.mypy]
-description = "Type check with lint"
-run = "uv run mypy packages/core/megaloader"
+[tasks.check]
+description = "Quick pre-push checks: format, lint, test-unit"
+depends = ["format", "lint", "test-unit"]
 
+# Testing
 [tasks.test]
-description = "Run the pytest suite, including live tests"
-alias = "t"
+description = "Run all tests including live network tests (~100 secs)"
 run = "uv run pytest packages/core/tests --run-live"
 
 [tasks.test-unit]
-description = "Run unit tests only"
-alias = "tu"
+description = "Run unit tests only (fast: <1 sec)"
 run = "uv run pytest packages/core/tests/unit"
 
-[tasks.test-integration]
-description = "Run integration tests only"
-alias = "ti"
-run = "uv run pytest packages/core/tests/integration"
+# Development: CLI
+[tasks.dev-cli]
+description = "Run CLI during development (e.g., mise run dev-cli -- extract <url>)"
+run = "uv run megaloader"
 
+# Development: API
+[tasks.api-serve]
+description = "Run local API server"
+run = "uv run uvicorn main:app --reload"
+dir = "api"
+
+# Development: Docs
 [tasks.docs-serve]
 description = "Serve documentation locally"
-alias = "ds"
 run = ["bun install", "bun run docs:dev"]
 dir = "docs"
 
 [tasks.docs-build]
 description = "Build documentation"
-alias = "db"
 run = ["bun install", "bun run docs:build"]
 dir = "docs"
 
-[tasks.api-serve]
-description = "Run local API server for development"
-alias = "as"
-run = "uv run uvicorn main:app --reload"
-dir = "api"
+[tasks.format-docs]
+description = "Format docs with biome (Vue only, markdown not supported)"
+run = "biome format --write ."
+dir = "docs"
 
+# Deploy
 [tasks.api-deploy]
 description = "Deploy API to Vercel"
-alias = "vda"
 run = "vercel --prod"
 dir = "api"
-
-[tasks.dev-cli]
-description = "Run the CLI during development"
-run = "uv run megaloader"
