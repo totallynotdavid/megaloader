@@ -55,7 +55,7 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
 
     Example:
         >>> for item in extract("https://pixeldrain.com/l/abc123"):
-        ...     download_file(item.download_url, item.filename)
+        ...     print(item.download_url, item.filename)
     """
     if not url or not url.strip():
         msg = "URL cannot be empty"
