@@ -46,6 +46,7 @@ jobs:
         if: matrix.python-version == '3.13'
         run: |
           uv run --with pytest-cov pytest \
+            --run-live \
             --cov=megaloader \
             --cov-report=xml \
             --cov-report=term \
