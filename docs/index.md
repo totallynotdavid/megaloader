@@ -2,44 +2,68 @@
 
 Welcome to the Megaloader documentation! This project will make you smile. 😊
 
-Megaloader is a Python library that automatically downloads content from
-multiple file hosting and media platforms using a plugin-based architecture.
+Megaloader is a Python library for **extracting downloadable content metadata** from file hosting and media platforms. It discovers files and provides download URLs, filenames, and other metadata—**without performing the actual downloads**.
 
-## Features
+## What Megaloader Does
 
-- **Automatic Detection**: Just provide a URL, and Megaloader automatically
-  selects the right plugin
-- **Multi-Platform**: Support for 11+ platforms including Bunkr, Cyberdrop,
-  GoFile, PixelDrain, and more
-- **Plugin Architecture**: Easy to extend with new platforms
-- **CLI Tool**: Command-line interface for quick downloads
-- **Type-Safe**: Full type hints and mypy compliance
+✅ **Extracts metadata** from 11+ file hosting platforms  
+✅ **Discovers files** in albums, galleries, and collections  
+✅ **Provides download URLs** with required headers and authentication  
+✅ **Yields results lazily** using Python generators for memory efficiency  
+✅ **Automatic plugin detection** based on URL domain
+
+## What Megaloader Doesn't Do
+
+❌ **Does not download files** - you implement downloads using the metadata  
+❌ **Does not manage file storage** - you control where and how files are saved  
+❌ **Does not handle rate limiting** - you implement retry logic as needed
+
+This separation gives you full control over the download process, allowing you to implement custom logic for progress tracking, concurrent downloads, resume capabilities, and error handling.
 
 ## Quick Example
 
 ```python
-from megaloader import download
+import megaloader as mgl
+import requests
+from pathlib import Path
 
-# Automatic plugin detection
-download("https://pixeldrain.com/u/95u1wnsd", "./downloads")
-download("https://cyberdrop.me/a/0OpiyaOV", "./downloads")
+# Extract metadata from a URL
+for item in mgl.extract("https://pixeldrain.com/l/abc123"):
+    print(f"Found: {item.filename} ({item.size_bytes} bytes)")
+    
+    # You implement the download
+    response = requests.get(item.download_url, headers=item.headers)
+    response.raise_for_status()
+    
+    # Organize by collection if available
+    output_dir = Path("downloads")
+    if item.collection_name:
+        output_dir = output_dir / item.collection_name
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Save the file
+    filepath = output_dir / item.filename
+    filepath.write_bytes(response.content)
+    print(f"Downloaded: {filepath}")
 ```
 
 ## Supported Platforms
 
-| Platform    | Domain(s)                  | Status      |
-| ----------- | -------------------------- | ----------- |
-| Bunkr       | bunkr._, bunkrr._          | ✅ Core     |
-| Cyberdrop   | cyberdrop.\*               | ✅ Core     |
-| GoFile      | gofile.io                  | ✅ Core     |
-| PixelDrain  | pixeldrain.com             | ✅ Core     |
-| Pixiv       | pixiv.net                  | ⚠️ Extended |
-| Rule34      | rule34.xxx                 | ⚠️ Extended |
-| Fanbox      | fanbox.cc                  | ⚠️ Extended |
-| Fapello     | fapello.com                | ⚠️ Extended |
-| Thotslife   | thotslife.com              | ⚠️ Extended |
-| Thothub.to  | thothub.to                 | ⚠️ Extended |
-| Thothub.vip | thothub.vip, thothub.today | ⚠️ Extended |
+| Platform    | Domain(s)                                    | Status      |
+| ----------- | -------------------------------------------- | ----------- |
+| Bunkr       | bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su | ✅ Core     |
+| Cyberdrop   | cyberdrop.cr, cyberdrop.me, cyberdrop.to     | ✅ Core     |
+| GoFile      | gofile.io                                    | ✅ Core     |
+| PixelDrain  | pixeldrain.com                               | ✅ Core     |
+| Fanbox      | fanbox.cc (with subdomains)                  | ⚠️ Extended |
+| Fapello     | fapello.com                                  | ⚠️ Extended |
+| Pixiv       | pixiv.net                                    | ⚠️ Extended |
+| Rule34      | rule34.xxx                                   | ⚠️ Extended |
+| Thotslife   | thotslife.com                                | ⚠️ Extended |
+| Thothub.to  | thothub.to, thothub.ch                       | ⚠️ Extended |
+| Thothub.vip | thothub.vip                                  | ⚠️ Extended |
+
+**Core platforms** receive active development and testing. **Extended platforms** are maintained on a best-effort basis.
 
 ## Try It Out
 
@@ -61,9 +85,9 @@ for examples.
 
 This monorepo contains:
 
-- **Core Library** (`packages/megaloader`): The main download library
-- **CLI Tool** (`packages/cli`): Command-line interface
-- **API** (`api/`): FastAPI server for development and Vercel deployment
+- **Core Library** (`megaloader`): Python library for metadata extraction - [PyPI](https://pypi.org/project/megaloader/)
+- **CLI Tool** (`megaloader-cli`): Command-line interface with built-in download functionality
+- **API** (`megaloader-api`): FastAPI demo server for documentation examples
 
 ## Links
 

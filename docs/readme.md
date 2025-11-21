@@ -10,7 +10,7 @@ bun install
 bun run docs:dev
 ```
 
-The server runs at [http://localhost:5173](http://localhost:5173).
+The server runs at `http://localhost:5173`.
 
 To build the site:
 

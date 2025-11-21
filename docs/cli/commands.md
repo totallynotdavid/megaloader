@@ -1,225 +1,298 @@
-# CLI Commands
+# Command Reference
 
-Complete reference for the Megaloader command-line interface.
+Complete reference for all Megaloader CLI commands and their options.
 
-## Installation
+## megaloader extract
 
-Install the CLI package:
+Extract metadata from a URL without downloading files (dry run).
+
+### Syntax
 
 ```bash
-uv pip install -e packages/cli
+megaloader extract [OPTIONS] URL
 ```
 
-## Commands
+### Arguments
 
-### megaloader
+- **`URL`** (required): The URL to extract metadata from
 
-Main command group.
+### Options
+
+- **`--json`**: Output structured JSON instead of human-readable text
+- **`-v, --verbose`**: Enable debug logging to see extraction details
+- **`--help`**: Show command help and exit
+
+### Output Format
+
+#### Human-Readable (Default)
 
 ```bash
-megaloader [OPTIONS] COMMAND [ARGS]...
+$ megaloader extract https://pixeldrain.com/l/abc123
+✓ Using plugin: PixelDrainPlugin
+Extracting metadata... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100%
+
+Found 3 files:
+
+  01. image001.jpg
+      Collection: My Photos
+      Size: 2.45 MB
+
+  02. image002.jpg
+      Collection: My Photos
+      Size: 3.12 MB
+
+  03. document.pdf
+      Collection: My Photos
+      Size: 0.89 MB
 ```
 
-**Options:**
-
-- `--version`: Show version and exit
-- `--help`: Show help message
-
-### download-url
-
-Download content from a URL.
+#### JSON Format
 
 ```bash
-megaloader download-url [OPTIONS] URL [OUTPUT_DIR]
+$ megaloader extract --json https://pixeldrain.com/l/abc123
 ```
 
-**Arguments:**
+```json
+{
+  "source": "https://pixeldrain.com/l/abc123",
+  "count": 3,
+  "items": [
+    {
+      "download_url": "https://pixeldrain.com/api/file/xyz789",
+      "filename": "image001.jpg",
+      "collection_name": "My Photos",
+      "source_id": "xyz789",
+      "headers": {},
+      "size_bytes": 2568192
+    },
+    {
+      "download_url": "https://pixeldrain.com/api/file/abc456",
+      "filename": "image002.jpg",
+      "collection_name": "My Photos",
+      "source_id": "abc456",
+      "headers": {},
+      "size_bytes": 3271680
+    },
+    {
+      "download_url": "https://pixeldrain.com/api/file/def123",
+      "filename": "document.pdf",
+      "collection_name": "My Photos",
+      "source_id": "def123",
+      "headers": {},
+      "size_bytes": 933888
+    }
+  ]
+}
+```
 
-- `URL`: The URL to download from (required)
-- `OUTPUT_DIR`: Directory to save files (default: `./downloads`)
+### Use Cases
 
-**Options:**
+- Preview what files are available before downloading
+- Export metadata to JSON for processing with other tools
+- Verify URL is supported and accessible
+- Debug extraction issues with `--verbose`
 
-- `-v, --verbose`: Enable verbose logging
-- `--use-proxy`: Use proxy for downloads
-- `--no-subdirs`: Don't create album subdirectories
+---
 
-**Examples:**
+## megaloader download
 
-Basic download:
+Download files from a URL to a local directory.
+
+### Syntax
 
 ```bash
-megaloader download-url "https://pixeldrain.com/u/file_id"
+megaloader download [OPTIONS] URL [OUTPUT_DIR]
+```
+
+### Arguments
+
+- **`URL`** (required): The URL to download from
+- **`OUTPUT_DIR`** (optional): Destination directory (default: `./downloads`)
+
+### Options
+
+- **`-v, --verbose`**: Enable debug logging
+- **`--flat`**: Save all files directly to OUTPUT_DIR without collection subfolders
+- **`--filter PATTERN`**: Filter files by glob pattern (e.g., `*.jpg`, `*.mp4`)
+- **`--password PASSWORD`**: Password for protected content (Gofile)
+- **`--help`**: Show command help and exit
+
+### Collection Organization
+
+By default, files are organized into subfolders based on their `collection_name`:
+
+```
+downloads/
+├── Album 1/
+│   ├── photo1.jpg
+│   └── photo2.jpg
+└── Album 2/
+    ├── video1.mp4
+    └── video2.mp4
+```
+
+Use `--flat` to disable this behavior and save all files directly to the output directory:
+
+```
+downloads/
+├── photo1.jpg
+├── photo2.jpg
+├── video1.mp4
+└── video2.mp4
+```
+
+### Output Format
+
+```bash
+$ megaloader download https://pixeldrain.com/l/abc123 ./my-downloads
+✓ Using plugin: PixelDrainPlugin
+Discovering files... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100%
+✓ Found 3 files.
+
+image001.jpg          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 2.45 MB • 5.2 MB/s • 0:00:00
+image002.jpg          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 3.12 MB • 6.1 MB/s • 0:00:00
+document.pdf          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 0.89 MB • 4.8 MB/s • 0:00:00
+
+✓ Success! Downloaded 3 files.
+Location: /path/to/my-downloads
+```
+
+### Examples
+
+Download to default directory:
+
+```bash
+megaloader download https://pixeldrain.com/l/abc123
 ```
 
 Download to specific directory:
 
 ```bash
-megaloader download-url "https://cyberdrop.me/a/album" ./my-downloads
+megaloader download https://pixeldrain.com/l/abc123 ./my-files
 ```
 
-Enable verbose output:
+Download without collection subfolders:
 
 ```bash
-megaloader download-url "https://bunkr.si/a/example" --verbose
+megaloader download --flat https://pixeldrain.com/l/abc123 ./downloads
 ```
 
-Use proxy:
+Download only images:
 
 ```bash
-megaloader download-url "https://pixeldrain.com/u/file" --use-proxy
+megaloader download --filter "*.jpg" https://pixeldrain.com/l/abc123 ./images
 ```
 
-Disable subdirectories:
+Download only videos:
 
 ```bash
-megaloader download-url "https://cyberdrop.me/a/album" --no-subdirs
+megaloader download --filter "*.mp4" https://pixeldrain.com/l/abc123 ./videos
 ```
 
-### list-plugins
-
-List all available plugins and supported platforms.
+Download password-protected content:
 
 ```bash
-megaloader list-plugins
+megaloader download --password "secret123" https://gofile.io/d/abc123 ./downloads
 ```
 
-**Output Example:**
+---
 
-```
-Available Plugins:
+## megaloader plugins
 
-  • Bunkr: bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su
-  • Cyberdrop: cyberdrop.me, cyberdrop.to
-  • GoFile: gofile.io
-  • PixelDrain: pixeldrain.com
-  • Pixiv: pixiv.net
-  ...
+List all supported platforms and their domains.
+
+### Syntax
+
+```bash
+megaloader plugins
 ```
+
+### Options
+
+- **`--help`**: Show command help and exit
+
+### Output Format
+
+```bash
+$ megaloader plugins
+
+Supported Platforms:
+
+  • bunkr.si              (BunkrPlugin)
+  • bunkr.su              (BunkrPlugin)
+  • cyberdrop.me          (CyberdropPlugin)
+  • fanbox.cc             (FanboxPlugin)
+  • fapello.com           (FapelloPlugin)
+  • gofile.io             (GofilePlugin)
+  • pixeldrain.com        (PixelDrainPlugin)
+  • pixiv.net             (PixivPlugin)
+  • rule34.xxx            (Rule34Plugin)
+  • thothub.to            (ThotHubToPlugin)
+  • thothub.vip           (ThotHubVipPlugin)
+  • thotslife.com         (ThotsLifePlugin)
+```
+
+### Use Cases
+
+- Check if a platform is supported
+- Find the plugin name for a domain
+- Verify CLI installation includes all plugins
+
+---
+
+## Global Options
+
+These options work with all commands:
+
+- **`--version`**: Show version and exit
+- **`--help`**: Show help message and exit
+
+### Examples
+
+Check CLI version:
+
+```bash
+megaloader --version
+```
+
+Get help for any command:
+
+```bash
+megaloader --help
+megaloader extract --help
+megaloader download --help
+```
+
+---
 
 ## Exit Codes
 
-- `0`: Success
-- `1`: Download failed or error occurred
+The CLI uses standard exit codes:
+
+- **`0`**: Success
+- **`1`**: Error (extraction failed, download failed, unsupported domain, etc.)
+
+This makes it easy to use in shell scripts:
+
+```bash
+if megaloader extract "$URL"; then
+    echo "Extraction successful"
+else
+    echo "Extraction failed"
+fi
+```
+
+---
 
 ## Environment Variables
 
-Some plugins require environment variables:
+The CLI respects the same environment variables as the core library for plugin-specific authentication:
 
-```bash
-# GoFile password-protected folders
-export GOFILE_PASSWORD=your_password
+- **`FANBOX_SESSION_ID`**: Fanbox session cookie
+- **`PIXIV_SESSION_ID`**: Pixiv session cookie
+- **`RULE34_API_KEY`**: Rule34 API key
+- **`RULE34_USER_ID`**: Rule34 user ID
 
-# Pixiv authentication
-export PIXIV_REFRESH_TOKEN=your_token
+Command-line options (like `--password`) take precedence over environment variables.
 
-# Fanbox authentication
-export FANBOX_SESSION_ID=your_session
-```
-
-Or use a `.env` file:
-
-```bash
-# .env
-GOFILE_PASSWORD=your_password
-PIXIV_REFRESH_TOKEN=your_token
-FANBOX_SESSION_ID=your_session
-```
-
-## Usage Examples
-
-### Basic Workflow
-
-1. List supported platforms:
-
-```bash
-megaloader list-plugins
-```
-
-2. Download from a supported platform:
-
-```bash
-megaloader download-url "https://pixeldrain.com/u/example" ./downloads
-```
-
-3. Check verbose output for debugging:
-
-```bash
-megaloader download-url "https://bunkr.si/a/example" --verbose
-```
-
-### Batch Downloads
-
-Use shell scripting for multiple downloads:
-
-```bash
-# urls.txt
-https://pixeldrain.com/u/file1
-https://cyberdrop.me/a/album1
-https://bunkr.si/a/example
-
-# Download all
-while read url; do
-  megaloader download-url "$url" ./batch-downloads
-done < urls.txt
-```
-
-### PowerShell (Windows)
-
-```powershell
-# Download multiple URLs
-$urls = @(
-    "https://pixeldrain.com/u/file1",
-    "https://cyberdrop.me/a/album1"
-)
-
-foreach ($url in $urls) {
-    megaloader download-url $url .\downloads
-}
-```
-
-## Logging
-
-The CLI uses Rich for formatted output:
-
-- ✓ Success messages in green
-- ✗ Error messages in red
-- ⚠ Warnings in yellow
-- Progress spinners during downloads
-
-## Troubleshooting
-
-### Command not found
-
-If `megaloader` is not found:
-
-```bash
-# Use full path to executable
-.\.venv\Scripts\megaloader.exe --version
-
-# Or activate virtual environment
-.\.venv\Scripts\Activate.ps1  # Windows
-source .venv/bin/activate      # Linux/Mac
-```
-
-### Import errors
-
-Ensure the core library is installed:
-
-```bash
-uv pip install -e packages/megaloader
-```
-
-### Network errors
-
-Use `--verbose` to see detailed error messages:
-
-```bash
-megaloader download-url "https://example.com/file" --verbose
-```
-
-## See Also
-
-- [Getting Started](../getting-started/quickstart.md)
-- [Core API Reference](../api/core.md)
-- [Plugin System](../guide/plugins.md)
+See [Plugin Options](/plugins/plugin-options) for details on authentication.
