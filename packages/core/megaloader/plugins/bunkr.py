@@ -7,6 +7,8 @@ import re
 from collections.abc import Generator
 from urllib.parse import quote, urljoin, urlparse
 
+import requests
+
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -64,7 +66,7 @@ class Bunkr(BasePlugin):
         try:
             response = self.session.get(file_url, timeout=30)
             response.raise_for_status()
-        except Exception:
+        except requests.RequestException:
             logger.debug("Failed to fetch file page %s", file_url, exc_info=True)
             return
 
