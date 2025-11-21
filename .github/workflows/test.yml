@@ -35,7 +35,7 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --all-groups --all-packages
+        run: uv sync --extra dev --package megaloader
 
       - name: Run tests
         run:
@@ -45,7 +45,7 @@ jobs:
       - name: Coverage & codecov (3.13 only)
         if: matrix.python-version == '3.13'
         run: |
-          uv add --group dev pytest-cov
+          uv add --optional dev pytest-cov
           uv run pytest \
             --cov=megaloader \
             --cov-report=xml \
