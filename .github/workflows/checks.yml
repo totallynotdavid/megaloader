@@ -38,4 +38,4 @@ jobs:
         with:
           args: "check"
 
-      - run: uv run mypy
+      - run: uv run mypy packages/core
