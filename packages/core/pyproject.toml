@@ -46,12 +46,9 @@ addopts = "-q"
 [tool.mypy]
 files = ["megaloader"]
 strict = true
+exclude = ["tests"]
 enable_error_code = [
     "ignore-without-code",
     "redundant-expr",
     "truthy-bool",
 ]
-
-[[tool.mypy.overrides]]
-module = ["requests.*", "bs4.*"]
-ignore_missing_imports = true
