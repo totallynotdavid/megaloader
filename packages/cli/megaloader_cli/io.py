@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import requests
-from rich.progress import Progress, TaskID
 
 from megaloader.item import DownloadItem
+from rich.progress import Progress, TaskID
 
 
 def download_file(

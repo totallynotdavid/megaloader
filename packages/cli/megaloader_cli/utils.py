@@ -4,6 +4,7 @@ import re
 from rich.console import Console
 from rich.logging import RichHandler
 
+
 # Shared console instance
 console = Console()
 
@@ -46,4 +47,4 @@ def sanitize_for_filesystem(name: str) -> str:
     sanitized = sanitized.strip().strip("_")
 
     # Ensure not empty
-    return sanitized if sanitized else "unnamed"
+    return sanitized or "unnamed"
