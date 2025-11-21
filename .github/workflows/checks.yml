@@ -28,7 +28,7 @@ jobs:
 
       - run: uv python install 3.13.7
 
-      - run: uv sync --extra dev
+      - run: uv sync --all-packages --extra dev
 
       - uses: astral-sh/ruff-action@e7baf99fcc269796ae85308f7bef6b06147c7f08 # v3.5.1
         with:
