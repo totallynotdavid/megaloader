@@ -46,11 +46,17 @@ def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
 
         logger.debug("Starting download", extra={"file_name": item.filename})
 
+        headers = item.headers.copy()
+        if "User-Agent" not in headers:
+            headers["User-Agent"] = (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            )
+
         response = requests.get(
             item.download_url,
             stream=True,
             timeout=DOWNLOAD_TIMEOUT,
-            headers=item.headers,
+            headers=headers,
         )
         response.raise_for_status()
 
