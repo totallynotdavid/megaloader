@@ -1,21 +1,6 @@
----
-title: Supported platforms
-description:
-  Complete list of supported file hosting platforms with features and examples
-outline: [2, 3]
-prev:
-  text: "Plugin system"
-  link: "/plugins/"
-next:
-  text: "Plugin options"
-  link: "/plugins/options"
----
-
 # Supported platforms
 
-Megaloader supports 11 file hosting platforms through dedicated plugins.
-Platforms are split into core (actively maintained) and extended (best-effort
-support) tiers.
+Megaloader supports 11 file hosting platforms through dedicated plugins. Platforms are split into core (actively maintained) and extended (best-effort support) tiers.
 
 ## Core platforms
 
@@ -57,8 +42,7 @@ File hosting with password protection.
 
 **Domains:** gofile.io
 
-**Features:** Folder extraction, password-protected content, automatic guest
-accounts
+**Features:** Folder extraction, password-protected content, automatic guest accounts
 
 **Requires:** Password for protected folders
 
@@ -104,8 +88,7 @@ Creator content platform requiring authentication.
 
 **Domains:** fanbox.cc (including creator subdomains)
 
-**Features:** Creator profiles, post content, images, file attachments, profile
-assets
+**Features:** Creator profiles, post content, images, file attachments, profile assets
 
 **Requires:** `session_id` parameter or `FANBOX_SESSION_ID` environment variable
 

@@ -1,19 +1,6 @@
----
-title: Advanced patterns
-description: Batch processing, caching, deduplication, and complex workflows
-outline: [2, 3]
-prev:
-  text: "Download implementations"
-  link: "/core/downloads"
-next:
-  text: "API reference"
-  link: "/core/api"
----
+# Advanced usage
 
-# Advanced patterns
-
-Beyond basic extraction and downloading, here are patterns for production
-environments and complex workflows.
+Beyond basic extraction and downloading, here are patterns for production environments and complex workflows.
 
 ## Batch processing multiple URLs
 
@@ -151,8 +138,7 @@ else:
     cache.set(url, items)
 ```
 
-This caches extraction results for 24 hours, avoiding repeated network requests
-for the same URL.
+This caches extraction results for 24 hours, avoiding repeated network requests for the same URL.
 
 ## Filtering with complex criteria
 
@@ -338,8 +324,7 @@ for item in plugin.extract():
     print(item.filename)
 ```
 
-This is useful when you need to reuse a plugin instance or customize the
-underlying session configuration.
+This is useful when you need to reuse a plugin instance or customize the underlying session configuration.
 
 ## Building extraction pipelines
 
@@ -411,6 +396,4 @@ items = extract_with_rich_progress(url)
 print(f"Complete: {len(items)} items")
 ```
 
-These patterns cover most advanced scenarios. Combine them as needed for your
-own workflows, such as caching frequently accessed URLs, running extractions in
-parallel for batch jobs, or deduplicating results before processing.
+These patterns cover most advanced scenarios. Combine them as needed for your own workflows, such as caching frequently accessed URLs, running extractions in parallel for batch jobs, or deduplicating results before processing.

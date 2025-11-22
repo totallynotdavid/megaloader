@@ -16,13 +16,13 @@ hero:
   actions:
     - theme: brand
       text: Get started
-      link: /getting-started/installation
+      link: /guide/getting-started
     - theme: alt
       text: View on GitHub
       link: https://github.com/totallynotdavid/megaloader
     - theme: alt
       text: CLI usage
-      link: /cli
+      link: /guide/cli-usage
   # image:
   #   src: /logo.svg
   #   alt: The megaloader logo

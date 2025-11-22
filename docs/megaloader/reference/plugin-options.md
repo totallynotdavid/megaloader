@@ -1,20 +1,6 @@
----
-title: Plugin options
-description: Authentication options and platform-specific parameters
-outline: [2, 3]
-prev:
-  text: "Supported platforms"
-  link: "/plugins/platforms"
-next:
-  text: "Creating plugins"
-  link: "/plugins/creating"
----
-
 # Plugin options
 
-Some platforms need extra parameters for authentication or password protection.
-These are passed as kwargs to `extract()` and follow a consistent credential
-precedence pattern.
+Some platforms need extra parameters for authentication or password protection. These are passed as kwargs to `extract()` and follow a consistent credential precedence pattern.
 
 ## Credential precedence
 
@@ -24,8 +10,7 @@ All plugins follow this pattern:
 2. **Environment variables** (fallback) - loaded from system environment
 3. **Graceful failure** - plugins work without credentials when possible
 
-This lets you hardcode credentials for testing, use environment variables in
-production, and share code without exposing secrets.
+This lets you hardcode credentials for testing, use environment variables in production, and share code without exposing secrets.
 
 **Example:**
 
@@ -68,8 +53,7 @@ for item in mgl.extract("https://gofile.io/d/xyz789", password="secret"):
 megaloader download "https://gofile.io/d/xyz789" ./output --password secret
 ```
 
-**Notes:** GoFile hashes passwords with SHA-256 before sending to the API.
-Invalid passwords result in empty file lists without raising errors.
+**Notes:** GoFile hashes passwords with SHA-256 before sending to the API. Invalid passwords result in empty file lists without raising errors.
 
 ## Fanbox
 
@@ -112,8 +96,7 @@ export FANBOX_SESSION_ID="your_session_cookie"
 megaloader download "https://creator.fanbox.cc" ./output
 ```
 
-**Notes:** Most creator content requires authentication. Session cookies expire
-periodically. Without authentication, you'll get 403 errors.
+**Notes:** Most creator content requires authentication. Session cookies expire periodically. Without authentication, you'll get 403 errors.
 
 ## Pixiv
 
@@ -156,8 +139,7 @@ export PIXIV_PHPSESSID="your_session_cookie"
 megaloader download "https://www.pixiv.net/en/artworks/123456" ./output
 ```
 
-**Notes:** Required for most content. Multi-page artworks are automatically
-detected. User extraction includes profile images and all artworks.
+**Notes:** Required for most content. Multi-page artworks are automatically detected. User extraction includes profile images and all artworks.
 
 ## Rule34
 
@@ -204,14 +186,11 @@ export RULE34_USER_ID="your_user_id"
 megaloader download "https://rule34.xxx/..." ./output
 ```
 
-**Notes:** API authentication is optional but recommended. Without credentials,
-the plugin falls back to web scraping (slower). Both `api_key` and `user_id`
-must be provided together.
+**Notes:** API authentication is optional but recommended. Without credentials, the plugin falls back to web scraping (slower). Both `api_key` and `user_id` must be provided together.
 
 ## Security best practices
 
-Never commit credentials to version control or hard-code them in your
-application.
+Never commit credentials to version control or hard-code them in your application.
 
 **Bad:**
 

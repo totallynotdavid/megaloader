@@ -1,19 +1,6 @@
----
-title: Creating plugins
-description: Guide to building custom plugins for new platforms
-outline: [2, 4]
-prev:
-  text: "Plugin options"
-  link: "/plugins/options"
-next:
-  text: "Contributing"
-  link: "/development/contributing"
----
-
 # Creating plugins
 
-This guide walks through creating a plugin for a new platform. You'll understand
-the architecture and be able to add support for any file hosting platform.
+This guide walks through creating a plugin for a new platform. You'll understand the architecture and be able to add support for any file hosting platform.
 
 ## Plugin architecture
 
@@ -26,7 +13,7 @@ Every plugin:
 
 ## Minimal example
 
-The simplest possible plugin:
+Here's the simplest possible plugin:
 
 ```python
 from collections.abc import Generator
@@ -48,35 +35,24 @@ class SimpleHost(BasePlugin):
             )
 ```
 
-That's it. `BasePlugin` handles session creation, retry logic, and default
-headers automatically.
+That's it. `BasePlugin` handles session creation, retry logic, and default headers automatically. Your plugin just needs to fetch data and yield `DownloadItem` objects.
 
-## BasePlugin reference
-
-**Provided attributes:**
+**What BasePlugin provides:**
 
 - `self.url` - The URL passed to `extract()`
 - `self.options` - Dictionary of keyword arguments
 - `self.session` - Lazy-loaded `requests.Session` with retry logic
 
-**Provided methods:**
-
-- `_create_session()` - Creates session with retry strategy (don't override)
-- `_configure_session(session)` - Override to add custom headers/cookies
-
-**Required implementation:**
+**What you implement:**
 
 - `extract()` - Must yield `DownloadItem` objects
+- `_configure_session(session)` - Optional, for custom headers/cookies
 
-## Building a real plugin
+## Building a complete plugin
 
-Let's build a plugin for a fictional platform "FileBox" with:
+Let's build a plugin for a fictional platform "FileBox" that has album URLs like `https://filebox.com/album/abc123` and file URLs like `https://filebox.com/file/xyz789`.
 
-- Album URLs: `https://filebox.com/album/abc123`
-- File URLs: `https://filebox.com/file/xyz789`
-- JSON API at `https://api.filebox.com/v1/`
-
-### Create the plugin class
+Start by creating the plugin class and parsing the URL:
 
 ```python
 import logging
@@ -109,7 +85,9 @@ class FileBox(BasePlugin):
             yield from self._extract_file()
 ```
 
-### Implement extraction logic
+This parses the URL in `__init__` to determine whether we're dealing with an album or a single file, then routes to the appropriate extraction method.
+
+Now implement the album extraction:
 
 ```python
 def _extract_album(self) -> Generator[DownloadItem, None, None]:
@@ -130,7 +108,13 @@ def _extract_album(self) -> Generator[DownloadItem, None, None]:
             source_id=file_data["id"],
             size_bytes=file_data.get("size"),
         )
+```
 
+This fetches the album data from the API and yields a `DownloadItem` for each file. The `collection_name` field groups files by album, which is useful when downloading multiple albums.
+
+For single files, the logic is simpler:
+
+```python
 def _extract_file(self) -> Generator[DownloadItem, None, None]:
     response = self.session.get(
         f"{self.API_BASE}/files/{self.content_id}",
@@ -148,9 +132,7 @@ def _extract_file(self) -> Generator[DownloadItem, None, None]:
     )
 ```
 
-### Add custom headers (optional)
-
-If the platform requires specific headers:
+If the platform requires specific headers, override `_configure_session()`:
 
 ```python
 def _configure_session(self, session: requests.Session) -> None:
@@ -160,9 +142,29 @@ def _configure_session(self, session: requests.Session) -> None:
     })
 ```
 
-### Add credential support (optional)
+Finally, register your plugin in `packages/core/megaloader/plugins/__init__.py`:
 
-For platforms requiring authentication:
+```python
+from megaloader.plugins.filebox import FileBox
+
+PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
+    # ... existing plugins ...
+    "filebox.com": FileBox,
+}
+```
+
+Now you can use it:
+
+```python
+import megaloader as mgl
+
+for item in mgl.extract("https://filebox.com/album/test123"):
+    print(item.filename)
+```
+
+## Adding authentication
+
+For platforms requiring authentication, accept credentials through options or environment variables:
 
 ```python
 import os
@@ -171,7 +173,7 @@ class FileBox(BasePlugin):
     def __init__(self, url: str, **options: Any) -> None:
         super().__init__(url, **options)
 
-        # kwargs > env var
+        # Prefer explicit option, fall back to environment variable
         self.api_key = self.options.get("api_key") or os.getenv("FILEBOX_API_KEY")
         self.content_type, self.content_id = self._parse_url(url)
 
@@ -183,37 +185,36 @@ class FileBox(BasePlugin):
             logger.debug("Using FileBox API authentication")
 ```
 
-### Register the plugin
-
-Add your plugin to
-[`packages/core/megaloader/plugins/__init__.py`](https://github.com/totallynotdavid/megaloader/blob/main/packages/core/megaloader/plugins/__init__.py):
+Users can then pass credentials:
 
 ```python
-from megaloader.plugins.filebox import FileBox
+import megaloader as mgl
 
-PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
-    # ... existing plugins ...
-    "filebox.com": FileBox,
-}
+for item in mgl.extract("https://filebox.com/album/test", api_key="your-key"):
+    print(item.filename)
+```
+
+Or set the environment variable:
+
+```bash
+export FILEBOX_API_KEY="your-key"
 ```
 
 ## DownloadItem fields
 
-When creating items:
-
-**Required:**
+When creating items, you must provide:
 
 - `download_url` (str) - Direct URL to download the file
 - `filename` (str) - Original filename
 
-**Optional:**
+Optional fields include:
 
 - `collection_name` (str | None) - Album/gallery/user grouping
 - `source_id` (str | None) - Platform-specific identifier
 - `headers` (dict[str, str]) - Additional HTTP headers needed for download
 - `size_bytes` (int | None) - File size in bytes
 
-**Example with all fields:**
+Example with all fields:
 
 ```python
 yield DownloadItem(
@@ -226,22 +227,85 @@ yield DownloadItem(
 )
 ```
 
-## Session management
+## Common patterns
 
-`BasePlugin` provides automatic session management:
+**Pagination** - when the API returns results in pages:
 
-**Lazy creation:** The session is created only when first accessed.
+```python
+def extract(self) -> Generator[DownloadItem, None, None]:
+    page = 1
 
-**Retry logic:** Sessions include automatic retries (3 attempts, exponential
-backoff) for status codes 429, 500, 502, 503, 504.
+    while True:
+        response = self.session.get(
+            f"{self.API_BASE}/albums/{self.content_id}",
+            params={"page": page},
+            timeout=30
+        )
+        response.raise_for_status()
 
-**Default headers:** All sessions include a User-Agent header.
+        files = response.json().get("files", [])
+        if not files:
+            break
 
-Add platform-specific headers in `_configure_session()`.
+        for file_data in files:
+            yield self._create_item(file_data)
+
+        page += 1
+```
+
+**Nested collections** - when albums contain sub-galleries:
+
+```python
+def extract(self) -> Generator[DownloadItem, None, None]:
+    album_data = self._fetch_album(self.content_id)
+
+    for gallery in album_data.get("galleries", []):
+        for file_data in gallery["files"]:
+            yield DownloadItem(
+                download_url=file_data["url"],
+                filename=file_data["name"],
+                collection_name=f"{self.content_id}/{gallery['name']}",
+            )
+```
+
+**Deduplication** - when the same file appears multiple times:
+
+```python
+def extract(self) -> Generator[DownloadItem, None, None]:
+    seen_urls: set[str] = set()
+
+    for file_data in self._fetch_files():
+        url = file_data["download_url"]
+
+        if url in seen_urls:
+            continue
+
+        seen_urls.add(url)
+        yield self._create_item(file_data)
+```
+
+**HTML parsing** - when there's no API:
+
+```python
+from bs4 import BeautifulSoup
+
+def extract(self) -> Generator[DownloadItem, None, None]:
+    response = self.session.get(self.url, timeout=30)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    for img in soup.select("div.gallery img"):
+        if src := img.get("src"):
+            yield DownloadItem(
+                download_url=src,
+                filename=src.split("/")[-1],
+            )
+```
 
 ## Error handling
 
-Let errors propagate naturally:
+Let errors propagate naturally - the `extract()` function wraps plugin errors in `ExtractionError` automatically:
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -254,8 +318,6 @@ def extract(self) -> Generator[DownloadItem, None, None]:
     for item in data["files"]:
         yield self._create_item(item)
 ```
-
-The `extract()` function wraps plugin errors in `ExtractionError` automatically.
 
 Validate input early and raise `ValueError` for invalid URLs:
 
@@ -280,85 +342,9 @@ def extract(self) -> Generator[DownloadItem, None, None]:
     logger.debug("Received %d files", len(response.json()["files"]))
 ```
 
-## Common patterns
+## Testing your plugin
 
-**Pagination:**
-
-```python
-def extract(self) -> Generator[DownloadItem, None, None]:
-    page = 1
-
-    while True:
-        response = self.session.get(
-            f"{self.API_BASE}/albums/{self.content_id}",
-            params={"page": page},
-            timeout=30
-        )
-        response.raise_for_status()
-
-        files = response.json().get("files", [])
-        if not files:
-            break
-
-        for file_data in files:
-            yield self._create_item(file_data)
-
-        page += 1
-```
-
-**Nested collections:**
-
-```python
-def extract(self) -> Generator[DownloadItem, None, None]:
-    album_data = self._fetch_album(self.content_id)
-
-    for gallery in album_data.get("galleries", []):
-        for file_data in gallery["files"]:
-            yield DownloadItem(
-                download_url=file_data["url"],
-                filename=file_data["name"],
-                collection_name=f"{self.content_id}/{gallery['name']}",
-            )
-```
-
-**Deduplication:**
-
-```python
-def extract(self) -> Generator[DownloadItem, None, None]:
-    seen_urls: set[str] = set()
-
-    for file_data in self._fetch_files():
-        url = file_data["download_url"]
-
-        if url in seen_urls:
-            continue
-
-        seen_urls.add(url)
-        yield self._create_item(file_data)
-```
-
-**HTML parsing:**
-
-```python
-from bs4 import BeautifulSoup
-
-def extract(self) -> Generator[DownloadItem, None, None]:
-    response = self.session.get(self.url, timeout=30)
-    response.raise_for_status()
-
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    for img in soup.select("div.gallery img"):
-        if src := img.get("src"):
-            yield DownloadItem(
-                download_url=src,
-                filename=src.split("/")[-1],
-            )
-```
-
-## Testing
-
-**Manual testing:**
+Test manually first:
 
 ```python
 from megaloader.plugins.filebox import FileBox
@@ -370,7 +356,7 @@ for item in items:
     print(f"{item.filename} - {item.download_url}")
 ```
 
-**Integration testing:**
+Then test through the main interface:
 
 ```python
 import megaloader as mgl
@@ -379,7 +365,7 @@ for item in mgl.extract("https://filebox.com/album/test123"):
     print(item.filename)
 ```
 
-**Unit tests** in `packages/core/tests/unit/`:
+Add unit tests in `packages/core/tests/unit/`:
 
 ```python
 import pytest
@@ -395,7 +381,7 @@ def test_invalid_url():
         FileBox("https://example.com/invalid")
 ```
 
-**Live tests** in `packages/core/tests/live/`:
+Add live tests in `packages/core/tests/live/`:
 
 ```python
 import pytest
@@ -410,9 +396,19 @@ def test_filebox_extraction():
     assert all(item.filename for item in items)
 ```
 
+Run tests with:
+
+```bash
+# Unit tests only
+pytest packages/core/tests/unit
+
+# Include live tests
+pytest packages/core/tests --run-live
+```
+
 ## Best practices
 
-Use type hints:
+Use type hints for better IDE support and type checking:
 
 ```python
 from collections.abc import Generator
@@ -422,7 +418,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
     ...
 ```
 
-Add docstrings:
+Add docstrings to document behavior:
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -438,7 +434,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
     """
 ```
 
-Use constants:
+Use constants for magic values:
 
 ```python
 class FileBox(BasePlugin):
@@ -446,7 +442,7 @@ class FileBox(BasePlugin):
     TIMEOUT = 30
 ```
 
-Extract helper methods:
+Extract helper methods to keep code readable:
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -474,14 +470,14 @@ yield DownloadItem(
 )
 ```
 
-## Contributing
+## Contributing your plugin
 
 Once your plugin works:
 
 1. Add tests (unit and live)
 2. Update documentation (add platform to platforms.md)
-3. Run linting (`ruff format` and `ruff check --fix`)
-4. Run type checking (`mypy packages/core/megaloader`)
+3. Run linting: `ruff format` and `ruff check --fix`
+4. Run type checking: `mypy packages/core/megaloader`
 5. Submit a pull request
 
 See the [Contributing Guide](/development/contributing) for details.

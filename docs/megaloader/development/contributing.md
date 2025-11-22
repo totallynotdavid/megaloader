@@ -1,14 +1,3 @@
----
-title: Contributing guide
-description:
-  Guidelines for contributing to the megaloader project including development
-  setup, code style, testing, and pull request process.
-outline: [2, 3]
-prev:
-  text: "Creating Plugins"
-  link: "/plugins/creating"
----
-
 # Contributing to Megaloader
 
 Thank you for considering contributing to Megaloader! This guide will help you
@@ -136,7 +125,7 @@ test: add tests for Cyberdrop plugin
 refactor: simplify HTTP retry logic
 ```
 
-## Contributing cCode
+## Contributing code
 
 ### Pull request process
 
@@ -235,7 +224,7 @@ megaloader/                    # Root workspace
 
 ### New core plugin
 
-See [creating plugins](../plugins/creating-plugins.md) for a detailed guide on
+See [creating plugins](/guide/creating-plugins) for a detailed guide on
 implementing platform extractors.
 
 **Quick checklist:**
@@ -245,13 +234,13 @@ implementing platform extractors.
 3. Register plugin in `PLUGIN_REGISTRY`
 4. Add unit tests in `tests/unit/`
 5. Add live tests in `tests/live/` with `@pytest.mark.live`
-6. Update documentation in `docs/plugins/supported-platforms.md`
+6. Update documentation in `docs/megaloader/reference/plugin-platforms.md`
 
 ### New CLI command
 
 1. Add command in `packages/cli/megaloader_cli/main.py` using Click decorators
-2. Update `docs/cli/commands.md` with command documentation
-3. Add examples to `docs/cli/examples.md`
+2. Update `docs/megaloader/reference/cli-commands.md` with command documentation
+3. Add examples to `docs/megaloader/guide/cli-usage.md`
 4. Test command manually
 
 ### New core library feature
@@ -260,7 +249,7 @@ implementing platform extractors.
 2. Create implementation plan
 3. Write tests first (TDD approach)
 4. Implement feature in `packages/core/megaloader/`
-5. Update API reference in `docs/core/api-reference.md`
+5. Update API reference in `docs/megaloader/reference/api.md`
 6. Add usage examples to relevant documentation pages
 
 ## Contributing to documentation
@@ -324,7 +313,7 @@ bun run docs:build
 - Use relative links for internal navigation
 - Keep line length reasonable for readability
 
-**What to wocument:**
+**What to document:**
 
 - New features and API changes
 - Plugin-specific options and requirements
@@ -336,9 +325,9 @@ bun run docs:build
 
 When making code changes, update relevant documentation:
 
-1. **API changes**: Update `docs/core/api-reference.md`
-2. **New plugin**: Update `docs/plugins/supported-platforms.md`
-3. **CLI changes**: Update `docs/cli/commands.md`
+1. **API changes**: Update `docs/megaloader/reference/api.md`
+2. **New plugin**: Update `docs/megaloader/reference/plugin-platforms.md`
+3. **CLI changes**: Update `docs/megaloader/reference/cli-commands.md`
 4. **New feature**: Add examples to appropriate guide pages
 
 ## Code review

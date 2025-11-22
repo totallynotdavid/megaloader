@@ -1,15 +1,3 @@
----
-title: API reference
-description: Complete reference for functions, classes, and exceptions
-outline: [2, 4]
-prev:
-  text: "Advanced patterns"
-  link: "/core/advanced"
-next:
-  text: "CLI usage"
-  link: "/cli/usage"
----
-
 # API reference
 
 Complete reference for the Megaloader core library.
