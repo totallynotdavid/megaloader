@@ -1,9 +1,15 @@
 # Downloading files
 
-Megaloader gives you metadata. You implement downloads. Here's how, from simple
-to more complex patterns:
+Megaloader gives you metadata. You implement downloads. This separation allows
+you to integrate with existing async pipelines, job queues, or specific HTTP
+clients.
+
+Here's how, from simple to more complex patterns.
 
 ## Basic download
+
+The most critical requirement is respecting the `headers` provided in the
+`DownloadItem`.
 
 ```python
 import megaloader as mgl
@@ -240,6 +246,8 @@ filepath = get_unique_filepath(filepath)
 This appends `_1`, `_2`, etc. to duplicate filenames.
 
 ## Concurrent downloads
+
+Since downloading is I/O bound, threading significantly improves throughput.
 
 ```python
 from concurrent.futures import ThreadPoolExecutor, as_completed
