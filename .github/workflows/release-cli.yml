@@ -1,0 +1,53 @@
+name: release-cli
+
+on:
+  push:
+    tags: ["vcli-*.*.*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
+        with:
+          version: "0.9.10"
+          python-version: "3.13.7"
+
+      - run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/vcli-}"
+          CLI_PKG_VERSION=$(grep '^version = ' packages/cli/pyproject.toml | cut -d'"' -f2)
+          if [ "$TAG_VERSION" != "$CLI_PKG_VERSION" ]; then
+            echo "Tag $TAG_VERSION != cli package $CLI_PKG_VERSION"
+            exit 1
+          fi
+
+      - run: uv build --package megaloader-cli
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cli-dist
+          path: dist/*
+
+  github:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v5
+        with:
+          name: cli-dist
+          path: dist
+      - uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
+        with:
+          files: dist/*
+          generate_release_notes: true
