@@ -4,19 +4,20 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "Megaloader",
   description: "Python library for extracting file metadata from 11+ hosting platforms",
+
+  lastUpdated: true,
+  cleanUrls: true,
+  metaChunk: true,
+  
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: "Home", link: "/" },
-      { text: "Getting started", link: "/getting-started/" },
       { text: "Guide", link: "/guide/" },
-      { text: "CLI", link: "/cli/" },
-      { text: "Plugins", link: "/plugins/" },
+      { text: "Reference", link: "/core/api" },
       {
         text: "More",
         items: [
           { text: "Contributing", link: "/development/contributing" },
-          { text: "GitHub", link: "https://github.com/totallynotdavid/megaloader" },
           { text: "PyPI", link: "https://pypi.org/project/megaloader/" },
         ],
       },
