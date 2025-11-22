@@ -6,7 +6,8 @@ Complete reference for the Megaloader core library.
 
 ### extract()
 
-Extract downloadable items from a URL.
+Extract downloadable items from a URL. Primary entry point. Dispatches the URL
+to the appropriate plugin.
 
 ```python
 def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]

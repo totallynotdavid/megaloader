@@ -1,7 +1,24 @@
 # Supported platforms
 
 Megaloader supports 11 file hosting platforms through dedicated plugins, split
-into core (actively maintained) and extended (best-effort) tiers.
+into core (actively maintained) and extended (best-effort) tiers. Some require
+specific options for full functionality.
+
+In summary:
+
+| Platform    | Domains             | Supports                    | Authentication options                     |
+| ----------- | ------------------- | --------------------------- | ------------------------------------------ |
+| Bunkr       | bunkr.\{si,la\}     | Albums, single files        | None                                       |
+| PixelDrain  | pixeldrain.com      | Lists, files, proxy support | None                                       |
+| Cyberdrop   | cyberdrop.\{me,to\} | Albums, single files        | None                                       |
+| GoFile      | gofile.io           | Folders, files              | password (kwarg)                           |
+| Fanbox      | {creator}.fanbox.cc | Creator content             | session_id or FANBOX_SESSION_ID            |
+| Pixiv       | pixiv.net           | Artworks, galleries         | session_id or PIXIV_SESSION_ID             |
+| Rule34      | rule34.xxx          | Tags, posts, API            | api_key + user_id or environment variables |
+| ThotsLife   | thotslife.com       | Albums, posts               | None                                       |
+| ThotHub.VIP | thothub.vip         | Videos, albums              | None                                       |
+| ThotHub.TO  | thothub.to          | Videos, albums              | None                                       |
+| Fapello     | fapello.com         | Model profiles              | None                                       |
 
 ## Core platforms
 

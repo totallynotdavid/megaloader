@@ -1,8 +1,7 @@
 # CLI
 
-The Megaloader CLI provides terminal access to extraction and downloading. It's
-a thin wrapper around the core library with progress tracking and organized
-output.
+Megaloader is a yet another command-line tool that downloads files from public
+share links. It's a thin wrapper around the core megaloader library.
 
 ## Installation
 
@@ -151,7 +150,7 @@ megaloader download "https://gofile.io/d/abc123" ./downloads --password "secret"
 
 ### plugins
 
-List supported platforms:
+Lists all supported domains and their associated plugin names.
 
 ```bash
 megaloader plugins

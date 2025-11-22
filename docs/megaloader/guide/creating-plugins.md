@@ -4,7 +4,11 @@ This guide walks through creating a plugin for a new platform.
 
 ## Plugin architecture
 
-Every plugin:
+Megaloader uses a registry pattern to map domains to plugin classes. To add
+support for a new platform, you create a class that inherits from `BasePlugin`
+and implements the extraction logic.
+
+In other words, every plugin:
 
 1. Inherits from `BasePlugin`
 2. Implements `extract()` to yield `DownloadItem` objects
@@ -13,7 +17,8 @@ Every plugin:
 
 ## Minimal example
 
-Here's the simplest possible plugin:
+Your plugin must implement the `extract` method and yield `DownloadItem`
+objects.
 
 ```python
 from collections.abc import Generator
@@ -42,7 +47,8 @@ What BasePlugin provides:
 
 - `self.url` - The URL passed to `extract()`
 - `self.options` - Dictionary of keyword arguments
-- `self.session` - Lazy-loaded `requests.Session` with retry logic
+- `self.session` - Lazy-loaded `requests.Session` with retry logic. Always use
+  it! Don't reimplement a retry logic.
 
 What you implement:
 
@@ -149,6 +155,7 @@ from megaloader.plugins.filebox import FileBox
 PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     # ... existing plugins ...
     "filebox.com": FileBox,
+    "filebox.cc": FileBox, # if it has other domains but same structure
 }
 ```
 
@@ -225,8 +232,9 @@ yield DownloadItem(
 
 ## Common patterns
 
-Pagination (when an API provides results in multiple pages, as the Rule34 plugin
-does):
+Handle pagination withing `extract` so the consumer sees a single continuos
+stream of items. This is useful when an API returns results in multiple pages,
+as is the case with the Rule34 plugin.
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
