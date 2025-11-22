@@ -2,12 +2,17 @@
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
 title: The Docs
-description: Python library for extracting downloadable content metadata from 11+ file hosting platforms without performing downloads. Fast, memory-efficient, and plugin-based.
+description:
+  Python library for extracting downloadable content metadata from 11+ file
+  hosting platforms without performing downloads. Fast, memory-efficient, and
+  plugin-based.
 
 hero:
   name: "megaloader"
   text: "this project will make you smile"
-  tagline: Extract download URLs, filenames, and metadata from 11+ platforms... without downloading files
+  tagline:
+    A generator-based Python library to extract file URLs and metadata from 11+
+    hosting platforms. You decide what to download.
   actions:
     - theme: brand
       text: Get started
@@ -15,24 +20,32 @@ hero:
     - theme: alt
       text: View on GitHub
       link: https://github.com/totallynotdavid/megaloader
+    - theme: alt
+      text: CLI usage
+      link: /cli
   # image:
   #   src: /logo.svg
   #   alt: The megaloader logo
 
 features:
   - icon: 🔍
-    title: Metadata extraction
-    details: Extract download URLs, filenames, sizes, and collection names from 11+ file hosting platforms without downloading files
+    title: Pure extraction
+    details:
+      We fetch direct download URLs, filenames, and headers. You decide how,
+      when, and where to download the files.
   - icon: ⚡
-    title: Memory efficient
-    details: Generator-based API yields results lazily, processing thousands of files without loading everything into memory
-  - icon: 🎯
-    title: You control downloads
-    details: We give you metadata and you implement downloads however you want with full control over logic, concurrency, and error handling
+    title: Generator-first
+    details:
+      The API yields results lazily. Process thousands of files in a gallery
+      without loading the entire dataset into memory.
   - icon: 🛡️
     title: Type safe
-    details: Full type hints throughout the codebase with strict mypy checking for reliable, predictable code
+    details:
+      Fully typed codebase with strict mypy compliance. Reliable, predictable,
+      and IDE-friendly.
   - icon: 📦
-    title: Minimal Dependencies
-    details: Core library only depends on requests and BeautifulSoup4. Lightweight and easy to integrate
+    title: Minimal dependencies
+    details:
+      Core library only depends on requests and BeautifulSoup4. Lightweight and
+      easy to integrate
 ---

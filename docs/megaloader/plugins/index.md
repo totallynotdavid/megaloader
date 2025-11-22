@@ -1,18 +1,22 @@
 ---
 title: Plugin system overview
-description: Learn about megaloader's plugin architecture, domain resolution, and plugin lifecycle for supporting multiple platforms.
+description:
+  Learn about megaloader's plugin architecture, domain resolution, and plugin
+  lifecycle for supporting multiple platforms.
 outline: [2, 3]
 prev:
-  text: 'CLI examples'
-  link: '/cli/examples'
+  text: "CLI examples"
+  link: "/cli/examples"
 next:
-  text: 'Supported platforms'
-  link: '/plugins/supported-platforms'
+  text: "Supported platforms"
+  link: "/plugins/platforms"
 ---
 
 # Plugin system overview
 
-Megaloader uses a plugin-based architecture to support multiple file hosting platforms through a unified interface. Each platform is implemented as a separate plugin that inherits from the `BasePlugin` abstract class.
+Megaloader uses a plugin-based architecture to support multiple file hosting
+platforms through a unified interface. Each platform is implemented as a
+separate plugin that inherits from the `BasePlugin` abstract class.
 
 ## How plugins work
 
@@ -45,7 +49,8 @@ def extract(self) -> Generator[DownloadItem, None, None]:
     """Extract downloadable items from the URL."""
 ```
 
-This method yields `DownloadItem` objects as files are discovered, enabling lazy evaluation and memory-efficient processing of large collections.
+This method yields `DownloadItem` objects as files are discovered, enabling lazy
+evaluation and memory-efficient processing of large collections.
 
 ### Optional customization
 
@@ -56,7 +61,9 @@ def _configure_session(self, session: requests.Session) -> None:
     """Add plugin-specific headers, cookies, or authentication."""
 ```
 
-This method is called once when the session is first created, allowing plugins to add platform-specific requirements like Referer headers or authentication tokens.
+This method is called once when the session is first created, allowing plugins
+to add platform-specific requirements like Referer headers or authentication
+tokens.
 
 ## Domain resolution
 
@@ -91,7 +98,8 @@ For domain variations and www prefixes:
 # "en.pixiv.net" → Pixiv plugin
 ```
 
-This fallback ensures compatibility with domain variations without explicit registration.
+This fallback ensures compatibility with domain variations without explicit
+registration.
 
 ## Plugin lifecycle
 
@@ -111,7 +119,8 @@ for item in mgl.extract("https://pixeldrain.com/l/abc123"):
 3. **Plugin lookup**: `get_plugin_class("pixeldrain.com")` returns `PixelDrain`
 4. **Plugin initialization**: `PixelDrain(url)` is instantiated
 5. **Session creation**: On first use, a session is created with retry logic
-6. **Session configuration**: `_configure_session()` adds plugin-specific headers
+6. **Session configuration**: `_configure_session()` adds plugin-specific
+   headers
 7. **Extraction**: `extract()` method yields items as they're discovered
 8. **Item yielding**: Each `DownloadItem` is yielded to the caller
 
@@ -129,7 +138,8 @@ PLUGIN_REGISTRY = {
 }
 ```
 
-Multiple domains can map to the same plugin class (e.g., Bunkr has multiple domain variations).
+Multiple domains can map to the same plugin class (e.g., Bunkr has multiple
+domain variations).
 
 ## Error handling
 
@@ -139,4 +149,5 @@ The plugin system raises specific exceptions:
 - **`ExtractionError`**: Network or parsing failure during extraction
 - **`ValueError`**: Invalid URL format or missing required parameters
 
-Plugins should let network errors propagate naturally—the `extract()` function wraps them in `ExtractionError` automatically.
+Plugins should let network errors propagate naturally—the `extract()` function
+wraps them in `ExtractionError` automatically.

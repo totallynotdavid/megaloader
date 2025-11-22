@@ -1,10 +1,12 @@
 ---
 title: Contributing guide
-description: Guidelines for contributing to the megaloader project including development setup, code style, testing, and pull request process.
+description:
+  Guidelines for contributing to the megaloader project including development
+  setup, code style, testing, and pull request process.
 outline: [2, 3]
 prev:
-  text: 'Creating Plugins'
-  link: '/plugins/creating-plugins'
+  text: "Creating Plugins"
+  link: "/plugins/creating"
 ---
 
 # Contributing to Megaloader

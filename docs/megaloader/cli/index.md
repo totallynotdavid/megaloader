@@ -1,18 +1,23 @@
 ---
 title: CLI overview
-description: Command-line interface for megaloader with extraction, downloading, and platform listing capabilities.
+description:
+  Command-line interface for megaloader with extraction, downloading, and
+  platform listing capabilities.
 outline: [2, 3]
 prev:
-  text: 'API reference'
-  link: '/guide/api-reference'
+  text: "API reference"
+  link: "/core/api"
 next:
-  text: 'Commands'
-  link: '/cli/commands'
+  text: "CLI usage"
+  link: "/cli/usage"
 ---
 
 # CLI overview
 
-The Megaloader CLI provides a command-line interface for extracting metadata and downloading files from supported platforms. It's a thin wrapper around the core library that adds terminal-friendly output, progress tracking, and convenient command-line options.
+The Megaloader CLI provides a command-line interface for extracting metadata and
+downloading files from supported platforms. It's a thin wrapper around the core
+library that adds terminal-friendly output, progress tracking, and convenient
+command-line options.
 
 ## Purpose
 
@@ -75,7 +80,8 @@ megaloader download --help
 Several options are available across commands:
 
 - **`-v, --verbose`**: Enable debug logging to see detailed extraction process
-- **`--json`**: Output structured JSON instead of human-readable text (extract only)
+- **`--json`**: Output structured JSON instead of human-readable text (extract
+  only)
 - **`--flat`**: Disable collection subfolder organization (download only)
 - **`--filter`**: Filter files by glob pattern (download only)
 - **`--password`**: Provide password for protected content (download only)

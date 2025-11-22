@@ -1,209 +1,223 @@
 ---
 title: Quick start
-description: Get started with megaloader in 5 minutes. Learn to extract metadata and download files from file hosting platforms.
+description:
+  Learn Megaloader in 5 minutes, from installation to extracting your first
+  files
 outline: [2, 3]
 prev:
-  text: 'Installation'
-  link: '/getting-started/installation'
+  text: "Installation"
+  link: "/getting-started/installation"
 next:
-  text: 'User guide'
-  link: '/guide/'
+  text: "Core concepts"
+  link: "/core/basics"
 ---
 
 # Quick start
 
-Get started with Megaloader in 5 minutes!
+Megaloader extracts downloadable file metadata from file hosting platforms. It
+doesn't download files, instead, it gives you URLs, filenames, and metadata so
+you can implement downloads however you want.
 
-## What is megaloader?
+## Your first extraction
 
-Megaloader extracts downloadable file metadata from file hosting platforms. It **does not download files**, instead, it gives you the URLs, filenames, and other metadata so you can implement downloads however you want.
-
-## Basic extraction
-
-The simplest way to use Megaloader is with the `extract()` function:
+The simplest way to use Megaloader is the `extract()` function:
 
 ```python
 import megaloader as mgl
 
-# Extract metadata from a URL
 for item in mgl.extract("https://pixeldrain.com/l/abc123"):
-    print(f"File: {item.filename}")
-    print(f"URL: {item.download_url}")
-    print(f"Size: {item.size_bytes} bytes")
-    print()
+    print(f"{item.filename} - {item.download_url}")
 ```
 
-The `extract()` function returns a generator that yields `DownloadItem` objects containing metadata for each file.
+That's it. The function returns a generator that yields `DownloadItem` objects
+containing metadata for each file. Network requests happen lazily during
+iteration, not when you call `extract()`.
 
-## Accessing DownloadItem fields
+## What you get back
 
-Each `DownloadItem` has the following fields:
+Each item contains everything you need to download the file:
 
 ```python
 for item in mgl.extract("https://cyberdrop.me/a/example"):
-    # Required fields
-    print(item.download_url)    # Direct download URL
-    print(item.filename)         # Original filename
-    
-    # Optional fields
-    print(item.collection_name)  # Album/gallery name (if applicable)
-    print(item.source_id)        # Platform-specific ID (if available)
-    print(item.headers)          # Required HTTP headers (dict)
-    print(item.size_bytes)       # File size in bytes (if available)
+    print(item.download_url)      # Direct download URL
+    print(item.filename)          # Original filename
+    print(item.size_bytes)        # File size (if available)
+    print(item.collection_name)   # Album/gallery name
+    print(item.headers)           # Required HTTP headers
 ```
 
-## Simple Download implementation
+Some fields like `size_bytes` and `collection_name` might be `None` depending on
+what the platform provides.
 
-To actually download files, use the metadata from `DownloadItem`:
+## Implementing downloads
 
-```python
+Megaloader separates extraction from downloading. It gives you, among other
+things, the direct URLs and the exact headers required by the host, and you
+handle the actual downloading.
+
+```python{8}
 import megaloader as mgl
 import requests
 from pathlib import Path
 
-# Extract and download
+output = Path("./downloads")
+output.mkdir(exist_ok=True)
+
 for item in mgl.extract("https://pixeldrain.com/u/example"):
-    # Download the file
     response = requests.get(item.download_url, headers=item.headers)
-    
-    # Save to disk
-    filepath = Path("./downloads") / item.filename
-    filepath.parent.mkdir(parents=True, exist_ok=True)
+
+    filepath = output / item.filename
     filepath.write_bytes(response.content)
-    
     print(f"Downloaded: {item.filename}")
 ```
 
+A few things are happening in this example:
+
+1. `mgl.extract()` returns one `DownloadItem` at a time. Each item includes a
+   direct download URL and a set of headers the host requires for the request to
+   succeed. Without these headers, many platforms will refuse the download.
+2. `requests.get()` uses those headers to retrieve the file.
+3. The downloaded data is written to the `./downloads` folder using
+   `Path.write_bytes()`.
+
+**Why keep downloads separate?** Megaloader's job is to provide reliable URLs
+and the request data that must be used. Everything else is up to you: streaming,
+retries, concurrency, filtering, or integrating downloads into your own tools.
+
+If you prefer something ready to use, the project also includes a CLI you can
+read about next.
+
 ## Using the CLI
 
-If you installed the CLI package, you can use Megaloader from the terminal:
+If you installed `megaloader-cli`, you can use it directly from your terminal.
 
-### Extract metadata (dry run)
-
-See what would be downloaded without actually downloading:
+To preview the files in a link without downloading:
 
 ```bash
 megaloader extract "https://pixeldrain.com/l/abc123"
 ```
 
-Output in JSON format:
-
-```bash
-megaloader extract "https://pixeldrain.com/l/abc123" --json
-```
-
-### Download files
-
-Download all files to a directory:
+To download everything into a folder named "downloads":
 
 ```bash
 megaloader download "https://pixeldrain.com/l/abc123" ./downloads
 ```
 
-By default, files are organized into subfolders by collection. Use `--flat` to disable this:
-
-```bash
-megaloader download "https://pixeldrain.com/l/abc123" ./downloads --flat
-```
-
-### List supported platforms
+To list all supported platforms:
 
 ```bash
 megaloader plugins
 ```
 
-## Plugin-specific options
+The CLI handles the downloading and organizes files for you. Use it for quick
+tasks or whenever you don’t need custom logic.
 
-Some platforms require additional options like passwords or authentication:
+## Platform-specific options
 
-::: code-group
+Some platforms support additional parameters that you may need to provide
+depending on the situation.
 
-```python [GoFile with Password]
-import megaloader as mgl
+For example, GoFile links can be password-protected. If so, pass the password
+when extracting:
 
-# Gofile with password
+```python
 for item in mgl.extract("https://gofile.io/d/abc123", password="secret"):
     print(item.filename)
 ```
 
-```python [Pixiv with Session]
-import megaloader as mgl
+Pixiv and Fanbox often require authentication to access the full set of files.
+Without it, Megaloader may return fewer items than you see on the website. You
+can supply your session cookie through the `session_id` argument:
 
-# Pixiv with session cookie
-for item in mgl.extract("https://pixiv.net/user/123", session_id="your_cookie"):
+```python{3}
+for item in mgl.extract(
+    "https://pixiv.net/user/123",
+    session_id="your_cookie"
+):
     print(item.filename)
 ```
 
-```bash [CLI with Password]
-megaloader download "https://gofile.io/d/abc123" ./downloads --password secret
-```
+Don't worry if you don't know to get your `session_id` yet, the Pixiv section
+will have you covered.
 
+<!-- prettier-ignore -->
+::: warning A known problem
+Using a session ID improves access but does not guarantee identical results to
+browsing directly
 :::
+
+Check the [plugin options](/plugins/options) page to see what each platform
+supports.
 
 ## Error handling
 
-Handle common errors gracefully:
+Wrap extraction in try-except to handle problems gracefully:
 
 ```python
 import megaloader as mgl
 
 try:
-    items = list(mgl.extract("https://example.com/file"))
+    items = list(mgl.extract(url))
 except mgl.UnsupportedDomainError as e:
-    print(f"Domain not supported: {e.domain}")
+    print(f"Platform not supported: {e.domain}")
 except mgl.ExtractionError as e:
     print(f"Extraction failed: {e}")
-except ValueError as e:
-    print(f"Invalid URL: {e}")
 ```
 
-::: tip Error Handling
-Always wrap extraction in try-except blocks to handle network failures and unsupported domains gracefully.
-:::
+The two main exceptions you'll see are `UnsupportedDomainError` when the
+platform isn't supported, and `ExtractionError` for network or parsing failures.
 
 ## Complete example
 
-Here's a complete example with error handling and progress tracking:
+Here's everything together with basic error handling:
 
 ```python
 import megaloader as mgl
 import requests
 from pathlib import Path
 
-def download_from_url(url: str, output_dir: str = "./downloads") -> None:
-    """Extract and download all files from a URL."""
+def download_from_url(url: str, output_dir: str = "./downloads"):
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
     try:
-        # Extract metadata
         items = list(mgl.extract(url))
         print(f"Found {len(items)} files")
-        
-        # Download each file
+
         for i, item in enumerate(items, 1):
-            print(f"[{i}/{len(items)}] Downloading {item.filename}...")
-            
-            # Determine output path
+            print(f"[{i}/{len(items)}] {item.filename}...")
+
+            # Organize by collection if available
             if item.collection_name:
-                output_path = Path(output_dir) / item.collection_name
+                file_path = output_path / item.collection_name / item.filename
             else:
-                output_path = Path(output_dir)
-            
-            output_path.mkdir(parents=True, exist_ok=True)
-            filepath = output_path / item.filename
-            
-            # Download file
+                file_path = output_path / item.filename
+
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+
             response = requests.get(item.download_url, headers=item.headers)
             response.raise_for_status()
-            filepath.write_bytes(response.content)
-            
-            print(f"  ✓ Saved to {filepath}")
-            
-    except mgl.UnsupportedDomainError as e:
-        print(f"Error: Domain '{e.domain}' is not supported")
-    except mgl.ExtractionError as e:
-        print(f"Error: Failed to extract metadata - {e}")
-    except Exception as e:
-        print(f"Error: {e}")
+            file_path.write_bytes(response.content)
 
-# Use it
+    except mgl.UnsupportedDomainError as e:
+        print(f"Platform '{e.domain}' isn't supported")
+    except mgl.ExtractionError as e:
+        print(f"Extraction failed: {e}")
+
 download_from_url("https://pixeldrain.com/l/abc123")
 ```
+
+## Next steps
+
+Now that you've seen the basics, you can:
+
+- Learn about [core library concepts](/core/basics) for deeper understanding
+- See [download implementations](/core/downloads) with progress bars and retry
+  logic
+- Explore [advanced patterns](/core/advanced) for batch processing and
+  concurrency
+- Check [CLI usage](/cli/usage) for terminal-based workflows
+- Browse [supported platforms](/plugins/platforms) to see what's available
+
+The library is intentionally minimal. Extraction is the hard part, downloading
+is just HTTP requests. You have full control over how files get saved.

@@ -1,205 +1,126 @@
 ---
 title: CLI examples
-description: Common workflows and usage patterns for the Megaloader CLI including extraction, filtering, and shell integration.
+description: Common workflows and patterns for using the CLI effectively
 outline: [2, 3]
 prev:
-  text: 'Commands'
-  link: '/cli/commands'
+  text: "CLI usage"
+  link: "/cli/usage"
 next:
-  text: 'Plugins overview'
-  link: '/plugins/'
+  text: "Plugins overview"
+  link: "/plugins/"
 ---
 
 # CLI examples
 
-Common workflows and usage patterns for the Megaloader CLI.
-
-[[toc]]
+Practical workflows and patterns for getting the most out of the CLI.
 
 ## Basic workflows
 
-### Preview before downloading
-
-Check what files are available before downloading:
+Preview before downloading:
 
 ```bash
-# Extract metadata first
-megaloader extract https://pixeldrain.com/l/abc123
+# Check what's available first
+megaloader extract "https://pixeldrain.com/l/abc123"
 
-# Review the output, then download
-megaloader download https://pixeldrain.com/l/abc123 ./downloads
+# Looks good? Download it
+megaloader download "https://pixeldrain.com/l/abc123" ./downloads
 ```
 
-### Quick download
-
-Download files in one command:
-
-```bash
-megaloader download https://pixeldrain.com/l/abc123 ./downloads
-```
-
-### Check supported platforms
-
-Verify a platform is supported:
+Check if a platform is supported:
 
 ```bash
 megaloader plugins | grep pixeldrain
 ```
 
-## Extracting metadata to JSON
-
-### Basic JSON export
-
-Export metadata as JSON for processing:
+Download with custom organization:
 
 ```bash
-megaloader extract --json https://pixeldrain.com/l/abc123 > metadata.json
+# Organized by collection (default)
+megaloader download "https://pixeldrain.com/l/abc123" ./downloads
+
+# Everything in one folder
+megaloader download "https://pixeldrain.com/l/abc123" ./downloads --flat
 ```
 
-### Process with jq
+## JSON output for automation
 
-Use `jq` to process JSON output:
+Export metadata to JSON:
 
 ```bash
-# Count total files
-megaloader extract --json https://pixeldrain.com/l/abc123 | jq '.count'
+megaloader extract "https://pixeldrain.com/l/abc123" --json > metadata.json
+```
 
-# List all filenames
-megaloader extract --json https://pixeldrain.com/l/abc123 | jq '.items[].filename'
+Process with jq:
 
-# Get total size in bytes
-megaloader extract --json https://pixeldrain.com/l/abc123 | \
+```bash
+# Count files
+megaloader extract --json "https://pixeldrain.com/l/abc123" | jq '.count'
+
+# List filenames
+megaloader extract --json "https://pixeldrain.com/l/abc123" | jq '.items[].filename'
+
+# Calculate total size
+megaloader extract --json "https://pixeldrain.com/l/abc123" | \
   jq '[.items[].size_bytes] | add'
 
-# Filter for images only
-megaloader extract --json https://pixeldrain.com/l/abc123 | \
+# Filter for images
+megaloader extract --json "https://pixeldrain.com/l/abc123" | \
   jq '.items[] | select(.filename | endswith(".jpg") or endswith(".png"))'
 ```
 
-### Extract download URLs
-
-Get just the download URLs:
+Extract just the download URLs:
 
 ```bash
-megaloader extract --json https://pixeldrain.com/l/abc123 | \
+megaloader extract --json "https://pixeldrain.com/l/abc123" | \
   jq -r '.items[].download_url'
 ```
 
-This is useful for passing to other download tools like `wget` or `curl`.
+Useful for passing to other download tools like wget or curl.
 
 ## Filtering downloads
 
-### Download specific file types
-
-Download only images:
+Download specific file types:
 
 ```bash
-megaloader download --filter "*.jpg" https://pixeldrain.com/l/abc123 ./images
+# Only images
+megaloader download --filter "*.jpg" "https://pixeldrain.com/l/abc123" ./images
+
+# Only videos
+megaloader download --filter "*.mp4" "https://pixeldrain.com/l/abc123" ./videos
+
+# Multiple filters (run separately)
+megaloader download --filter "*.jpg" "https://pixeldrain.com/l/abc123" ./media
+megaloader download --filter "*.png" "https://pixeldrain.com/l/abc123" ./media
 ```
 
-Download only videos:
+Filter by filename pattern:
 
 ```bash
-megaloader download --filter "*.mp4" https://pixeldrain.com/l/abc123 ./videos
+# Files starting with "photo"
+megaloader download --filter "photo*" "https://pixeldrain.com/l/abc123" ./photos
+
+# Files containing "2024"
+megaloader download --filter "*2024*" "https://pixeldrain.com/l/abc123" ./2024
 ```
 
-Download multiple extensions using shell expansion:
+## Authentication
+
+Password-protected GoFile:
 
 ```bash
-# Download both .jpg and .png files
-megaloader download --filter "*.jpg" https://pixeldrain.com/l/abc123 ./images
-megaloader download --filter "*.png" https://pixeldrain.com/l/abc123 ./images
+megaloader download --password "secret123" "https://gofile.io/d/abc123" ./downloads
 ```
 
-### Filter by filename pattern
-
-Download files matching a pattern:
-
-```bash
-# Download files starting with "photo"
-megaloader download --filter "photo*" https://pixeldrain.com/l/abc123 ./photos
-
-# Download files containing "2024"
-megaloader download --filter "*2024*" https://pixeldrain.com/l/abc123 ./2024-files
-```
-
-## Password-protected content
-
-### Gofile with password
-
-Download password-protected Gofile content:
-
-```bash
-megaloader download --password "secret123" https://gofile.io/d/abc123 ./downloads
-```
-
-### Using environment variables
-
-Set password via environment variable:
+Using environment variables:
 
 ```bash
 export GOFILE_PASSWORD="secret123"
-megaloader download https://gofile.io/d/abc123 ./downloads
+megaloader download "https://gofile.io/d/abc123" ./downloads
 ```
 
-Note: Command-line `--password` takes precedence over environment variables.
-
-## Organizing downloads
-
-### Default organization (collections)
-
-By default, files are organized into subfolders by collection:
-
-```bash
-megaloader download https://pixeldrain.com/l/abc123 ./downloads
-```
-
-Result:
-
-```
-downloads/
-├── Album 1/
-│   ├── photo1.jpg
-│   └── photo2.jpg
-└── Album 2/
-    ├── video1.mp4
-    └── video2.mp4
-```
-
-### Flat organization
-
-Disable collection subfolders with `--flat`:
-
-```bash
-megaloader download --flat https://pixeldrain.com/l/abc123 ./downloads
-```
-
-Result:
-
-```
-downloads/
-├── photo1.jpg
-├── photo2.jpg
-├── video1.mp4
-└── video2.mp4
-```
-
-### Custom directory structure
-
-Combine with shell commands for custom organization:
-
-```bash
-# Download to dated directory
-megaloader download https://pixeldrain.com/l/abc123 ./downloads/$(date +%Y-%m-%d)
-
-# Download to platform-specific directory
-PLATFORM="pixeldrain"
-megaloader download https://pixeldrain.com/l/abc123 ./downloads/$PLATFORM
-```
+Command-line password takes precedence over environment variables.
 
 ## Shell integration
-
-### Batch processing multiple URLs
 
 Process multiple URLs from a file:
 
@@ -210,25 +131,21 @@ while read url; do
 done < urls.txt
 ```
 
-### Conditional downloads
-
-Download only if extraction succeeds:
+Conditional downloads:
 
 ```bash
-if megaloader extract https://pixeldrain.com/l/abc123; then
-    megaloader download https://pixeldrain.com/l/abc123 ./downloads
+if megaloader extract "https://pixeldrain.com/l/abc123"; then
+    megaloader download "https://pixeldrain.com/l/abc123" ./downloads
 else
-    echo "Failed to extract metadata"
+    echo "Extraction failed"
 fi
 ```
 
-### Error handling
-
-Handle errors in scripts:
+Error handling in scripts:
 
 ```bash
 #!/bin/bash
-set -e  # Exit on error
+set -e
 
 URL="https://pixeldrain.com/l/abc123"
 OUTPUT="./downloads"
@@ -238,207 +155,133 @@ if ! megaloader download "$URL" "$OUTPUT"; then
     exit 1
 fi
 
-echo "Download completed successfully"
+echo "Download completed"
 ```
 
-### Logging to file
-
-Save verbose output to a log file:
+Save logs to file:
 
 ```bash
-megaloader download --verbose https://pixeldrain.com/l/abc123 ./downloads 2>&1 | \
+megaloader download --verbose "https://pixeldrain.com/l/abc123" ./downloads 2>&1 | \
   tee download.log
 ```
 
----
+## Custom directory structures
 
-## Advanced workflows
-
-### Extract, filter, then download
-
-Use JSON output to filter before downloading:
+Download to dated directories:
 
 ```bash
-# Extract metadata
-megaloader extract --json https://pixeldrain.com/l/abc123 > metadata.json
-
-# Analyze with jq
-jq '.items[] | select(.size_bytes > 10000000) | .filename' metadata.json
-
-# Download based on analysis
-megaloader download https://pixeldrain.com/l/abc123 ./downloads
+megaloader download "https://pixeldrain.com/l/abc123" ./downloads/$(date +%Y-%m-%d)
 ```
 
-### Download with progress monitoring
-
-Monitor download progress in real-time:
+Platform-specific folders:
 
 ```bash
-megaloader download --verbose https://pixeldrain.com/l/abc123 ./downloads
-```
-
-The `--verbose` flag shows detailed extraction and download progress.
-
-### Verify downloads
-
-Check if all files were downloaded:
-
-```bash
-# Count expected files
-EXPECTED=$(megaloader extract --json "$URL" | jq '.count')
-
-# Count downloaded files
-ACTUAL=$(find ./downloads -type f | wc -l)
-
-if [ "$EXPECTED" -eq "$ACTUAL" ]; then
-    echo "All files downloaded successfully"
-else
-    echo "Warning: Expected $EXPECTED files, found $ACTUAL"
-fi
-```
-
-## Platform-specific examples
-
-### PixelDrain lists
-
-Download from PixelDrain list:
-
-```bash
-megaloader download https://pixeldrain.com/l/abc123 ./pixeldrain-files
-```
-
-### Gofile folders
-
-Download from Gofile folder:
-
-```bash
-megaloader download https://gofile.io/d/abc123 ./gofile-files
-```
-
-With password:
-
-```bash
-megaloader download --password "secret" https://gofile.io/d/abc123 ./gofile-files
-```
-
-### Cyberdrop albums
-
-Download from Cyberdrop album:
-
-```bash
-megaloader download https://cyberdrop.me/a/abc123 ./cyberdrop-album
-```
-
-### Bunkr albums
-
-Download from Bunkr album:
-
-```bash
-megaloader download https://bunkr.si/a/abc123 ./bunkr-album
+PLATFORM="pixeldrain"
+megaloader download "https://pixeldrain.com/l/abc123" ./downloads/$PLATFORM
 ```
 
 ## Combining with other tools
 
-### Download with wget
-
-Extract URLs and download with wget:
+Download with wget instead:
 
 ```bash
-megaloader extract --json https://pixeldrain.com/l/abc123 | \
+megaloader extract --json "https://pixeldrain.com/l/abc123" | \
   jq -r '.items[].download_url' | \
   wget -i -
 ```
 
-### Create download archive
-
-Download and create archive:
+Create an archive after downloading:
 
 ```bash
-megaloader download https://pixeldrain.com/l/abc123 ./temp-downloads
-tar -czf archive.tar.gz -C ./temp-downloads .
-rm -rf ./temp-downloads
+megaloader download "https://pixeldrain.com/l/abc123" ./temp
+tar -czf archive.tar.gz -C ./temp .
+rm -rf ./temp
 ```
 
-### Generate download report
-
-Create a report of downloaded files:
+Generate a download report:
 
 ```bash
-megaloader extract --json https://pixeldrain.com/l/abc123 | \
+megaloader extract --json "https://pixeldrain.com/l/abc123" | \
   jq -r '.items[] | "\(.filename)\t\(.size_bytes)\t\(.collection_name)"' > report.tsv
 ```
 
-### Filter by size
+## Verification and validation
 
-Download only files larger than 1MB:
-
-```bash
-# Extract and filter
-megaloader extract --json https://pixeldrain.com/l/abc123 | \
-  jq '.items[] | select(.size_bytes > 1048576) | .filename'
-
-# Then download (CLI doesn't support size filtering directly)
-megaloader download https://pixeldrain.com/l/abc123 ./downloads
-```
-
-## Troubleshooting
-
-### Enable verbose logging
-
-See detailed extraction process:
+Check all files were downloaded:
 
 ```bash
-megaloader extract --verbose https://pixeldrain.com/l/abc123
+EXPECTED=$(megaloader extract --json "$URL" | jq '.count')
+ACTUAL=$(find ./downloads -type f | wc -l)
+
+if [ "$EXPECTED" -eq "$ACTUAL" ]; then
+    echo "All files downloaded"
+else
+    echo "Warning: Expected $EXPECTED, found $ACTUAL"
+fi
 ```
-
-### Check platform support
-
-Verify platform is supported:
-
-```bash
-megaloader plugins | grep -i "pixeldrain"
-```
-
-### Test extraction first
-
-Always test extraction before downloading:
-
-```bash
-# Test first
-megaloader extract https://example.com/content
-
-# If successful, download
-megaloader download https://example.com/content ./downloads
-```
-
-### Handle network issues
 
 Retry failed downloads:
 
 ```bash
 #!/bin/bash
 MAX_RETRIES=3
-RETRY=0
+URL="$1"
+OUTPUT="$2"
 
-while [ $RETRY -lt $MAX_RETRIES ]; do
-    if megaloader download "$URL" ./downloads; then
+for i in $(seq 1 $MAX_RETRIES); do
+    if megaloader download "$URL" "$OUTPUT"; then
         echo "Download successful"
-        break
+        exit 0
     else
-        RETRY=$((RETRY + 1))
-        echo "Retry $RETRY/$MAX_RETRIES"
+        echo "Attempt $i failed, retrying..."
         sleep 5
     fi
 done
+
+echo "Failed after $MAX_RETRIES attempts"
+exit 1
 ```
 
-## Tips and Best Practices
+## Platform-specific examples
 
-1. **Always test extraction first**: Use `extract` to verify the URL works before downloading
-2. **Use `--json` for automation**: JSON output is easier to parse in scripts
-3. **Filter early**: Use `--filter` to download only what you need
-4. **Organize with collections**: Default collection organization keeps files organized
-5. **Use `--verbose` for debugging**: Helps identify issues with extraction or downloads
-6. **Check platform support**: Use `megaloader plugins` to verify platform is supported
-7. **Handle passwords securely**: Use environment variables instead of command-line arguments for sensitive passwords
-8. **Monitor disk space**: Check available space before downloading large collections
+PixelDrain lists:
+
+```bash
+megaloader download "https://pixeldrain.com/l/abc123" ./pixeldrain
+```
+
+GoFile with password:
+
+```bash
+megaloader download --password "secret" "https://gofile.io/d/abc123" ./gofile
+```
+
+Cyberdrop albums:
+
+```bash
+megaloader download "https://cyberdrop.me/a/abc123" ./cyberdrop
+```
+
+Bunkr albums:
+
+```bash
+megaloader download "https://bunkr.si/a/abc123" ./bunkr
+```
+
+## Tips
+
+Always test extraction first before downloading to verify the URL works and see
+what's available.
+
+Use `--json` for automation since it's easier to parse programmatically than
+human-readable output.
+
+Filter early with `--filter` to download only what you need rather than
+downloading everything then deleting files.
+
+Use `--verbose` when debugging extraction issues to see detailed logs.
+
+Check available disk space before downloading large collections.
+
+Use environment variables for credentials instead of command-line arguments to
+avoid exposing them in shell history.

@@ -1,13 +1,15 @@
 ---
 title: Installation
-description: Install megaloader core library and CLI tool using pip or uv package manager. Supports Python 3.10+.
+description:
+  Install megaloader core library and CLI tool using pip or uv package manager.
+  Supports Python 3.10+.
 outline: [2, 3]
 prev:
-  text: 'Home'
-  link: '/'
+  text: "Home"
+  link: "/"
 next:
-  text: 'Quick start'
-  link: '/getting-started/quickstart'
+  text: "Quick start"
+  link: "/getting-started/quickstart"
 ---
 
 # Installation
@@ -33,15 +35,16 @@ pip install megaloader
 
 :::
 
-::: tip Why uv?
-uv is significantly faster than pip and provides better dependency resolution. [Learn more about uv](https://docs.astral.sh/uv/)
-:::
+::: tip Why uv? uv is significantly faster than pip and provides better
+dependency resolution. [Learn more about uv](https://docs.astral.sh/uv/) :::
 
-This installs the `megaloader` package, which provides the `extract()` function and related APIs for metadata extraction.
+This installs the `megaloader` package, which provides the `extract()` function
+and related APIs for metadata extraction.
 
 ## CLI tool
 
-The command-line interface is distributed as a separate package. Install it if you want to use Megaloader from the terminal:
+The command-line interface is distributed as a separate package. Install it if
+you want to use Megaloader from the terminal:
 
 ::: code-group
 
@@ -55,9 +58,8 @@ pip install megaloader-cli
 
 :::
 
-::: info Automatic dependencies
-The CLI package automatically installs the core library as a dependency. You don't need to install both.
-:::
+::: info Automatic dependencies The CLI package automatically installs the core
+library as a dependency. You don't need to install both. :::
 
 ## Install from source
 
@@ -88,7 +90,8 @@ uv pip install -e "packages/core[dev]"
 uv pip install -e "packages/cli[dev]"
 ```
 
-This installs additional tools like pytest, ruff, and mypy for testing and code quality.
+This installs additional tools like pytest, ruff, and mypy for testing and code
+quality.
 
 ## Verify installation
 
