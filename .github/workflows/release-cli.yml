@@ -51,6 +51,8 @@ jobs:
           version: "0.9.10"
           python-version: "3.13.7"
 
+      - run: uv venv
+
       - run: uv pip install pyinstaller
 
       - run:
