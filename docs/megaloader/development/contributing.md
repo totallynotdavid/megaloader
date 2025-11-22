@@ -1,59 +1,55 @@
-# Contributing to Megaloader
+# Contributing
 
-Thank you for considering contributing to Megaloader! This guide will help you
-get started with development, testing, and documentation contributions.
+Thank you for considering contributing to Megaloader. This guide covers
+development setup, workflow, and contribution guidelines.
 
 ## Getting started
 
 ### Prerequisites
 
-- Python 3.10 or higher (3.13+ recommended for reproducibility)
+- Python 3.10+ (3.13+ recommended)
 - [uv](https://docs.astral.sh/uv/) package manager (v0.9.10+)
-- [mise](https://mise.jdx.dev/) (optional but recommended for task management)
+- [mise](https://mise.jdx.dev/) (optional, for task management)
 - Git
 
 ### Development setup
 
-1. Fork and clone the repository:
+Fork and clone:
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/megaloader.git
 cd megaloader
 ```
 
-2. Install dependencies:
+Install dependencies:
 
 ```bash
-# Using mise (recommended)
-mise install              # Install Python, uv, ruff, and other tools
-mise run sync             # Install workspace dependencies
+mise install
+mise run sync
 
 # Or using uv directly
 uv sync --all-packages --extra dev
 ```
 
-3. Verify installation:
+Verify:
 
 ```bash
-# Run unit tests to verify setup
 mise run test-unit
 
-# Or using uv directly
+# Or using uv
 uv run pytest packages/core/tests/unit
 ```
 
-The workspace uses uv's workspace feature, so all packages are automatically
-installed in editable mode.
+The workspace uses uv's workspace feature, so all packages are installed in
+editable mode.
 
 ## Development workflow
 
 ### Code style
 
-We use **ruff** (v0.14.5) for both formatting and linting, replacing black,
-isort, and flake8:
+We use ruff (v0.14.5) for formatting and linting:
 
 ```bash
-# Format and fix linting issues
 mise run format
 
 # Or manually
@@ -61,42 +57,31 @@ ruff format .
 ruff check --fix .
 ```
 
-**Style guidelines:**
-
-- Line length: 88 characters (ruff default)
-- Target version: Python 3.10
-- Import style: Absolute imports preferred, relative imports banned
-- Type hints: Required for core library
+**Style guidelines:** Line length 88 characters, target Python 3.10, absolute
+imports preferred, type hints required for core library.
 
 ### Type checking
 
-We maintain strict type checking with **mypy**:
+We maintain strict type checking with mypy:
 
 ```bash
-# Run type checking
 mise run lint
 
 # Or manually
 uv run mypy packages/core/megaloader
 ```
 
-All code in the core library must pass strict type checking before submission.
+All core library code must pass strict type checking.
 
 ### Testing
 
-We use **pytest** with two types of tests:
-
 ```bash
-# Unit tests only (fast: <1 sec, no network)
 mise run test-unit
 
-# All tests including live network tests (~100 secs)
 mise run test
 
-# Specific test file
 uv run pytest packages/core/tests/unit/test_item.py -v
 
-# Run with verbose output
 uv run pytest packages/core/tests -v
 ```
 
@@ -107,11 +92,8 @@ uv run pytest packages/core/tests -v
 - `tests/conftest.py` - Pytest fixtures and configuration
 - `tests/helpers.py` - Shared test utilities
 
-**Writing tests:**
-
-- Use `@pytest.mark.live` for tests requiring network access
-- Unit tests should be fast and not depend on external services
-- Follow existing test patterns in the codebase
+**Writing tests:** Use `@pytest.mark.live` for tests requiring network access.
+Unit tests should be fast and not depend on external services.
 
 ### Commit messages
 
@@ -129,147 +111,138 @@ refactor: simplify HTTP retry logic
 
 ### Pull request process
 
-1. Create a feature branch:
+Create feature branch:
 
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-2. Make your changes and commit:
+Make changes and commit:
 
 ```bash
 git add .
 git commit -m "feat: description of your changes"
 ```
 
-3. Push to your fork:
+Push to fork:
 
 ```bash
 git push origin feature/your-feature-name
 ```
 
-4. Create a Pull Request on GitHub
+Create Pull Request on GitHub.
 
 ### PR requirements
 
-- [ ] Code passes all tests
-- [ ] Code is formatted with Ruff
-- [ ] Type hints are added/updated
-- [ ] Documentation is updated
-- [ ] Tests are added for new features
-- [ ] Commit messages follow conventions
+- Code passes all tests
+- Code is formatted with Ruff
+- Type hints are added/updated
+- Documentation is updated
+- Tests are added for new features
+- Commit messages follow conventions
 
 ## Project structure
 
 ```
-megaloader/                    # Root workspace
+megaloader/
 ├── packages/
-│   ├── core/                  # Core library (megaloader on PyPI)
-│   │   ├── megaloader/        # Main package
-│   │   │   ├── plugins/       # Platform-specific extractors
-│   │   │   ├── plugin.py      # BasePlugin abstract class
-│   │   │   ├── item.py        # DownloadItem dataclass
-│   │   │   ├── exceptions.py  # Custom exceptions
-│   │   │   └── __init__.py    # Public API exports
-│   │   ├── tests/             # Test suite
-│   │   │   ├── unit/          # Unit tests
-│   │   │   ├── live/          # Live network tests
-│   │   │   ├── conftest.py    # Pytest fixtures
-│   │   │   └── helpers.py     # Test utilities
-│   │   └── pyproject.toml     # Package configuration
+│   ├── core/
+│   │   ├── megaloader/
+│   │   │   ├── plugins/
+│   │   │   ├── plugin.py
+│   │   │   ├── item.py
+│   │   │   ├── exceptions.py
+│   │   │   └── __init__.py
+│   │   ├── tests/
+│   │   │   ├── unit/
+│   │   │   ├── live/
+│   │   │   ├── conftest.py
+│   │   │   └── helpers.py
+│   │   └── pyproject.toml
 │   │
-│   └── cli/                   # CLI tool (megaloader-cli on PyPI)
-│       ├── megaloader_cli/    # CLI package
-│       │   ├── main.py        # Click CLI entry point
-│       │   └── ...
-│       └── pyproject.toml     # Package configuration
+│   └── cli/
+│       ├── megaloader_cli/
+│       │   └── main.py
+│       └── pyproject.toml
 │
-├── api/                       # FastAPI demo server
-│   ├── main.py                # FastAPI application
-│   └── pyproject.toml         # Package configuration
+├── docs/
+│   ├── guide/
+│   ├── reference/
+│   └── development/
 │
-├── docs/                      # VitePress documentation
-│   ├── getting-started/       # Installation & quickstart
-│   ├── core/                  # Core library docs
-│   ├── cli/                   # CLI documentation
-│   ├── plugins/               # Plugin documentation
-│   └── development/           # Contributing guides
-│
-├── pyproject.toml             # Workspace configuration
-├── uv.lock                    # Dependency lock file
-└── mise.toml                  # Development tasks
+├── pyproject.toml
+├── uv.lock
+└── mise.toml
 ```
 
 ## Areas for contribution
 
 ### High priority
 
-- **Bug fixes**: Fix issues with existing plugins
-- **Test coverage**: Add more unit and live tests
-- **Documentation**: Improve guides, API docs, and examples
-- **Core plugins**: Maintain and improve Bunkr, PixelDrain, Cyberdrop, GoFile
+- Bug fixes for existing plugins
+- Test coverage improvements
+- Documentation enhancements
+- Core plugin maintenance (Bunkr, PixelDrain, Cyberdrop, GoFile)
 
 ### Medium priority
 
-- **New Core plugins**: Well-maintained platforms with stable APIs
-- **CLI enhancements**: New commands or options
-- **Performance**: Optimize extraction speed and memory usage
+- New core plugins with stable APIs
+- CLI enhancements
+- Performance optimizations
 
 ### Low priority
 
-- **Extended plugins**: Additional platforms (best-effort support)
-- **API demo**: Improvements to FastAPI demo server
+- Extended plugins (additional platforms)
+- API demo improvements
 
 ## Adding features
 
 ### New core plugin
 
-See [creating plugins](/guide/creating-plugins) for a detailed guide on
-implementing platform extractors.
+See the creating plugins guide for details.
 
 **Quick checklist:**
 
-1. Create new plugin file in `packages/core/megaloader/plugins/`
-2. Inherit from `BasePlugin` and implement `extract()` method
-3. Register plugin in `PLUGIN_REGISTRY`
+1. Create plugin file in `packages/core/megaloader/plugins/`
+2. Inherit from `BasePlugin` and implement `extract()`
+3. Register in `PLUGIN_REGISTRY`
 4. Add unit tests in `tests/unit/`
 5. Add live tests in `tests/live/` with `@pytest.mark.live`
-6. Update documentation in `docs/megaloader/reference/plugin-platforms.md`
+6. Update `docs/reference/platforms.md`
 
 ### New CLI command
 
-1. Add command in `packages/cli/megaloader_cli/main.py` using Click decorators
-2. Update `docs/megaloader/reference/cli-commands.md` with command documentation
-3. Add examples to `docs/megaloader/guide/cli-usage.md`
-4. Test command manually
+1. Add command in `packages/cli/megaloader_cli/main.py` using Click
+2. Update `docs/reference/cli.md`
+3. Add examples to `docs/guide/cli.md`
+4. Test manually
 
 ### New core library feature
 
 1. Discuss in GitHub Issues first
 2. Create implementation plan
 3. Write tests first (TDD approach)
-4. Implement feature in `packages/core/megaloader/`
-5. Update API reference in `docs/megaloader/reference/api.md`
-6. Add usage examples to relevant documentation pages
+4. Implement in `packages/core/megaloader/`
+5. Update `docs/reference/api.md`
+6. Add usage examples
 
 ## Contributing to documentation
 
-We use **VitePress** for documentation. Contributions to improve clarity,
-accuracy, and completeness are highly valued.
+We use VitePress for documentation. Contributions to improve clarity and
+completeness are valued.
 
 ### Documentation setup
 
-1. Install Node.js dependencies:
+Install dependencies:
 
 ```bash
 cd docs
 bun install
 ```
 
-2. Run local development server:
+Run development server:
 
 ```bash
-# Using mise
 mise run docs-serve
 
 # Or manually
@@ -277,10 +250,9 @@ cd docs
 bun run docs:dev
 ```
 
-3. Build documentation:
+Build:
 
 ```bash
-# Using mise
 mise run docs-build
 
 # Or manually
@@ -290,70 +262,47 @@ bun run docs:build
 
 ### Documentation guidelines
 
-**Structure:**
+**Structure:** Use kebab-case file naming, organize logically, separate guides
+from reference, progress from simple to advanced.
 
-- Use consistent file naming: `kebab-case.md`
-- Organize content in logical directories
-- Separate conceptual guides from reference material
-- Progress from simple to advanced topics
+**Code examples:** Use `extract()` function, show `DownloadItem` objects
+correctly, use `import megaloader as mgl`, include complete runnable examples.
 
-**Code examples:**
-
-- Use `extract()` function, not deprecated `download()`
-- Show `DownloadItem` objects with correct field names
-- Use `import megaloader as mgl` for imports
-- Include complete, runnable examples
-- Add syntax highlighting with ` ```python `
-
-**Style:**
-
-- Use clear, concise language
-- Define technical terms before using them
-- Include practical examples for each concept
-- Use relative links for internal navigation
-- Keep line length reasonable for readability
-
-**What to document:**
-
-- New features and API changes
-- Plugin-specific options and requirements
-- Common usage patterns and workflows
-- Error handling and troubleshooting
-- Breaking changes and migration guides
+**Style:** Use clear concise language, define technical terms, include practical
+examples, use relative links, keep lines readable.
 
 ### Updating documentation
 
 When making code changes, update relevant documentation:
 
-1. **API changes**: Update `docs/megaloader/reference/api.md`
-2. **New plugin**: Update `docs/megaloader/reference/plugin-platforms.md`
-3. **CLI changes**: Update `docs/megaloader/reference/cli-commands.md`
-4. **New feature**: Add examples to appropriate guide pages
+1. API changes → `docs/reference/api.md`
+2. New plugin → `docs/reference/platforms.md`
+3. CLI changes → `docs/reference/cli.md`
+4. New feature → Add to appropriate guide
 
 ## Code review
 
 ### What we look for
 
-- **Correctness**: Does it work as intended?
-- **Tests**: Are there tests covering the changes?
-- **Style**: Does it follow project conventions?
-- **Performance**: Is it reasonably efficient?
-- **Documentation**: Are changes documented?
-- **Type safety**: Are type hints correct and complete?
+- Correctness
+- Tests coverage
+- Style consistency
+- Performance
+- Documentation
+- Type safety
 
 ### Review process
 
-1. Automated checks run on PR (ruff, mypy, pytest)
+1. Automated checks run on PR
 2. Maintainer reviews code and documentation
 3. Discussion and iteration
 4. Approval and merge
 
 ## Getting help
 
-- **Questions**: Use
+- Questions:
   [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
-- **Bugs**: Open an
-  [Issue](https://github.com/totallynotdavid/megaloader/issues)
+- Bugs: [Issues](https://github.com/totallynotdavid/megaloader/issues)
 
 ## License
 
@@ -362,10 +311,7 @@ MIT License.
 
 ## Recognition
 
-Contributors are recognized in:
+Contributors are recognized in README.md, release notes, and GitHub contributors
+page.
 
-- README.md
-- Release notes
-- GitHub contributors page
-
-Thank you for contributing! 🎉
+Thank you for contributing!

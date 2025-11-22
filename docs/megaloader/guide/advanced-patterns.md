@@ -1,11 +1,8 @@
-# Advanced usage
+# Advanced patterns
 
-Beyond basic extraction and downloading, here are patterns for production
-environments and complex workflows.
+Patterns for production environments and complex workflows.
 
-## Batch processing multiple URLs
-
-Process several URLs efficiently:
+## Batch processing
 
 ```python
 import megaloader as mgl
@@ -24,7 +21,6 @@ for url in urls:
         results[url] = items
         print(f"{url}: {len(items)} items")
     except mgl.UnsupportedDomainError:
-        print(f"{url}: Unsupported")
         results[url] = []
     except mgl.ExtractionError as e:
         print(f"{url}: {e}")
@@ -35,8 +31,6 @@ print(f"\nTotal: {total} items from {len(urls)} URLs")
 ```
 
 ## Parallel extraction
-
-Extract from multiple URLs concurrently:
 
 ```python
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -58,9 +52,9 @@ def extract_parallel(urls, max_workers=5):
             url, items, error = future.result()
 
             if error:
-                print(f"✗ {url}: {error}")
+                print(f"{url}: {error}")
             else:
-                print(f"✓ {url}: {len(items)} items")
+                print(f"{url}: {len(items)} items")
 
             results[url] = items
 
@@ -71,8 +65,6 @@ results = extract_parallel(urls, max_workers=3)
 ```
 
 ## Caching extraction results
-
-Avoid repeated requests by caching metadata:
 
 ```python
 import json
@@ -96,12 +88,10 @@ class ExtractionCache:
         if not cache_path.exists():
             return None
 
-        # Check expiration
         mtime = datetime.fromtimestamp(cache_path.stat().st_mtime)
         if datetime.now() - mtime > self.ttl:
             return None
 
-        # Load and reconstruct items
         with open(cache_path) as f:
             data = json.load(f)
 
@@ -126,25 +116,21 @@ class ExtractionCache:
         with open(cache_path, 'w') as f:
             json.dump(data, f)
 
-# Usage
 cache = ExtractionCache(ttl_hours=24)
 
 cached = cache.get(url)
 if cached:
-    print(f"Using cached results ({len(cached)} items)")
     items = cached
 else:
-    print("Extracting (not cached)...")
     items = list(mgl.extract(url))
     cache.set(url, items)
 ```
 
-This caches extraction results for 24 hours, avoiding repeated network requests
-for the same URL.
+Caches extraction results for 24 hours, avoiding repeated network requests.
 
-## Filtering with complex criteria
+## Complex filtering
 
-Apply multiple filters during extraction:
+Apply multiple criteria:
 
 ```python
 from pathlib import Path
@@ -152,7 +138,7 @@ import re
 
 def filter_items(url, **filters):
     for item in mgl.extract(url):
-        # Filter by file extension
+        # Filter by extension
         if "extensions" in filters:
             ext = Path(item.filename).suffix.lower()
             if ext not in filters["extensions"]:
@@ -179,7 +165,6 @@ def filter_items(url, **filters):
 
         yield item
 
-# Usage examples
 images = list(filter_items(url, extensions=[".jpg", ".png", ".webp"]))
 
 medium_files = list(filter_items(
@@ -201,7 +186,7 @@ matching_names = list(filter_items(
 
 ## Deduplication
 
-Remove duplicates based on various criteria:
+Remove duplicates by URL or filename:
 
 ```python
 def deduplicate_by_url(items):
@@ -226,21 +211,16 @@ def deduplicate_by_filename(items):
 
     return unique
 
-# Usage
 items = list(mgl.extract(url))
-print(f"Original: {len(items)} items")
-
 unique = deduplicate_by_url(items)
-print(f"Unique: {len(unique)} items")
 ```
 
 ## Exporting metadata
 
-Export extraction results to various formats:
+Export to JSON or CSV for external processing:
 
 ```python
 import json
-import csv
 
 def export_json(url, output_file):
     items = []
@@ -256,32 +236,12 @@ def export_json(url, output_file):
     with open(output_file, 'w') as f:
         json.dump(items, f, indent=2)
 
-    print(f"Exported {len(items)} items to {output_file}")
-
-def export_csv(url, output_file):
-    items = list(mgl.extract(url))
-
-    with open(output_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(["filename", "download_url", "collection", "size_bytes"])
-
-        for item in items:
-            writer.writerow([
-                item.filename,
-                item.download_url,
-                item.collection_name or "",
-                item.size_bytes or "",
-            ])
-
-    print(f"Exported {len(items)} items to {output_file}")
-
-export_json(url, "metadata.json")
-export_csv(url, "metadata.csv")
+    print(f"Exported {len(items)} items")
 ```
 
 ## Retry with exponential backoff
 
-Handle transient failures at the extraction level:
+Handle transient failures:
 
 ```python
 import time
@@ -295,50 +255,38 @@ def extract_with_retry(url, max_retries=3, **options):
             return
         except mgl.ExtractionError as e:
             if attempt < max_retries - 1:
-                print(f"Attempt {attempt + 1} failed: {e}")
-                print(f"Retrying in {delay}s...")
+                print(f"Attempt {attempt + 1} failed, retrying in {delay}s...")
                 time.sleep(delay)
                 delay *= 2
             else:
-                print(f"Failed after {max_retries} attempts")
                 raise
-
-# Usage
-for item in extract_with_retry(url):
-    print(item.filename)
 ```
 
-## Direct plugin instantiation
-
-Sometimes you want direct control over the plugin:
+## Direct plugin usage
 
 ```python
 from megaloader.plugins import PixelDrain
 
 plugin = PixelDrain("https://pixeldrain.com/l/abc123")
 
-# Access the session for customization
 plugin.session.headers["Custom-Header"] = "value"
 plugin.session.proxies = {"https": "http://proxy.example.com:8080"}
 
-# Extract with custom session
 for item in plugin.extract():
     print(item.filename)
 ```
 
-This is useful when you need to reuse a plugin instance or customize the
-underlying session configuration.
+Useful when you need to reuse a plugin instance or customize the session.
 
-## Building extraction pipelines
+## Extraction pipelines
 
 Chain operations together:
 
 ```python
 def extract_pipeline(url):
-    # Extract
     items = mgl.extract(url)
 
-    # Filter
+    # Filter by size
     items = (item for item in items if item.size_bytes and item.size_bytes > 1_000_000)
 
     # Deduplicate
@@ -351,10 +299,9 @@ def extract_pipeline(url):
 
     items = dedupe(items)
 
-    # Transform filenames
+    # Clean filenames
     def clean_names(items):
         for item in items:
-            # Remove special characters
             clean_name = re.sub(r'[<>:"/\\|?*]', '_', item.filename)
             item.filename = clean_name
             yield item
@@ -363,16 +310,13 @@ def extract_pipeline(url):
 
     return items
 
-# Everything happens lazily during iteration
 for item in extract_pipeline(url):
     download(item)
 ```
 
-The entire pipeline is lazy. Nothing happens until you iterate.
+Everything happens lazily during iteration.
 
 ## Progress tracking with rich
-
-Use rich for better terminal output:
 
 ```python
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -394,11 +338,8 @@ def extract_with_rich_progress(url):
             )
 
     return items
-
-items = extract_with_rich_progress(url)
-print(f"Complete: {len(items)} items")
 ```
 
-These patterns cover most advanced scenarios. Combine them as needed for your
-own workflows, such as caching frequently accessed URLs, running extractions in
-parallel for batch jobs, or deduplicating results before processing.
+Combine these patterns as needed: caching frequently accessed URLs, running
+extractions in parallel for batch jobs, or deduplicating results before
+processing.

@@ -1,16 +1,13 @@
 # Supported platforms
 
-Megaloader supports 11 file hosting platforms through dedicated plugins.
-Platforms are split into core (actively maintained) and extended (best-effort
-support) tiers.
+Megaloader supports 11 file hosting platforms through dedicated plugins, split
+into core (actively maintained) and extended (best-effort) tiers.
 
 ## Core platforms
 
-These receive active development and testing:
-
 ### Bunkr
 
-File hosting with album support across multiple domains.
+File hosting with album support.
 
 **Domains:** bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su
 
@@ -52,11 +49,9 @@ accounts
 **Example:**
 
 ```python
-# Public folder
 for item in mgl.extract("https://gofile.io/d/abc123"):
     print(item.filename)
 
-# Password-protected
 for item in mgl.extract("https://gofile.io/d/xyz789", password="secret"):
     print(item.filename)
 ```
@@ -72,18 +67,14 @@ File hosting with lists and single files.
 **Example:**
 
 ```python
-# List
 for item in mgl.extract("https://pixeldrain.com/l/list123"):
     print(item.filename, item.size_bytes)
 
-# Single file
 for item in mgl.extract("https://pixeldrain.com/u/file456"):
     print(item.filename)
 ```
 
 ## Extended platforms
-
-Best-effort support with possible limitations:
 
 ### Fanbox
 
@@ -154,11 +145,9 @@ Image board with optional API authentication.
 **Example:**
 
 ```python
-# Without authentication
 for item in mgl.extract("https://rule34.xxx/index.php?page=post&s=view&id=123"):
     print(item.filename)
 
-# With API authentication
 for item in mgl.extract(
     "https://rule34.xxx/index.php?page=post&s=view&id=123",
     api_key="your_key",
@@ -214,13 +203,13 @@ for item in mgl.extract("https://thothub.vip/model-name/"):
 
 ## Checking platform support
 
-List all supported platforms with the CLI:
+List all supported platforms:
 
 ```bash
 megaloader plugins
 ```
 
-Or programmatically:
+Programmatically:
 
 ```python
 from megaloader.plugins import PLUGIN_REGISTRY
@@ -229,7 +218,7 @@ for domain in sorted(PLUGIN_REGISTRY.keys()):
     print(domain)
 ```
 
-Check if a specific domain is supported:
+Check if domain is supported:
 
 ```python
 from megaloader.plugins import get_plugin_class

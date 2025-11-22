@@ -1,6 +1,5 @@
 import { defineConfig, type DefaultTheme } from "vitepress";
 
-// https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Megaloader",
   description:
@@ -11,7 +10,6 @@ export default defineConfig({
   metaChunk: true,
 
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
     nav: nav(),
 
     sidebar: {
@@ -70,10 +68,6 @@ function nav(): DefaultTheme.NavItem[] {
           link: "/development/contributing",
         },
         {
-          text: "GitHub",
-          link: "https://github.com/totallynotdavid/megaloader",
-        },
-        {
           text: "PyPI",
           link: "https://pypi.org/project/megaloader/",
         },
@@ -85,7 +79,7 @@ function nav(): DefaultTheme.NavItem[] {
 function sidebarGuide(): DefaultTheme.SidebarItem[] {
   return [
     {
-      text: "Getting started",
+      text: "Introduction",
       collapsed: false,
       items: [
         {
@@ -98,18 +92,21 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
       text: "Core library",
       collapsed: false,
       items: [
-        { text: "Basic usage", link: "basic-usage" },
+        { text: "Using the library", link: "using-the-library" },
         {
-          text: "Download implementation",
-          link: "download-implementation",
+          text: "Downloading files",
+          link: "downloading-files",
         },
-        { text: "Advanced usage", link: "advanced-usage" },
+        { text: "Advanced patterns", link: "advanced-patterns" },
       ],
     },
     {
-      text: "CLI tool",
+      text: "CLI",
       collapsed: false,
-      items: [{ text: "CLI usage", link: "cli-usage" }],
+      items: [
+        { text: "Using the CLI", link: "cli" },
+        { text: "CLI automation", link: "cli-automation" },
+      ],
     },
     {
       text: "Plugin development",
@@ -119,6 +116,10 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
           text: "Creating plugins",
           link: "creating-plugins",
         },
+        {
+          text: "Testing plugins",
+          link: "testing-plugins",
+        },
       ],
     },
   ];
@@ -127,24 +128,24 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
 function sidebarReference(): DefaultTheme.SidebarItem[] {
   return [
     {
-      text: "API reference",
+      text: "API",
       collapsed: false,
-      items: [{ text: "API", link: "api" }],
+      items: [{ text: "API reference", link: "api" }],
     },
     {
-      text: "CLI reference",
+      text: "CLI",
       collapsed: false,
-      items: [{ text: "CLI commands", link: "cli-commands" }],
+      items: [{ text: "CLI reference", link: "cli" }],
     },
     {
-      text: "Plugin reference",
+      text: "Plugins",
       collapsed: false,
       items: [
         {
-          text: "Plugin platforms",
-          link: "plugin-platforms",
+          text: "Supported platforms",
+          link: "platforms",
         },
-        { text: "Plugin options", link: "plugin-options" },
+        { text: "Plugin options", link: "options" },
       ],
     },
   ];

@@ -17,25 +17,16 @@ requests happen during iteration.
 
 **Parameters:**
 
-- `url` (str) - The source URL to extract from
+- `url` (str) - Source URL to extract from
 - `**options` (Any) - Plugin-specific options
 
 **Returns:** Generator yielding `DownloadItem` objects
 
 **Raises:**
 
-- `ValueError` - Invalid URL format or empty URL
+- `ValueError` - Invalid or empty URL
 - `UnsupportedDomainError` - No plugin available for the domain
 - `ExtractionError` - Network or parsing failure
-
-**Plugin-specific options:**
-
-| Option       | Type | Plugins       | Description                       |
-| ------------ | ---- | ------------- | --------------------------------- |
-| `password`   | str  | Gofile        | Password for protected content    |
-| `session_id` | str  | Fanbox, Pixiv | Session cookie for authentication |
-| `api_key`    | str  | Rule34        | API key                           |
-| `user_id`    | str  | Rule34        | User ID                           |
 
 **Example:**
 
@@ -55,7 +46,7 @@ for item in mgl.extract("https://gofile.io/d/xyz789", password="secret"):
 
 ### DownloadItem
 
-Dataclass representing metadata for a downloadable file.
+Dataclass representing file metadata for a downloadable file.
 
 ```python
 @dataclass
@@ -72,7 +63,7 @@ class DownloadItem:
 
 | Field             | Type           | Required | Description                        |
 | ----------------- | -------------- | -------- | ---------------------------------- |
-| `download_url`    | str            | Yes      | Direct URL to download the file    |
+| `download_url`    | str            | Yes      | Direct download URL                |
 | `filename`        | str            | Yes      | Original filename                  |
 | `collection_name` | str \| None    | No       | Album/gallery/user grouping        |
 | `source_id`       | str \| None    | No       | Platform-specific identifier       |
@@ -112,38 +103,24 @@ class BasePlugin(ABC):
     def extract(self) -> Generator[DownloadItem, None, None]
 ```
 
-**Class attributes:**
+**Attributes:**
 
 - `DEFAULT_HEADERS` - Default User-Agent header
-
-**Instance attributes:**
-
-- `url` (str) - The URL being extracted from
+- `url` (str) - URL being extracted from
 - `options` (dict) - Plugin-specific options
 
-**Methods:**
+#### session (property)
 
-#### `__init__(url, **options)`
-
-Initialize plugin with URL and options.
-
-**Raises:** `ValueError` if URL is empty
-
-#### `session` (property)
-
-Lazily-created requests session with retry logic and default headers.
+Lazily-created requests session with retry logic.
 
 **Returns:** `requests.Session`
 
-The session includes:
+Includes default User-Agent, retry strategy (3 retries, exponential backoff),
+and automatic retry on 429, 500, 502, 503, 504.
 
-- Default User-Agent header
-- Retry strategy (3 retries, exponential backoff)
-- Automatic retry on: 429, 500, 502, 503, 504
+#### \_configure_session(session)
 
-#### `_configure_session(session)`
-
-Override to add plugin-specific headers or authentication.
+Override to add platform-specific headers or authentication.
 
 **Parameters:** `session` (requests.Session)
 
@@ -156,9 +133,9 @@ def _configure_session(self, session: requests.Session) -> None:
         session.headers["Authorization"] = f"Bearer {api_key}"
 ```
 
-#### `extract()` (abstract)
+#### extract() (abstract)
 
-Extract downloadable items from the URL. Must be implemented by subclasses.
+Extract downloadable items from URL. Must be implemented by subclasses.
 
 **Returns:** Generator yielding `DownloadItem` objects
 
@@ -186,13 +163,8 @@ class ExtractionError(MegaloaderError):
     pass
 ```
 
-**Common causes:**
-
-- Network connectivity issues
-- Invalid or expired URLs
-- Missing authentication
-- Platform changes breaking the plugin
-- Rate limiting
+**Common causes:** Network issues, invalid URLs, missing authentication,
+platform changes breaking the plugin, rate limiting.
 
 **Example:**
 
@@ -205,7 +177,7 @@ except mgl.ExtractionError as e:
 
 ### UnsupportedDomainError
 
-No plugin available for the URL's domain.
+No plugin available for the domain.
 
 ```python
 class UnsupportedDomainError(MegaloaderError):
@@ -214,9 +186,7 @@ class UnsupportedDomainError(MegaloaderError):
         self.domain = domain
 ```
 
-**Attributes:**
-
-- `domain` (str) - The unsupported domain
+**Attributes:** `domain` (str) - The unsupported domain
 
 **Example:**
 
@@ -237,15 +207,11 @@ Resolve domain to plugin class.
 def get_plugin_class(domain: str) -> type[BasePlugin] | None
 ```
 
-**Parameters:** `domain` (str) - Normalized domain (e.g., "pixiv.net")
+**Parameters:** `domain` (str) - Normalized domain
 
-**Returns:** Plugin class or None if unsupported
+**Returns:** Plugin class or None
 
-**Resolution order:**
-
-1. Exact match in PLUGIN_REGISTRY
-2. Subdomain match for supported domains
-3. Partial match fallback
+**Resolution order:** Exact match, subdomain match, partial match fallback.
 
 **Example:**
 
@@ -276,8 +242,6 @@ for domain in sorted(PLUGIN_REGISTRY.keys()):
 
 ## Module exports
 
-The top-level `megaloader` module exports:
-
 ```python
 __all__ = [
     "DownloadItem",
@@ -287,24 +251,15 @@ __all__ = [
 ]
 ```
 
-**Recommended import style:**
+**Recommended import:**
 
 ```python
-# Namespace import (recommended)
 import megaloader as mgl
 
 items = list(mgl.extract(url))
-
-# Specific imports
-from megaloader import extract, DownloadItem, ExtractionError
-
-# Exception imports
-from megaloader import UnsupportedDomainError
 ```
 
 ## Environment variables
-
-Some plugins support environment variables for credentials:
 
 | Variable            | Plugin | Description      |
 | ------------------- | ------ | ---------------- |
@@ -314,12 +269,11 @@ Some plugins support environment variables for credentials:
 | `RULE34_API_KEY`    | Rule34 | API key          |
 | `RULE34_USER_ID`    | Rule34 | User ID          |
 
-Explicit kwargs take precedence over environment variables.
+Explicit kwargs take precedence.
 
 ## Logging
 
-Megaloader uses Python's standard logging. Enable debug logging to see detailed
-extraction information:
+Enable debug logging:
 
 ```python
 import logging
@@ -327,19 +281,13 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-**Log levels:**
-
-- `DEBUG` - Detailed extraction info, HTTP requests
-- `INFO` - General progress
-- `WARNING` - Recoverable issues
-- `ERROR` - Extraction failures
+**Levels:** DEBUG (detailed extraction), INFO (progress), WARNING (recoverable
+issues), ERROR (failures).
 
 ## Version
-
-Get the library version:
 
 ```python
 import megaloader
 
-print(megaloader.__version__)  # e.g., "0.2.0"
+print(megaloader.__version__)
 ```

@@ -1,15 +1,14 @@
 # Creating plugins
 
-This guide walks through creating a plugin for a new platform. You'll understand
-the architecture and be able to add support for any file hosting platform.
+This guide walks through creating a plugin for a new platform.
 
 ## Plugin architecture
 
 Every plugin:
 
-1. Inherits from `BasePlugin` for session management and retry logic
+1. Inherits from `BasePlugin`
 2. Implements `extract()` to yield `DownloadItem` objects
-3. Optionally overrides `_configure_session()` for platform-specific headers
+3. Optionally overrides `_configure_session()` for platform-specific setup
 4. Gets registered in `PLUGIN_REGISTRY` to map domains to the plugin
 
 ## Minimal example
@@ -37,29 +36,28 @@ class SimpleHost(BasePlugin):
 ```
 
 That's it. `BasePlugin` handles session creation, retry logic, and default
-headers automatically. Your plugin just needs to fetch data and yield
-`DownloadItem` objects.
+headers. Your plugin just needs to fetch data and yield `DownloadItem` objects.
 
-**What BasePlugin provides:**
+What BasePlugin provides:
 
 - `self.url` - The URL passed to `extract()`
 - `self.options` - Dictionary of keyword arguments
 - `self.session` - Lazy-loaded `requests.Session` with retry logic
 
-**What you implement:**
+What you implement:
 
 - `extract()` - Must yield `DownloadItem` objects
 - `_configure_session(session)` - Optional, for custom headers/cookies
 
-## Building a complete plugin
+## Building a plugin
 
-Let's build a plugin for a fictional platform "FileBox" that has album URLs like
-`https://filebox.com/album/abc123` and file URLs like
+Let's build a plugin for a fictional platform called "FileBox" that has album
+URLs like `https://filebox.com/album/abc123` and file URLs like
 `https://filebox.com/file/xyz789`.
 
 Start by creating the plugin class and parsing the URL:
 
-```python
+```python{16}
 import logging
 import re
 from collections.abc import Generator
@@ -90,10 +88,7 @@ class FileBox(BasePlugin):
             yield from self._extract_file()
 ```
 
-This parses the URL in `__init__` to determine whether we're dealing with an
-album or a single file, then routes to the appropriate extraction method.
-
-Now implement the album extraction:
+Implement album extraction:
 
 ```python
 def _extract_album(self) -> Generator[DownloadItem, None, None]:
@@ -116,11 +111,7 @@ def _extract_album(self) -> Generator[DownloadItem, None, None]:
         )
 ```
 
-This fetches the album data from the API and yields a `DownloadItem` for each
-file. The `collection_name` field groups files by album, which is useful when
-downloading multiple albums.
-
-For single files, the logic is simpler:
+For single files:
 
 ```python
 def _extract_file(self) -> Generator[DownloadItem, None, None]:
@@ -175,7 +166,7 @@ for item in mgl.extract("https://filebox.com/album/test123"):
 For platforms requiring authentication, accept credentials through options or
 environment variables:
 
-```python
+```python{8}
 import os
 
 class FileBox(BasePlugin):
@@ -191,16 +182,12 @@ class FileBox(BasePlugin):
 
         if self.api_key:
             session.headers["Authorization"] = f"Bearer {self.api_key}"
-            logger.debug("Using FileBox API authentication")
 ```
 
 Users can then pass credentials:
 
 ```python
-import megaloader as mgl
-
-for item in mgl.extract("https://filebox.com/album/test", api_key="your-key"):
-    print(item.filename)
+mgl.extract("https://filebox.com/album/test", api_key="your-key")
 ```
 
 Or set the environment variable:
@@ -213,10 +200,10 @@ export FILEBOX_API_KEY="your-key"
 
 When creating items, you must provide:
 
-- `download_url` (str) - Direct URL to download the file
+- `download_url` (str) - Direct download URL
 - `filename` (str) - Original filename
 
-Optional fields include:
+Optional fields:
 
 - `collection_name` (str | None) - Album/gallery/user grouping
 - `source_id` (str | None) - Platform-specific identifier
@@ -238,7 +225,8 @@ yield DownloadItem(
 
 ## Common patterns
 
-**Pagination** - when the API returns results in pages:
+Pagination (when an API provides results in multiple pages, as the Rule34 plugin
+does):
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -262,7 +250,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
         page += 1
 ```
 
-**Nested collections** - when albums contain sub-galleries:
+Nested collections (when albums contain sub-galleries):
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -277,7 +265,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
             )
 ```
 
-**Deduplication** - when the same file appears multiple times:
+Deduplication (when a host supports uploading files with the same name):
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -293,7 +281,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
         yield self._create_item(file_data)
 ```
 
-**HTML parsing** - when there's no API:
+HTML parsing (when there's no API):
 
 ```python
 from bs4 import BeautifulSoup
@@ -314,12 +302,11 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 
 ## Error handling
 
-Let errors propagate naturally - the `extract()` function wraps plugin errors in
-`ExtractionError` automatically:
+Let errors propagate naturally. The `extract()` function wraps plugin errors in
+`ExtractionError`:
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
-    # Good: Let errors propagate
     response = self.session.get(self.url, timeout=30)
     response.raise_for_status()
 
@@ -354,67 +341,8 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 
 ## Testing your plugin
 
-Test manually first:
-
-```python
-from megaloader.plugins.filebox import FileBox
-
-plugin = FileBox("https://filebox.com/album/test123")
-items = list(plugin.extract())
-
-for item in items:
-    print(f"{item.filename} - {item.download_url}")
-```
-
-Then test through the main interface:
-
-```python
-import megaloader as mgl
-
-for item in mgl.extract("https://filebox.com/album/test123"):
-    print(item.filename)
-```
-
-Add unit tests in `packages/core/tests/unit/`:
-
-```python
-import pytest
-from megaloader.plugins.filebox import FileBox
-
-def test_parse_album_url():
-    plugin = FileBox("https://filebox.com/album/abc123")
-    assert plugin.content_type == "album"
-    assert plugin.content_id == "abc123"
-
-def test_invalid_url():
-    with pytest.raises(ValueError, match="Invalid FileBox URL"):
-        FileBox("https://example.com/invalid")
-```
-
-Add live tests in `packages/core/tests/live/`:
-
-```python
-import pytest
-import megaloader as mgl
-
-@pytest.mark.live
-def test_filebox_extraction():
-    items = list(mgl.extract("https://filebox.com/album/test123"))
-
-    assert len(items) > 0
-    assert all(item.download_url for item in items)
-    assert all(item.filename for item in items)
-```
-
-Run tests with:
-
-```bash
-# Unit tests only
-pytest packages/core/tests/unit
-
-# Include live tests
-pytest packages/core/tests --run-live
-```
+See [Testing plugins](testing-plugins) for manual testing, writing unit tests,
+and adding live tests.
 
 ## Best practices
 
@@ -428,7 +356,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
     ...
 ```
 
-Add docstrings to document behavior:
+Add docstrings to document behaviour:
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:
@@ -460,17 +388,9 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 
     for file_data in data["files"]:
         yield self._create_item(file_data)
-
-def _fetch_album_data(self) -> dict[str, Any]:
-    response = self.session.get(
-        f"{self.API_BASE}/albums/{self.content_id}",
-        timeout=self.TIMEOUT
-    )
-    response.raise_for_status()
-    return response.json()
 ```
 
-Handle missing data gracefully:
+Handle missing data:
 
 ```python
 yield DownloadItem(
@@ -480,14 +400,14 @@ yield DownloadItem(
 )
 ```
 
-## Contributing your plugin
+## Contributing
 
 Once your plugin works:
 
-1. Add tests (unit and live)
-2. Update documentation (add platform to platforms.md)
+1. Add tests ([see Testing plugins](testing-plugins))
+2. Update documentation (add to platforms.md)
 3. Run linting: `ruff format` and `ruff check --fix`
 4. Run type checking: `mypy packages/core/megaloader`
 5. Submit a pull request
 
-See the [Contributing Guide](/development/contributing) for details.
+See the [Contributing Guide](../development/contributing.md) for details.

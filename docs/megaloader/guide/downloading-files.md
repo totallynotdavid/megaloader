@@ -1,11 +1,9 @@
-# Download implementation
+# Downloading files
 
-Megaloader gives you metadata, you implement downloads. Here's how to do that
-with increasing sophistication.
+Megaloader gives you metadata. You implement downloads. Here's how, from simple
+to more complex patterns:
 
 ## Basic download
-
-The simplest approach:
 
 ```python
 import megaloader as mgl
@@ -21,17 +19,16 @@ for item in mgl.extract("https://pixeldrain.com/l/abc123"):
 
     filepath = output / item.filename
     filepath.write_bytes(response.content)
-    print(f"Downloaded: {item.filename}")
 ```
 
-This works for small files but loads each file entirely into memory before
-writing. Not ideal for large videos or images.
+This works for small files but loads each entirely into memory. Not ideal for
+large files (videos for example).
 
-## Streaming downloads
+## Streaming for large files
 
-For large files, stream the download in chunks:
+For large files, stream in chunks:
 
-```python
+```python{10}
 def download_streaming(item, output_dir="./downloads"):
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -51,13 +48,10 @@ def download_streaming(item, output_dir="./downloads"):
                 f.write(chunk)
 
     return filepath
-
-for item in mgl.extract(url):
-    download_streaming(item)
 ```
 
-The `stream=True` parameter prevents requests from loading the entire response
-into memory. We write it in 8KB chunks instead.
+The `stream=True` parameter prevents loading the entire response into memory. We
+write it in 8KB chunks instead.
 
 ## Organizing by collection
 
@@ -85,7 +79,7 @@ def download_organized(item, base_dir="./downloads"):
     return filepath
 ```
 
-This creates a structure like:
+This creates folders for each collection like this:
 
 ```
 downloads/
@@ -96,9 +90,11 @@ downloads/
     └── video.mp4
 ```
 
-## Progress bars
+## Progress tracking
 
-If you're implementing a CLI program, you can add visual feedback with tqdm:
+When building a CLI tool, it’s helpful to provide visual feedback during
+downloads. The example below shows how to track progress for a single file using
+tqdm:
 
 ```python
 from tqdm import tqdm
@@ -143,8 +139,6 @@ for item in tqdm(items, desc="Downloading", unit="file"):
 
 ## Retry logic
 
-Handle transient network failures:
-
 ```python
 import time
 
@@ -175,15 +169,14 @@ def download_with_retry(item, output_dir="./downloads", max_retries=3):
             if attempt < max_retries - 1:
                 print(f"Attempt {attempt + 1} failed, retrying in {delay}s...")
                 time.sleep(delay)
-                delay *= 2  # Exponential backoff
+                delay *= 2
             else:
-                print(f"Failed after {max_retries} attempts: {item.filename}")
                 raise
 ```
 
-## Resume support
+Exponential backoff handles transient network failures.
 
-Resume interrupted downloads using HTTP range requests:
+## Resume support
 
 ```python
 def download_resumable(item, output_dir="./downloads"):
@@ -192,13 +185,11 @@ def download_resumable(item, output_dir="./downloads"):
 
     filepath = output_path / item.filename
 
-    # Check for partial file
     if filepath.exists():
         existing_size = filepath.stat().st_size
         headers = item.headers.copy()
         headers['Range'] = f'bytes={existing_size}-'
         mode = 'ab'
-        print(f"Resuming from byte {existing_size}")
     else:
         headers = item.headers
         mode = 'wb'
@@ -209,8 +200,6 @@ def download_resumable(item, output_dir="./downloads"):
         stream=True
     )
 
-    # 206 = Partial Content (resume supported)
-    # 200 = Full content (resume not supported, start over)
     if response.status_code == 200:
         mode = 'wb'
     elif response.status_code != 206:
@@ -223,12 +212,34 @@ def download_resumable(item, output_dir="./downloads"):
     return filepath
 ```
 
-Some platforms do not support resume and will return 200 rather than 206. When
-that happens, we start over.
+Status 206 means resume is supported. Status 200 means start over.
+
+## Handling filename conflicts
+
+Prevent overwriting files with duplicate names:
+
+```python
+def get_unique_filepath(filepath):
+    if not filepath.exists():
+        return filepath
+
+    stem = filepath.stem
+    suffix = filepath.suffix
+    counter = 1
+
+    while True:
+        new_path = filepath.parent / f"{stem}_{counter}{suffix}"
+        if not new_path.exists():
+            return new_path
+        counter += 1
+
+filepath = output_path / item.filename
+filepath = get_unique_filepath(filepath)
+```
+
+This appends `_1`, `_2`, etc. to duplicate filenames.
 
 ## Concurrent downloads
-
-Download multiple files simultaneously:
 
 ```python
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -255,7 +266,6 @@ def download_concurrent(url, output_dir="./downloads", max_workers=3):
     output_path.mkdir(parents=True, exist_ok=True)
 
     items = list(mgl.extract(url))
-    print(f"Found {len(items)} files")
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {
@@ -270,26 +280,16 @@ def download_concurrent(url, output_dir="./downloads", max_workers=3):
                 print(f"✓ {filepath.name}")
             except Exception as e:
                 print(f"✗ {item.filename}: {e}")
-
-download_concurrent("https://pixeldrain.com/l/abc123", max_workers=3)
 ```
 
-Use concurrency responsibly. A range of 3 to 5 workers is usually safe, while
-excessive parallel requests can lead to rate limiting or blocking. Some
-platforms are more agressive than others.
+Use 3-5 workers typically. Excessive parallel requests can trigger rate
+limiting.
 
-## Production-ready download manager
+## Complete manager
 
-Putting everything together:
+Combining all patterns:
 
 ```python
-import megaloader as mgl
-import requests
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
-import time
-
 class DownloadManager:
     def __init__(
         self,
@@ -337,9 +337,7 @@ class DownloadManager:
         return False, "Unknown error"
 
     def download(self, url, **extract_options):
-        print(f"Extracting from {url}...")
         items = list(mgl.extract(url, **extract_options))
-        print(f"Found {len(items)} files\n")
 
         if not items:
             return
@@ -368,10 +366,7 @@ class DownloadManager:
         print(f"\nDownloaded: {success_count}/{len(items)}")
         if failed_items:
             print(f"Failed: {len(failed_items)}")
-            for filename, error in failed_items:
-                print(f"  {filename}: {error}")
 
-# Usage
 manager = DownloadManager(
     output_dir="./downloads",
     max_workers=3,
@@ -379,53 +374,15 @@ manager = DownloadManager(
 )
 
 manager.download("https://pixeldrain.com/l/abc123")
-manager.download("https://gofile.io/d/xyz789", password="secret")
 ```
 
-This manager handles streaming, retries, concurrency, progress tracking, and
-collection organization. Adapt it to your specific needs.
+This handles streaming, retries, concurrency, progress tracking, and collection
+organization.
 
-## Handling filename conflicts
+## Final notes
 
-Prevent overwriting files with duplicate names:
-
-```python
-def get_unique_filepath(filepath):
-    if not filepath.exists():
-        return filepath
-
-    stem = filepath.stem
-    suffix = filepath.suffix
-    counter = 1
-
-    while True:
-        new_path = filepath.parent / f"{stem}_{counter}{suffix}"
-        if not new_path.exists():
-            return new_path
-        counter += 1
-
-# Usage in download function
-filepath = output_path / item.filename
-filepath = get_unique_filepath(filepath)
-```
-
-This appends `_1`, `_2`, etc. to duplicate filenames.
-
-## Important notes
-
-**Always use `item.headers`**: Some platforms require specific headers like
-`Referer` to prevent hotlinking, these are included in `item.headers`. Always
-pass them in your requests.
-
-**Respect rate limits**: Don't hammer platforms with excessive concurrency. 3-5
-concurrent downloads is reasonable for most platforms.
-
-**Handle errors gracefully**: Network failures happen. Use retry logic and catch
-exceptions so one failed file doesn't kill your entire download batch.
-
-**Consider disk space**: Check available space before downloading large
-collections. A simple `shutil.disk_usage()` call can prevent failures.
-
-These patterns should cover most download scenarios. Mix and match based on your
-needs: streaming for large files, concurrency for faster throughput, retry logic
-for stability, and progress bars for clearer feedback.
+- Always use `item.headers` in requests. Some platforms require specific headers
+  to prevent hotlinking.
+- Respect rate limits with 3-5 concurrent downloads.
+- Handle errors gracefully with retry logic.
+- Check available disk space before downloading large collections.
