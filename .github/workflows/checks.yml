@@ -30,11 +30,11 @@ jobs:
 
       - run: uv sync --all-packages --extra dev
 
-      - uses: astral-sh/ruff-action@e7baf99fcc269796ae85308f7bef6b06147c7f08 # v3.5.1
+      - uses: astral-sh/ruff-action@b08f7b47e5c97c539fcd4ccc6dc06a64a6621742 # v3.5.1
         with:
           args: "format --check --diff"
 
-      - uses: astral-sh/ruff-action@e7baf99fcc269796ae85308f7bef6b06147c7f08 # v3.5.1
+      - uses: astral-sh/ruff-action@b08f7b47e5c97c539fcd4ccc6dc06a64a6621742 # v3.5.1
         with:
           args: "check"
 
