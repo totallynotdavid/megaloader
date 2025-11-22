@@ -4,6 +4,14 @@ updates:
     directory: "/packages/core"
     schedule:
       interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "/packages/cli"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "/api"
+    schedule:
+      interval: "daily"
 
   - package-ecosystem: "github-actions"
     directory: "/"
