@@ -35,8 +35,11 @@ pip install megaloader
 
 :::
 
-::: tip Why uv? uv is significantly faster than pip and provides better
-dependency resolution. [Learn more about uv](https://docs.astral.sh/uv/) :::
+<!-- prettier-ignore -->
+::: tip Why uv?
+uv is significantly faster than pip and provides better dependency resolution.
+[Learn more about uv](https://docs.astral.sh/uv/)
+:::
 
 This installs the `megaloader` package, which provides the `extract()` function
 and related APIs for metadata extraction.
@@ -58,8 +61,11 @@ pip install megaloader-cli
 
 :::
 
-::: info Automatic dependencies The CLI package automatically installs the core
-library as a dependency. You don't need to install both. :::
+<!-- prettier-ignore -->
+::: info Automatic dependencies
+The CLI package automatically installs the core library as a dependency. You
+don't need to install both.
+:::
 
 ## Install from source
 
