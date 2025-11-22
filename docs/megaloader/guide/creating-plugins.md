@@ -1,6 +1,7 @@
 # Creating plugins
 
-This guide walks through creating a plugin for a new platform. You'll understand the architecture and be able to add support for any file hosting platform.
+This guide walks through creating a plugin for a new platform. You'll understand
+the architecture and be able to add support for any file hosting platform.
 
 ## Plugin architecture
 
@@ -35,7 +36,9 @@ class SimpleHost(BasePlugin):
             )
 ```
 
-That's it. `BasePlugin` handles session creation, retry logic, and default headers automatically. Your plugin just needs to fetch data and yield `DownloadItem` objects.
+That's it. `BasePlugin` handles session creation, retry logic, and default
+headers automatically. Your plugin just needs to fetch data and yield
+`DownloadItem` objects.
 
 **What BasePlugin provides:**
 
@@ -50,7 +53,9 @@ That's it. `BasePlugin` handles session creation, retry logic, and default heade
 
 ## Building a complete plugin
 
-Let's build a plugin for a fictional platform "FileBox" that has album URLs like `https://filebox.com/album/abc123` and file URLs like `https://filebox.com/file/xyz789`.
+Let's build a plugin for a fictional platform "FileBox" that has album URLs like
+`https://filebox.com/album/abc123` and file URLs like
+`https://filebox.com/file/xyz789`.
 
 Start by creating the plugin class and parsing the URL:
 
@@ -85,7 +90,8 @@ class FileBox(BasePlugin):
             yield from self._extract_file()
 ```
 
-This parses the URL in `__init__` to determine whether we're dealing with an album or a single file, then routes to the appropriate extraction method.
+This parses the URL in `__init__` to determine whether we're dealing with an
+album or a single file, then routes to the appropriate extraction method.
 
 Now implement the album extraction:
 
@@ -110,7 +116,9 @@ def _extract_album(self) -> Generator[DownloadItem, None, None]:
         )
 ```
 
-This fetches the album data from the API and yields a `DownloadItem` for each file. The `collection_name` field groups files by album, which is useful when downloading multiple albums.
+This fetches the album data from the API and yields a `DownloadItem` for each
+file. The `collection_name` field groups files by album, which is useful when
+downloading multiple albums.
 
 For single files, the logic is simpler:
 
@@ -164,7 +172,8 @@ for item in mgl.extract("https://filebox.com/album/test123"):
 
 ## Adding authentication
 
-For platforms requiring authentication, accept credentials through options or environment variables:
+For platforms requiring authentication, accept credentials through options or
+environment variables:
 
 ```python
 import os
@@ -305,7 +314,8 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 
 ## Error handling
 
-Let errors propagate naturally - the `extract()` function wraps plugin errors in `ExtractionError` automatically:
+Let errors propagate naturally - the `extract()` function wraps plugin errors in
+`ExtractionError` automatically:
 
 ```python
 def extract(self) -> Generator[DownloadItem, None, None]:

@@ -1,8 +1,11 @@
 # Getting started
 
-Megaloader extracts downloadable file metadata from file hosting platforms. It doesn't download files. Instead, it gives you URLs, filenames, and metadata so you can implement downloads however you want.
+Megaloader extracts downloadable file metadata from file hosting platforms. It
+doesn't download files. Instead, it gives you URLs, filenames, and metadata so
+you can implement downloads however you want.
 
-This guide will get you from installation to your first extraction in just a few minutes.
+This guide will get you from installation to your first extraction in just a few
+minutes.
 
 ## Requirements
 
@@ -25,7 +28,8 @@ pip install megaloader
 
 :::
 
-This installs the `megaloader` package, which provides the `extract()` function and related APIs for metadata extraction.
+This installs the `megaloader` package, which provides the `extract()` function
+and related APIs for metadata extraction.
 
 <!-- prettier-ignore -->
 ::: tip Why uv?
@@ -35,7 +39,8 @@ uv is significantly faster than pip and provides better dependency resolution.
 
 **Installing the CLI tool**
 
-The command-line interface is distributed as a separate package. Install it if you want to use Megaloader from the terminal:
+The command-line interface is distributed as a separate package. Install it if
+you want to use Megaloader from the terminal:
 
 ::: code-group
 
@@ -123,13 +128,15 @@ uv pip install -e packages/core
 uv pip install -e packages/cli
 ```
 
-For contributors working on Megaloader itself, install all workspace dependencies including dev tools:
+For contributors working on Megaloader itself, install all workspace
+dependencies including dev tools:
 
 ```bash
 uv sync --all-groups
 ```
 
-This installs additional tools like pytest, ruff, and mypy for testing and code quality.
+This installs additional tools like pytest, ruff, and mypy for testing and code
+quality.
 
 ## Your first extraction
 
@@ -142,7 +149,8 @@ for item in mgl.extract("https://pixeldrain.com/l/DDGtvvTU"):
     print(item.filename)
 ```
 
-That's it. The function returns a generator that yields `DownloadItem` objects containing metadata for each file.
+That's it. The function returns a generator that yields `DownloadItem` objects
+containing metadata for each file.
 
 Output:
 
@@ -155,7 +163,9 @@ sample-image-05.jpg
 sample-image-06.jpg
 ```
 
-Network requests happen lazily during iteration, not when you call `extract()`. This means you can start processing results immediately without waiting for all files to be discovered.
+Network requests happen lazily during iteration, not when you call `extract()`.
+This means you can start processing results immediately without waiting for all
+files to be discovered.
 
 ## What you get back
 
@@ -185,11 +195,14 @@ The `DownloadItem` object includes:
 - `collection_name`: Album/gallery name
 - `headers`: Required HTTP headers
 
-Some fields like `size_bytes` and `collection_name` might be `None` depending on what the platform provides.
+Some fields like `size_bytes` and `collection_name` might be `None` depending on
+what the platform provides.
 
 ## Implementing downloads
 
-Megaloader separates extraction from downloading. It gives you the direct URLs and the exact headers required by the host, and you handle the actual downloading.
+Megaloader separates extraction from downloading. It gives you the direct URLs
+and the exact headers required by the host, and you handle the actual
+downloading.
 
 ```python
 import megaloader as mgl
@@ -201,7 +214,7 @@ output.mkdir(exist_ok=True)
 
 for item in mgl.extract("https://pixeldrain.com/l/DDGtvvTU"):
     response = requests.get(item.download_url, headers=item.headers)
-    
+
     filepath = output / item.filename
     filepath.write_bytes(response.content)
     print(f"Downloaded: {item.filename}")
@@ -209,11 +222,16 @@ for item in mgl.extract("https://pixeldrain.com/l/DDGtvvTU"):
 
 A few things are happening here:
 
-1. `mgl.extract()` returns one `DownloadItem` at a time. Each item includes a direct download URL and a set of headers the host requires for the request to succeed. Without these headers, many platforms will refuse the download.
+1. `mgl.extract()` returns one `DownloadItem` at a time. Each item includes a
+   direct download URL and a set of headers the host requires for the request to
+   succeed. Without these headers, many platforms will refuse the download.
 2. `requests.get()` uses those headers to retrieve the file.
-3. The downloaded data is written to the `./downloads` folder using `Path.write_bytes()`.
+3. The downloaded data is written to the `./downloads` folder using
+   `Path.write_bytes()`.
 
-**Why keep downloads separate?** Megaloader's job is to provide reliable URLs and the request data that must be used. Everything else is up to you: streaming, retries, concurrency, filtering, or integrating downloads into your own tools.
+**Why keep downloads separate?** Megaloader's job is to provide reliable URLs
+and the request data that must be used. Everything else is up to you: streaming,
+retries, concurrency, filtering, or integrating downloads into your own tools.
 
 ## Using the CLI
 
@@ -253,15 +271,18 @@ Download everything into a folder:
 uv run megaloader download "https://pixeldrain.com/l/DDGtvvTU" ./downloads
 ```
 
-The CLI handles the downloading and organizes files for you. Use it for quick tasks or whenever you don't need custom logic.
+The CLI handles the downloading and organizes files for you. Use it for quick
+tasks or whenever you don't need custom logic.
 
 ## Platform-specific options
 
-Some platforms support additional parameters that you may need to provide depending on the situation.
+Some platforms support additional parameters that you may need to provide
+depending on the situation.
 
 **Password-protected links**
 
-GoFile links can be password-protected. If so, pass the password when extracting:
+GoFile links can be password-protected. If so, pass the password when
+extracting:
 
 ```python
 for item in mgl.extract("https://gofile.io/d/abc123", password="secret"):
@@ -270,7 +291,9 @@ for item in mgl.extract("https://gofile.io/d/abc123", password="secret"):
 
 **Authentication for Pixiv and Fanbox**
 
-Pixiv and Fanbox often require authentication to access the full set of files. Without it, Megaloader may return fewer items than you see on the website. You can supply your session cookie through the `session_id` argument:
+Pixiv and Fanbox often require authentication to access the full set of files.
+Without it, Megaloader may return fewer items than you see on the website. You
+can supply your session cookie through the `session_id` argument:
 
 ```python
 for item in mgl.extract(
@@ -285,7 +308,8 @@ for item in mgl.extract(
 Using a session ID improves access but does not guarantee identical results to browsing directly
 :::
 
-Check the [plugin options](/reference/plugin-options) page to see what each platform supports.
+Check the [plugin options](/reference/plugin-options) page to see what each
+platform supports.
 
 ## Error handling
 
@@ -302,7 +326,8 @@ except mgl.ExtractionError as e:
     print(f"Extraction failed: {e}")
 ```
 
-The two main exceptions you'll see are `UnsupportedDomainError` when the platform isn't supported, and `ExtractionError` for network or parsing failures.
+The two main exceptions you'll see are `UnsupportedDomainError` when the
+platform isn't supported, and `ExtractionError` for network or parsing failures.
 
 ## Complete example
 
@@ -316,26 +341,26 @@ from pathlib import Path
 def download_from_url(url: str, output_dir: str = "./downloads"):
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
-    
+
     try:
         items = list(mgl.extract(url))
         print(f"Found {len(items)} files")
-        
+
         for i, item in enumerate(items, 1):
             print(f"[{i}/{len(items)}] {item.filename}...")
-            
+
             # Organize by collection if available
             if item.collection_name:
                 file_path = output_path / item.collection_name / item.filename
             else:
                 file_path = output_path / item.filename
-            
+
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             response = requests.get(item.download_url, headers=item.headers)
             response.raise_for_status()
             file_path.write_bytes(response.content)
-    
+
     except mgl.UnsupportedDomainError as e:
         print(f"Platform '{e.domain}' isn't supported")
     except mgl.ExtractionError as e:
@@ -349,9 +374,13 @@ download_from_url("https://pixeldrain.com/l/DDGtvvTU")
 Now that you've seen the basics, you can:
 
 - Learn about [basic usage](/guide/basic-usage) for deeper understanding
-- See [download implementations](/guide/download-implementation) with progress bars and retry logic
-- Explore [advanced usage](/guide/advanced-usage) for batch processing and concurrency
+- See [download implementations](/guide/download-implementation) with progress
+  bars and retry logic
+- Explore [advanced usage](/guide/advanced-usage) for batch processing and
+  concurrency
 - Check [CLI usage](/guide/cli-usage) for terminal-based workflows
-- Browse [supported platforms](/reference/plugin-platforms) to see what's available
+- Browse [supported platforms](/reference/plugin-platforms) to see what's
+  available
 
-The library is intentionally minimal. Extraction is the hard part, downloading is just HTTP requests. You have full control over how files get saved.
+The library is intentionally minimal. Extraction is the hard part, downloading
+is just HTTP requests. You have full control over how files get saved.

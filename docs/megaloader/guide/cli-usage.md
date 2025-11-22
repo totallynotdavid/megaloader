@@ -1,6 +1,8 @@
 # CLI usage
 
-The Megaloader CLI provides terminal-based access to extraction and downloading functionality. It's a thin wrapper around the core library that adds progress tracking, organized output, and convenient command-line options.
+The Megaloader CLI provides terminal-based access to extraction and downloading
+functionality. It's a thin wrapper around the core library that adds progress
+tracking, organized output, and convenient command-line options.
 
 ## Installation
 
@@ -22,11 +24,13 @@ Output:
 megaloader, version 0.1.0
 ```
 
-You can also download pre-built binaries from the [release page](https://github.com/totallynotdavid/megaloader/releases).
+You can also download pre-built binaries from the
+[release page](https://github.com/totallynotdavid/megaloader/releases).
 
 ## Three main commands
 
-The CLI provides three commands: `extract` for previewing files, `download` for downloading them, and `plugins` to list supported platforms.
+The CLI provides three commands: `extract` for previewing files, `download` for
+downloading them, and `plugins` to list supported platforms.
 
 ### extract
 
@@ -58,7 +62,9 @@ Found 6 files:
       Size: 0.08 MB
 ```
 
-The extract command is a dry run. It discovers files but doesn't download anything. This is useful for checking what's available before committing to a download.
+The extract command is a dry run. It discovers files but doesn't download
+anything. This is useful for checking what's available before committing to a
+download.
 
 Get structured JSON output instead:
 
@@ -107,7 +113,8 @@ The output directory is optional and defaults to `./downloads`:
 megaloader download "https://pixeldrain.com/l/DDGtvvTU"
 ```
 
-You'll see progress bars for each file as they download. By default, files are organized into subfolders by collection name. Disable this with `--flat`:
+You'll see progress bars for each file as they download. By default, files are
+organized into subfolders by collection name. Disable this with `--flat`:
 
 ```bash
 megaloader download "https://pixeldrain.com/l/DDGtvvTU" ./downloads --flat
@@ -123,7 +130,8 @@ megaloader download "https://pixeldrain.com/l/DDGtvvTU" ./images --filter "*.jpg
 megaloader download "https://pixeldrain.com/l/DDGtvvTU" ./videos --filter "*.mp4"
 ```
 
-The filter uses glob patterns, so you can match by filename prefix, suffix, or any pattern.
+The filter uses glob patterns, so you can match by filename prefix, suffix, or
+any pattern.
 
 Provide a password for protected content:
 
@@ -164,7 +172,8 @@ Supported Platforms:
   • thotslife.com        (Thotslife)
 ```
 
-This is useful for quickly checking if a platform is supported before trying to extract from it.
+This is useful for quickly checking if a platform is supported before trying to
+extract from it.
 
 ## Global options
 
@@ -261,7 +270,8 @@ megaloader download --filter "sample*" "https://pixeldrain.com/l/DDGtvvTU" ./sam
 megaloader download --filter "*2024*" "https://pixeldrain.com/l/DDGtvvTU" ./2024
 ```
 
-Note that you need to run the command separately for each filter pattern. Multiple filters aren't yet supported in a single command.
+Note that you need to run the command separately for each filter pattern.
+Multiple filters aren't yet supported in a single command.
 
 ## Authentication
 
@@ -280,7 +290,8 @@ megaloader download "https://gofile.io/d/abc123" ./downloads
 
 Command-line password takes precedence over environment variables.
 
-For platforms requiring authentication (Fanbox, Pixiv, Rule34), set the appropriate environment variables:
+For platforms requiring authentication (Fanbox, Pixiv, Rule34), set the
+appropriate environment variables:
 
 ```bash
 export FANBOX_SESSION_ID="your_cookie"
@@ -291,7 +302,8 @@ export RULE34_USER_ID="your_id"
 megaloader download "https://creator.fanbox.cc" ./output
 ```
 
-See the [plugin options reference](/reference/plugin-options) for details on authentication requirements for each platform.
+See the [plugin options reference](/reference/plugin-options) for details on
+authentication requirements for each platform.
 
 ## Shell integration
 
@@ -422,26 +434,35 @@ The CLI uses standard exit codes:
 - `0` = Success
 - `1` = Error (extraction failed, unsupported domain, etc.)
 
-This makes shell scripting straightforward. You can check the exit code to determine if a command succeeded.
+This makes shell scripting straightforward. You can check the exit code to
+determine if a command succeeded.
 
 ## When to use CLI vs library
 
-Use the CLI when you need quick one-off downloads, shell scripting, or just want to explore what's available on a URL without writing code.
+Use the CLI when you need quick one-off downloads, shell scripting, or just want
+to explore what's available on a URL without writing code.
 
-Use the library when you need custom download logic, want to process items programmatically, or are building an application that integrates extraction functionality.
+Use the library when you need custom download logic, want to process items
+programmatically, or are building an application that integrates extraction
+functionality.
 
-The CLI is essentially a convenience wrapper around the core library with progress bars and organized output.
+The CLI is essentially a convenience wrapper around the core library with
+progress bars and organized output.
 
 ## Tips
 
-Always test extraction first before downloading to verify the URL works and see what's available.
+Always test extraction first before downloading to verify the URL works and see
+what's available.
 
-Use `--json` for automation since it's easier to parse programmatically than human-readable output.
+Use `--json` for automation since it's easier to parse programmatically than
+human-readable output.
 
-Filter early with `--filter` to download only what you need rather than downloading everything then deleting files.
+Filter early with `--filter` to download only what you need rather than
+downloading everything then deleting files.
 
 Use `--verbose` when debugging extraction issues to see detailed logs.
 
 Check available disk space before downloading large collections.
 
-Use environment variables for credentials instead of command-line arguments to avoid exposing them in shell history.
+Use environment variables for credentials instead of command-line arguments to
+avoid exposing them in shell history.

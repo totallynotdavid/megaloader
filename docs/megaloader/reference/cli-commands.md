@@ -10,11 +10,9 @@ megaloader [OPTIONS] COMMAND [ARGS]...
 
 ## Global options
 
-**`--version`**
-Show the version and exit.
+**`--version`** Show the version and exit.
 
-**`--help`**
-Show help message and exit.
+**`--help`** Show help message and exit.
 
 ## Commands
 
@@ -34,14 +32,12 @@ megaloader extract [OPTIONS] URL
 
 **Options:**
 
-**`--json`**
-Output structured JSON instead of human-readable text. Useful for automation and piping to other tools.
+**`--json`** Output structured JSON instead of human-readable text. Useful for
+automation and piping to other tools.
 
-**`-v, --verbose`**
-Enable debug logging to see detailed extraction process.
+**`-v, --verbose`** Enable debug logging to see detailed extraction process.
 
-**`--help`**
-Show help for the extract command.
+**`--help`** Show help for the extract command.
 
 **Exit codes:**
 
@@ -98,22 +94,20 @@ megaloader download [OPTIONS] URL [OUTPUT_DIR]
 
 **Options:**
 
-**`-v, --verbose`**
-Enable debug logging to see detailed download process.
+**`-v, --verbose`** Enable debug logging to see detailed download process.
 
-**`--flat`**
-Save all files directly to OUTPUT_DIR without creating collection subfolders. By default, files are organized into subfolders by collection name.
+**`--flat`** Save all files directly to OUTPUT_DIR without creating collection
+subfolders. By default, files are organized into subfolders by collection name.
 
-**`--filter PATTERN`**
-Filter files by glob pattern. Only files matching the pattern will be downloaded.
+**`--filter PATTERN`** Filter files by glob pattern. Only files matching the
+pattern will be downloaded.
 
 Examples: `*.jpg`, `*.mp4`, `photo*`, `*2024*`
 
-**`--password PASSWORD`**
-Password for protected content. Required for password-protected GoFile links.
+**`--password PASSWORD`** Password for protected content. Required for
+password-protected GoFile links.
 
-**`--help`**
-Show help for the download command.
+**`--help`** Show help for the download command.
 
 **Exit codes:**
 
@@ -146,8 +140,7 @@ megaloader plugins [OPTIONS]
 
 **Options:**
 
-**`--help`**
-Show help for the plugins command.
+**`--help`** Show help for the plugins command.
 
 **Exit codes:**
 

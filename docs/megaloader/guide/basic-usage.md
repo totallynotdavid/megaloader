@@ -1,6 +1,8 @@
 # Basic usage
 
-Megaloader is built around a few simple ideas: lazy evaluation through generators, platform-specific plugins, and clean separation between extraction and downloading.
+Megaloader is built around a few simple ideas: lazy evaluation through
+generators, platform-specific plugins, and clean separation between extraction
+and downloading.
 
 ## Generator-based extraction
 
@@ -28,9 +30,12 @@ sample-image-05.jpg
 sample-image-06.jpg
 ```
 
-This lazy evaluation means you can start processing the first files while later pages are still loading. For large galleries with thousands of files, this can make a difference.
+This lazy evaluation means you can start processing the first files while later
+pages are still loading. For large galleries with thousands of files, this can
+make a difference.
 
-If you actually need a list (to count items, iterate multiple times, etc), just materialize the generator:
+If you actually need a list (to count items, iterate multiple times, etc), just
+materialize the generator:
 
 ```python
 items = list(mgl.extract("https://pixeldrain.com/l/DDGtvvTU"))
@@ -60,12 +65,13 @@ class DownloadItem:
     size_bytes: int | None = None
 ```
 
-The two required fields are `download_url` and `filename`, which are everything you need to download a file. The rest provides context:
+The two required fields are `download_url` and `filename`, which are everything
+you need to download a file. The rest provides context:
 
 ```python
 for item in mgl.extract("https://pixeldrain.com/l/DDGtvvTU"):
     print(f"Filename: {item.filename}")
-    
+
     if item.size_bytes:
         mb = item.size_bytes / 1_000_000
         print(f"Size: {mb:.2f} MB")
@@ -82,18 +88,22 @@ Filename: sample-image-03.jpg
 Size: 0.20 MB
 ```
 
-Always use `item.headers` in your download requests. Some platforms require things like `Referer` headers to prevent hotlinking.
+Always use `item.headers` in your download requests. Some platforms require
+things like `Referer` headers to prevent hotlinking.
 
 ## Plugin architecture
 
-Under the hood, Megaloader uses a plugin system. Each platform has a plugin that knows how to parse that platform's pages and APIs. When you call `extract()`, the library:
+Under the hood, Megaloader uses a plugin system. Each platform has a plugin that
+knows how to parse that platform's pages and APIs. When you call `extract()`,
+the library:
 
 1. Parses the domain from your URL
 2. Looks up the appropriate plugin
 3. Instantiates it with your URL and options
 4. Returns the plugin's generator
 
-You normally do not need to interact with plugins directly because `extract()` handles that for you. You can still do it manually if you want:
+You normally do not need to interact with plugins directly because `extract()`
+handles that for you. You can still do it manually if you want:
 
 ```python
 from megaloader.plugins import PixelDrain
@@ -104,11 +114,15 @@ for item in plugin.extract():
     print(item.filename)
 ```
 
-This can be useful if you want to reuse the same plugin instance, or if a platform adds a new domain or URL pattern that is not yet recognized by `extract()`.
+This can be useful if you want to reuse the same plugin instance, or if a
+platform adds a new domain or URL pattern that is not yet recognized by
+`extract()`.
 
 ### Platform support
 
-Megaloader currently supports 11 platforms split into two tiers. Core platforms (Bunkr, PixelDrain, Cyberdrop, GoFile) get active maintenance. Extended platforms (Fanbox, Pixiv, Rule34, etc) work but receive best-effort support.
+Megaloader currently supports 11 platforms split into two tiers. Core platforms
+(Bunkr, PixelDrain, Cyberdrop, GoFile) get active maintenance. Extended
+platforms (Fanbox, Pixiv, Rule34, etc) work but receive best-effort support.
 
 To check if a domain is supported:
 
@@ -129,7 +143,8 @@ See the [platforms page](/reference/plugin-platforms) for the complete list.
 
 ## Platform-specific options
 
-Some platforms need extra parameters. You can pass these as keyword arguments to `extract()`.
+Some platforms need extra parameters. You can pass these as keyword arguments to
+`extract()`.
 
 For example, GoFile folders may be password-protected:
 
@@ -158,7 +173,8 @@ os.environ["FANBOX_SESSION_ID"] = "your_cookie"
 mgl.extract("https://creator.fanbox.cc")  # Uses env var
 ```
 
-Explicit kwargs always take precedence over environment variables. Check [plugin options](/reference/plugin-options) for what each platform supports.
+Explicit kwargs always take precedence over environment variables. Check
+[plugin options](/reference/plugin-options) for what each platform supports.
 
 ## Error handling
 
@@ -203,11 +219,14 @@ except mgl.ExtractionError as e:
     print(f"Failed: {e}")
 ```
 
-`ExtractionError` covers a range of issues: network timeouts, authentication failures, broken URLs, platform changes that broke the plugin, etc. The exception message usually gives you a hint about what went wrong.
+`ExtractionError` covers a range of issues: network timeouts, authentication
+failures, broken URLs, platform changes that broke the plugin, etc. The
+exception message usually gives you a hint about what went wrong.
 
 ## Working with collections
 
-Many platforms organize files into collections (albums, galleries, user pages). The `collection_name` field lets you recreate this structure:
+Many platforms organize files into collections (albums, galleries, user pages).
+The `collection_name` field lets you recreate this structure:
 
 ```python
 from collections import defaultdict
@@ -226,7 +245,8 @@ This is particularly useful for maintaining album structure when downloading.
 
 ## Filtering during extraction
 
-Since `extract()` returns a generator, you can filter items as they're discovered without loading everything into memory:
+Since `extract()` returns a generator, you can filter items as they're
+discovered without loading everything into memory:
 
 ```python
 # Only images
@@ -249,18 +269,27 @@ for item in mgl.extract(url):
         break
 ```
 
-Breaking out of the loop early means later network requests never happen, which is one of the benefits of lazy evaluation.
+Breaking out of the loop early means later network requests never happen, which
+is one of the benefits of lazy evaluation.
 
 ## Why separate extraction from downloads?
 
-This might seem unusual if you're used to libraries (like gallery-dl) that handle everything. The separation provides several advantages:
+This might seem unusual if you're used to libraries (like gallery-dl) that
+handle everything. The separation provides several advantages:
 
-**Full control**: Use any HTTP library, implement custom retry logic, add progress bars, handle concurrency however you want. Deploy and use it wherever you want.
+**Full control**: Use any HTTP library, implement custom retry logic, add
+progress bars, handle concurrency however you want. Deploy and use it wherever
+you want.
 
-**Efficiency**: Extract once, filter what you need, then download only those files. No wasted bandwidth.
+**Efficiency**: Extract once, filter what you need, then download only those
+files. No wasted bandwidth.
 
-**Testability**: I can test the extraction logic without actually downloading many of files. 😮‍💨
+**Testability**: I can test the extraction logic without actually downloading
+many of files. 😮‍💨
 
-**Integration**: Easy to integrate with existing download managers, job queues, or processing pipelines.
+**Integration**: Easy to integrate with existing download managers, job queues,
+or processing pipelines.
 
-The library focuses on the hard part: parsing platform-specific formats and finding download URLs. Downloading is just standard HTTP requests that you implement however makes sense for your use case.
+The library focuses on the hard part: parsing platform-specific formats and
+finding download URLs. Downloading is just standard HTTP requests that you
+implement however makes sense for your use case.

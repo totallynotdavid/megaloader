@@ -1,6 +1,7 @@
 # Download implementation
 
-Megaloader gives you metadata, you implement downloads. Here's how to do that with increasing sophistication.
+Megaloader gives you metadata, you implement downloads. Here's how to do that
+with increasing sophistication.
 
 ## Basic download
 
@@ -23,7 +24,8 @@ for item in mgl.extract("https://pixeldrain.com/l/abc123"):
     print(f"Downloaded: {item.filename}")
 ```
 
-This works for small files but loads each file entirely into memory before writing. Not ideal for large videos or images.
+This works for small files but loads each file entirely into memory before
+writing. Not ideal for large videos or images.
 
 ## Streaming downloads
 
@@ -54,7 +56,8 @@ for item in mgl.extract(url):
     download_streaming(item)
 ```
 
-The `stream=True` parameter prevents requests from loading the entire response into memory. We write it in 8KB chunks instead.
+The `stream=True` parameter prevents requests from loading the entire response
+into memory. We write it in 8KB chunks instead.
 
 ## Organizing by collection
 
@@ -220,7 +223,8 @@ def download_resumable(item, output_dir="./downloads"):
     return filepath
 ```
 
-Some platforms do not support resume and will return 200 rather than 206. When that happens, we start over.
+Some platforms do not support resume and will return 200 rather than 206. When
+that happens, we start over.
 
 ## Concurrent downloads
 
@@ -270,7 +274,9 @@ def download_concurrent(url, output_dir="./downloads", max_workers=3):
 download_concurrent("https://pixeldrain.com/l/abc123", max_workers=3)
 ```
 
-Use concurrency responsibly. A range of 3 to 5 workers is usually safe, while excessive parallel requests can lead to rate limiting or blocking. Some platforms are more agressive than others.
+Use concurrency responsibly. A range of 3 to 5 workers is usually safe, while
+excessive parallel requests can lead to rate limiting or blocking. Some
+platforms are more agressive than others.
 
 ## Production-ready download manager
 
@@ -376,7 +382,8 @@ manager.download("https://pixeldrain.com/l/abc123")
 manager.download("https://gofile.io/d/xyz789", password="secret")
 ```
 
-This manager handles streaming, retries, concurrency, progress tracking, and collection organization. Adapt it to your specific needs.
+This manager handles streaming, retries, concurrency, progress tracking, and
+collection organization. Adapt it to your specific needs.
 
 ## Handling filename conflicts
 
@@ -406,12 +413,19 @@ This appends `_1`, `_2`, etc. to duplicate filenames.
 
 ## Important notes
 
-**Always use `item.headers`**: Some platforms require specific headers like `Referer` to prevent hotlinking, these are included in `item.headers`. Always pass them in your requests.
+**Always use `item.headers`**: Some platforms require specific headers like
+`Referer` to prevent hotlinking, these are included in `item.headers`. Always
+pass them in your requests.
 
-**Respect rate limits**: Don't hammer platforms with excessive concurrency. 3-5 concurrent downloads is reasonable for most platforms.
+**Respect rate limits**: Don't hammer platforms with excessive concurrency. 3-5
+concurrent downloads is reasonable for most platforms.
 
-**Handle errors gracefully**: Network failures happen. Use retry logic and catch exceptions so one failed file doesn't kill your entire download batch.
+**Handle errors gracefully**: Network failures happen. Use retry logic and catch
+exceptions so one failed file doesn't kill your entire download batch.
 
-**Consider disk space**: Check available space before downloading large collections. A simple `shutil.disk_usage()` call can prevent failures.
+**Consider disk space**: Check available space before downloading large
+collections. A simple `shutil.disk_usage()` call can prevent failures.
 
-These patterns should cover most download scenarios. Mix and match based on your needs: streaming for large files, concurrency for faster throughput, retry logic for stability, and progress bars for clearer feedback.
+These patterns should cover most download scenarios. Mix and match based on your
+needs: streaming for large files, concurrency for faster throughput, retry logic
+for stability, and progress bars for clearer feedback.
