@@ -23,22 +23,32 @@ cd megaloader
 
 Install dependencies:
 
-```bash
+::: code-group
+
+```bash [mise]
 mise install
 mise run sync
+```
 
-# Or using uv directly
+```bash [uv]
 uv sync --all-packages --extra dev
 ```
 
+:::
+
 Verify:
 
-```bash
-mise run test-unit
+::: code-group
 
-# Or using uv
+```bash [mise]
+mise run test-unit
+```
+
+```bash [uv]
 uv run pytest packages/core/tests/unit
 ```
+
+:::
 
 The workspace uses uv's workspace feature, so all packages are installed in
 editable mode.
@@ -49,13 +59,18 @@ editable mode.
 
 We use ruff (v0.14.5) for formatting and linting:
 
-```bash
-mise run format
+::: code-group
 
-# Or manually
+```bash [mise]
+mise run format
+```
+
+```bash [manual]
 ruff format .
 ruff check --fix .
 ```
+
+:::
 
 **Style guidelines:** Line length 88 characters, target Python 3.10, absolute
 imports preferred, type hints required for core library.
@@ -64,12 +79,17 @@ imports preferred, type hints required for core library.
 
 We maintain strict type checking with mypy:
 
-```bash
-mise run lint
+::: code-group
 
-# Or manually
+```bash [mise]
+mise run lint
+```
+
+```bash [manual]
 uv run mypy packages/core/megaloader
 ```
+
+:::
 
 All core library code must pass strict type checking.
 
@@ -242,23 +262,33 @@ bun install
 
 Run development server:
 
-```bash
-mise run docs-serve
+::: code-group
 
-# Or manually
+```bash [mise]
+mise run docs-serve
+```
+
+```bash [manual]
 cd docs
 bun run docs:dev
 ```
 
+:::
+
 Build:
 
-```bash
-mise run docs-build
+::: code-group
 
-# Or manually
+```bash [mise]
+mise run docs-build
+```
+
+```bash [manual]
 cd docs
 bun run docs:build
 ```
+
+:::
 
 ### Documentation guidelines
 
