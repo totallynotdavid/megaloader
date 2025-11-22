@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@30ce38e20653a26dd16caa082b010cec334ccf56 # v3.5.1
+      - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v3.5.1
         with:
           version: "0.9.10"
 
