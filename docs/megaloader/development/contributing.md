@@ -1,7 +1,10 @@
 # Contributing
 
-Thank you for considering contributing to Megaloader. This guide covers
-development setup, workflow, and contribution guidelines.
+Thank you for considering contributing to Megaloader. This guide covers the
+essentials for developers to get started and contribute effectively.
+
+We review for correctness, test coverage, style, performance, documentation, and
+type safety. Automated checks run on PRs, followed by maintainer review.
 
 ## Getting started
 
@@ -14,10 +17,10 @@ development setup, workflow, and contribution guidelines.
 
 ### Development setup
 
-Fork and clone:
+Fork and clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/megaloader.git
+git clone https://github.com/totallynotdavid/megaloader
 cd megaloader
 ```
 
@@ -36,7 +39,7 @@ uv sync --all-packages --extra dev
 
 :::
 
-Verify:
+Verify setup:
 
 ::: code-group
 
@@ -50,14 +53,13 @@ uv run pytest packages/core/tests/unit
 
 :::
 
-The workspace uses uv's workspace feature, so all packages are installed in
-editable mode.
+The workspace uses uv's workspace feature for editable installs.
 
 ## Development workflow
 
 ### Code style
 
-We use ruff (v0.14.5) for formatting and linting:
+We use Ruff for formatting and linting:
 
 ::: code-group
 
@@ -72,12 +74,12 @@ ruff check --fix .
 
 :::
 
-**Style guidelines:** Line length 88 characters, target Python 3.10, absolute
-imports preferred, type hints required for core library.
+**Guidelines:** 88-character lines, Python 3.10 target, absolute imports, type
+hints required for core.
 
 ### Type checking
 
-We maintain strict type checking with mypy:
+Strict mypy checking:
 
 ::: code-group
 
@@ -86,20 +88,20 @@ mise run lint
 ```
 
 ```bash [manual]
-uv run mypy packages/core/megaloader
+uv run mypy .
 ```
 
 :::
 
-All core library code must pass strict type checking.
-
 ### Testing
+
+Run tests:
 
 ::: code-group
 
 ```bash [mise]
-mise run test-unit
-mise run test
+mise run test-unit  # Fast unit tests
+mise run test       # All tests including live
 ```
 
 ```bash [uv]
@@ -109,92 +111,51 @@ uv run pytest packages/core/tests -v
 
 :::
 
-**Test organization:**
+**Organization:**
 
-- `tests/unit/` - Unit tests with no network access (fast)
-- `tests/live/` - Live network tests marked with `@pytest.mark.live`
-- `tests/conftest.py` - Pytest fixtures and configuration
-- `tests/helpers.py` - Shared test utilities
+- `tests/unit/` - Fast unit tests (no network)
+- `tests/live/` - Live tests with `@pytest.mark.live`
+- Use `uv run pytest packages/core/tests --run-live` for live tests
 
-**Writing tests:** Use `@pytest.mark.live` for tests requiring network access.
-Unit tests should be fast and not depend on external services.
+### Commit messages
+
+Follow conventional commits:
+
+```
+feat: add new platform support
+fix: resolve Bunkr download issue
+docs: update installation guide
+test: add Cyberdrop plugin tests
+refactor: simplify retry logic
+```
 
 ## Contributing code
 
 ### Pull request process
 
-Create feature branch:
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make changes and commit: `git commit -m "type: description"`
+3. Push to your fork: `git push origin feature/your-feature`
+4. Create a Pull Request on GitHub
 
-```bash
-git checkout -b feature/your-feature-name
-```
+**Requirements:**
 
-Make changes and commit:
+- All tests pass
+- Code formatted with Ruff
+- Type hints updated
+- Documentation updated
+- New features have tests
 
-```bash
-git add .
-git commit -m "feat: description of your changes"
-```
-
-Push to fork:
-
-```bash
-git push origin feature/your-feature-name
-```
-
-Create Pull Request on GitHub.
-
-### PR requirements
-
-- Code passes all tests
-- Code is formatted with Ruff
-- Type hints are added/updated
-- Documentation is updated
-- Tests are added for new features
-- Commit messages follow conventions
-
-## Project structure
-
-```
-megaloader/
-├── packages/
-│   ├── core/
-│   │   ├── megaloader/
-│   │   │   ├── plugins/
-│   │   │   ├── plugin.py
-│   │   │   ├── item.py
-│   │   │   ├── exceptions.py
-│   │   │   └── __init__.py
-│   │   ├── tests/
-│   │   │   ├── unit/
-│   │   │   ├── live/
-│   │   │   ├── conftest.py
-│   │   │   └── helpers.py
-│   │   └── pyproject.toml
-│   │
-│   └── cli/
-│       ├── megaloader_cli/
-│       │   └── main.py
-│       └── pyproject.toml
-│
-├── docs/
-│   ├── guide/
-│   ├── reference/
-│   └── development/
-│
-├── pyproject.toml
-├── uv.lock
-└── mise.toml
-```
+See [GitHub's PR documentation](https://docs.github.com/en/pull-requests) for
+details.
 
 ## Areas for contribution
 
 ### High priority
 
-- Bug fixes for existing plugins
+- Bug fixes for core plugins (Bunkr, PixelDrain, Cyberdrop, GoFile)
 - Test coverage improvements
-- Documentation enhancements
-- Core plugin maintenance (Bunkr, PixelDrain, Cyberdrop, GoFile)
+- Documentation updates
 
 ### Medium priority
 
@@ -204,55 +165,47 @@ megaloader/
 
 ### Low priority
 
-- Extended plugins (additional platforms)
+- Extended plugins for additional platforms
 - API demo improvements
 
 ## Adding features
 
 ### New core plugin
 
-See the creating plugins guide for details.
+See [creating plugins guide](../guide/creating-plugins).
 
-**Quick checklist:**
+**Checklist:**
 
-1. Create plugin file in `packages/core/megaloader/plugins/`
-2. Inherit from `BasePlugin` and implement `extract()`
+1. Create plugin in `packages/core/megaloader/plugins/`
+2. Inherit `BasePlugin`, implement `extract()`
 3. Register in `PLUGIN_REGISTRY`
 4. Add unit tests in `tests/unit/`
-5. Add live tests in `tests/live/` with `@pytest.mark.live`
+5. Add live tests with `@pytest.mark.live`
 6. Update `docs/reference/platforms.md`
 
 ### New CLI command
 
-1. Add command in `packages/cli/megaloader_cli/main.py` using Click
-2. Update `docs/reference/cli.md`
-3. Add examples to `docs/guide/cli.md`
-4. Test manually
+1. Add to `packages/cli/megaloader_cli/main.py`
+2. Update `docs/reference/cli.md` and `docs/guide/cli.md`
 
-### New core library feature
+### New core feature
 
-1. Discuss in GitHub Issues first
-2. Create implementation plan
-3. Write tests first (TDD approach)
-4. Implement in `packages/core/megaloader/`
-5. Update `docs/reference/api.md`
-6. Add usage examples
+1. Discuss in
+   [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
+2. Write tests first (TDD)
+3. Implement in core library
+4. Update `docs/reference/api.md`
 
 ## Contributing to documentation
 
-We use VitePress for documentation. Contributions to improve clarity and
-completeness are valued.
-
-### Documentation setup
-
-Install dependencies:
+We use VitePress. Setup:
 
 ```bash
 cd docs
 bun install
 ```
 
-Run development server:
+Run dev server:
 
 ::: code-group
 
@@ -261,79 +214,17 @@ mise run docs-serve
 ```
 
 ```bash [manual]
-cd docs
 bun run docs:dev
 ```
 
 :::
 
-Build:
-
-::: code-group
-
-```bash [mise]
-mise run docs-build
-```
-
-```bash [manual]
-cd docs
-bun run docs:build
-```
-
-:::
-
-### Documentation guidelines
-
-**Structure:** Use kebab-case file naming, organize logically, separate guides
-from reference, progress from simple to advanced.
-
-**Code examples:** Use `extract()` function, show `DownloadItem` objects
-correctly, use `import megaloader as mgl`, include complete runnable examples.
-
-**Style:** Use clear concise language, define technical terms, include practical
-examples, use relative links, keep lines readable.
-
-### Updating documentation
-
-When making code changes, update relevant documentation:
-
-1. API changes → `docs/reference/api.md`
-2. New plugin → `docs/reference/platforms.md`
-3. CLI changes → `docs/reference/cli.md`
-4. New feature → Add to appropriate guide
-
-## Code review
-
-### What we look for
-
-- Correctness
-- Tests coverage
-- Style consistency
-- Performance
-- Documentation
-- Type safety
-
-### Review process
-
-1. Automated checks run on PR
-2. Maintainer reviews code and documentation
-3. Discussion and iteration
-4. Approval and merge
+**Guidelines:** Clear language, complete examples, relative links. Update docs
+with code changes.
 
 ## Getting help
 
-- Questions:
-  [GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions)
-- Bugs: [Issues](https://github.com/totallynotdavid/megaloader/issues)
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the
-MIT License.
-
-## Recognition
-
-Contributors are recognized in README.md, release notes, and GitHub contributors
-page.
-
-Thank you for contributing!
+For questions, ideas, or feedback, use
+[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
+If you encounter a bug, please report it there first. Maintainers may convert it
+to an Issue if necessary.
