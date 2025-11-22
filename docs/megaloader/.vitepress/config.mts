@@ -1,4 +1,4 @@
-import { defineConfig } from "vitepress";
+import { defineConfig, type DefaultTheme } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -11,72 +11,11 @@ export default defineConfig({
   
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: "Guide", link: "/guide/" },
-      { text: "Reference", link: "/core/api" },
-      {
-        text: "More",
-        items: [
-          { text: "Contributing", link: "/development/contributing" },
-          { text: "PyPI", link: "https://pypi.org/project/megaloader/" },
-        ],
-      },
-    ],
+    nav: nav(),
 
     sidebar: {
-      "/getting-started/": [
-        {
-          text: "Getting Started",
-          items: [
-            { text: "Overview", link: "/getting-started/" },
-            { text: "Installation", link: "/getting-started/installation" },
-            { text: "Quick Start", link: "/getting-started/quickstart" },
-          ],
-        },
-      ],
-
-      "/guide/": [
-        {
-          text: "User Guide",
-          items: [
-            { text: "Overview", link: "/guide/" },
-            { text: "Basic Usage", link: "/guide/basic-usage" },
-            { text: "Download Implementation", link: "/guide/download-implementation" },
-            { text: "Advanced Usage", link: "/guide/advanced-usage" },
-            { text: "API Reference", link: "/guide/api-reference" },
-          ],
-        },
-      ],
-
-      "/cli/": [
-        {
-          text: "CLI Tool",
-          items: [
-            { text: "Overview", link: "/cli/" },
-            { text: "Commands", link: "/cli/commands" },
-            { text: "Examples", link: "/cli/examples" },
-          ],
-        },
-      ],
-
-      "/plugins/": [
-        {
-          text: "Plugins",
-          items: [
-            { text: "Overview", link: "/plugins/" },
-            { text: "Supported Platforms", link: "/plugins/supported-platforms" },
-            { text: "Plugin Options", link: "/plugins/plugin-options" },
-            { text: "Creating Plugins", link: "/plugins/creating-plugins" },
-          ],
-        },
-      ],
-
-      "/development/": [
-        {
-          text: "Development",
-          items: [{ text: "Contributing", link: "/development/contributing" }],
-        },
-      ],
+      "/guide/": { base: "/guide/", items: sidebarGuide() },
+      "/reference/": { base: "/reference/", items: sidebarReference() },
     },
 
     socialLinks: [{ icon: "github", link: "https://github.com/totallynotdavid/megaloader" }],
@@ -100,3 +39,88 @@ export default defineConfig({
     },
   },
 });
+
+function nav(): DefaultTheme.NavItem[] {
+  return [
+    { 
+      text: "Guide", 
+      link: "/guide/getting-started",
+      activeMatch: "/guide/"
+    },
+    { 
+      text: "Reference", 
+      link: "/reference/api",
+      activeMatch: "/reference/"
+    },
+    {
+      text: "More",
+      items: [
+        { text: "Contributing", link: "/development/contributing" },
+        { text: "GitHub", link: "https://github.com/totallynotdavid/megaloader" },
+        { text: "PyPI", link: "https://pypi.org/project/megaloader/" },
+      ],
+    },
+  ];
+}
+
+function sidebarGuide(): DefaultTheme.SidebarItem[] {
+  return [
+    {
+      text: "Getting started",
+      collapsed: false,
+      items: [
+        { text: "Getting started", link: "getting-started" },
+      ],
+    },
+    {
+      text: "Core library",
+      collapsed: false,
+      items: [
+        { text: "Basic usage", link: "basic-usage" },
+        { text: "Download implementation", link: "download-implementation" },
+        { text: "Advanced usage", link: "advanced-usage" },
+      ],
+    },
+    {
+      text: "CLI tool",
+      collapsed: false,
+      items: [
+        { text: "CLI usage", link: "cli-usage" },
+      ],
+    },
+    {
+      text: "Plugin development",
+      collapsed: false,
+      items: [
+        { text: "Creating plugins", link: "creating-plugins" },
+      ],
+    },
+  ];
+}
+
+function sidebarReference(): DefaultTheme.SidebarItem[] {
+  return [
+    {
+      text: "API reference",
+      collapsed: false,
+      items: [
+        { text: "API", link: "api" },
+      ],
+    },
+    {
+      text: "CLI reference",
+      collapsed: false,
+      items: [
+        { text: "CLI commands", link: "cli-commands" },
+      ],
+    },
+    {
+      text: "Plugin reference",
+      collapsed: false,
+      items: [
+        { text: "Plugin platforms", link: "plugin-platforms" },
+        { text: "Plugin options", link: "plugin-options" },
+      ],
+    },
+  ];
+}
