@@ -3,7 +3,7 @@ name = "megaloader-cli"
 version = "0.1.0"
 description = "Command-line interface for Megaloader"
 
-license = { text = "MIT" }
+license = "Apache-2.0"
 readme = "readme.md"
 requires-python = ">=3.10"
 
