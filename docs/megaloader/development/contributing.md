@@ -95,15 +95,19 @@ All core library code must pass strict type checking.
 
 ### Testing
 
-```bash
+::: code-group
+
+```bash [mise]
 mise run test-unit
-
 mise run test
+```
 
+```bash [uv]
 uv run pytest packages/core/tests/unit/test_item.py -v
-
 uv run pytest packages/core/tests -v
 ```
+
+:::
 
 **Test organization:**
 
@@ -114,18 +118,6 @@ uv run pytest packages/core/tests -v
 
 **Writing tests:** Use `@pytest.mark.live` for tests requiring network access.
 Unit tests should be fast and not depend on external services.
-
-### Commit messages
-
-Follow conventional commits:
-
-```
-feat: add support for new platform
-fix: correct URL parsing for Bunkr
-docs: update installation instructions
-test: add tests for Cyberdrop plugin
-refactor: simplify HTTP retry logic
-```
 
 ## Contributing code
 
