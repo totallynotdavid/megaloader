@@ -56,7 +56,7 @@ jobs:
       - run: uv pip install pyinstaller
 
       - run:
-          pyinstaller --onefile --name megaloader-cli-${{ runner.os }} --paths
+          uv run pyinstaller --onefile --name megaloader-cli-${{ runner.os }} --paths
           packages/core packages/cli/megaloader_cli/main.py
         shell: bash
 
