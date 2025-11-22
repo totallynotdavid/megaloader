@@ -72,7 +72,10 @@ dir = "docs"
 
 [tasks.format-docs]
 description = "Format docs with biome (Vue only, markdown not supported)"
-run = "biome format --write ."
+run = [
+  "biome format --write .",
+  "bun x prettier \"**/*.md\" --write --print-width=80 --prose-wrap=always",
+]
 dir = "docs"
 
 # Deploy

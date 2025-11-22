@@ -29,22 +29,28 @@ def extract_command(url: str, output_json: bool) -> None:
     Fetches metadata and displays items without downloading.
     """
     try:
-        # Show which plugin is being used
-        if plugin_name := _get_plugin_name(url):
+        # Show which plugin is being used (only in human-readable mode)
+        if not output_json and (plugin_name := _get_plugin_name(url)):
             console.print(f"[green]✓[/green] Using plugin: [bold]{plugin_name}[/bold]")
 
         # Stream items as they're discovered
         items = []
-        with Progress(
-            TextColumn("[bold blue]Extracting metadata..."),
-            BarColumn(),
-            console=console,
-        ) as progress:
-            task = progress.add_task("", total=None)
-
+        if output_json:
+            # Silent extraction for JSON mode
             for item in mgl.extract(url):
                 items.append(item)
-                progress.update(task, advance=1)
+        else:
+            # Show progress for human-readable mode
+            with Progress(
+                TextColumn("[bold blue]Extracting metadata..."),
+                BarColumn(),
+                console=console,
+            ) as progress:
+                task = progress.add_task("", total=None)
+
+                for item in mgl.extract(url):
+                    items.append(item)
+                    progress.update(task, advance=1)
 
         # Display results
         if output_json:
