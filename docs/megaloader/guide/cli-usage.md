@@ -58,7 +58,7 @@ Found 6 files:
       Size: 0.08 MB
 ```
 
-The extract command is a dry run—it discovers files but doesn't download anything. This is useful for checking what's available before committing to a download.
+The extract command is a dry run. It discovers files but doesn't download anything. This is useful for checking what's available before committing to a download.
 
 Get structured JSON output instead:
 
@@ -261,7 +261,7 @@ megaloader download --filter "sample*" "https://pixeldrain.com/l/DDGtvvTU" ./sam
 megaloader download --filter "*2024*" "https://pixeldrain.com/l/DDGtvvTU" ./2024
 ```
 
-Note that you need to run the command separately for each filter pattern—multiple filters aren't supported in a single command.
+Note that you need to run the command separately for each filter pattern. Multiple filters aren't yet supported in a single command.
 
 ## Authentication
 
@@ -422,7 +422,7 @@ The CLI uses standard exit codes:
 - `0` = Success
 - `1` = Error (extraction failed, unsupported domain, etc.)
 
-This makes shell scripting straightforward—you can check the exit code to determine if a command succeeded.
+This makes shell scripting straightforward. You can check the exit code to determine if a command succeeded.
 
 ## When to use CLI vs library
 

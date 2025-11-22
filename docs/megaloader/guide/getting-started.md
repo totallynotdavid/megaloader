@@ -1,6 +1,6 @@
 # Getting started
 
-Megaloader extracts downloadable file metadata from file hosting platforms. It doesn't download files—instead, it gives you URLs, filenames, and metadata so you can implement downloads however you want.
+Megaloader extracts downloadable file metadata from file hosting platforms. It doesn't download files. Instead, it gives you URLs, filenames, and metadata so you can implement downloads however you want.
 
 This guide will get you from installation to your first extraction in just a few minutes.
 
@@ -179,11 +179,11 @@ sample-image-06.jpg - 81920 bytes
 
 The `DownloadItem` object includes:
 
-- `download_url` — Direct download URL
-- `filename` — Original filename
-- `size_bytes` — File size (if available)
-- `collection_name` — Album/gallery name
-- `headers` — Required HTTP headers
+- `download_url`: Direct download URL
+- `filename`: Original filename
+- `size_bytes`: File size (if available)
+- `collection_name`: Album/gallery name
+- `headers`: Required HTTP headers
 
 Some fields like `size_bytes` and `collection_name` might be `None` depending on what the platform provides.
 
