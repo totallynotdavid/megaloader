@@ -2,6 +2,7 @@
 import { h } from "vue";
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
+import ApiDemo from "../../components/api-demo.vue";
 import "./style.css";
 
 export default {
@@ -12,6 +13,6 @@ export default {
     });
   },
   enhanceApp({ app, router, siteData }) {
-    // ...
+    app.component("ApiDemo", ApiDemo);
   },
 } satisfies Theme;
