@@ -94,8 +94,12 @@ sample-image-02.jpg - 405661 bytes
 
 :::
 
-Always use `item.headers` in download requests. Some platforms require headers
-like `Referer` to prevent hotlinking.
+Always include `item.headers` in your download requests. Some platforms require
+specific headers to access files, and omitting them can lead to errors such as
+HTTP 403 or 502. Currently, Bunkr, Thothub and Pixiv require headers.
+
+If a platform requires headers, they will be included in `item.headers`. Make
+sure to merge them into your download requests.
 
 ## Plugin architecture
 

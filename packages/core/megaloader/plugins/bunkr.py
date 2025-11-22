@@ -96,6 +96,7 @@ class Bunkr(BasePlugin):
                 download_url=direct_url,
                 filename=filename,
                 source_id=file_id,
+                headers={"Referer": "https://get.bunkrr.su/"},
             )
 
     def _extract_filename(self, content: str) -> str | None:
