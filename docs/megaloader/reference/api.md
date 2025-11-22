@@ -43,6 +43,19 @@ for item in mgl.extract("https://gofile.io/d/xyz789", password="secret"):
     print(item.filename)
 ```
 
+::: details Output
+
+```
+sample-image-01.jpg
+sample-image-02.jpg
+sample-image-03.jpg
+sample-image-04.jpg
+sample-image-05.jpg
+sample-image-06.jpg
+```
+
+:::
+
 ## Classes
 
 ### DownloadItem
@@ -84,6 +97,18 @@ for item in mgl.extract(url):
     print(f"Collection: {item.collection_name}")
     print(f"Headers: {item.headers}")
 ```
+
+::: details Output
+
+```
+URL: https://pixeldrain.com/api/file/WnQte6cf
+Name: sample-image-01.jpg
+Size: 207558
+Collection: None
+Headers: {}
+```
+
+:::
 
 ### BasePlugin
 
@@ -223,6 +248,14 @@ plugin_class = get_plugin_class("pixeldrain.com")
 if plugin_class:
     print(f"Supported: {plugin_class.__name__}")
 ```
+
+::: details Output
+
+```
+Supported: PixelDrain
+```
+
+:::
 
 ### PLUGIN_REGISTRY
 

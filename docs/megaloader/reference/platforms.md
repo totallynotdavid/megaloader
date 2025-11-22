@@ -6,19 +6,19 @@ specific options for full functionality.
 
 In summary:
 
-| Platform    | Domains             | Supports                    | Authentication options                     |
-| ----------- | ------------------- | --------------------------- | ------------------------------------------ |
-| Bunkr       | bunkr.\{si,la\}     | Albums, single files        | None                                       |
-| PixelDrain  | pixeldrain.com      | Lists, files, proxy support | None                                       |
-| Cyberdrop   | cyberdrop.\{me,to\} | Albums, single files        | None                                       |
-| GoFile      | gofile.io           | Folders, files              | password (kwarg)                           |
-| Fanbox      | {creator}.fanbox.cc | Creator content             | session_id or FANBOX_SESSION_ID            |
-| Pixiv       | pixiv.net           | Artworks, galleries         | session_id or PIXIV_SESSION_ID             |
-| Rule34      | rule34.xxx          | Tags, posts, API            | api_key + user_id or environment variables |
-| ThotsLife   | thotslife.com       | Albums, posts               | None                                       |
-| ThotHub.VIP | thothub.vip         | Videos, albums              | None                                       |
-| ThotHub.TO  | thothub.to          | Videos, albums              | None                                       |
-| Fapello     | fapello.com         | Model profiles              | None                                       |
+| Platform    | Domains                  | Supports                    | Authentication options                     |
+| ----------- | ------------------------ | --------------------------- | ------------------------------------------ |
+| Bunkr       | bunkr.\{is,la,ru,si,su\} | Albums, single files        | None                                       |
+| PixelDrain  | pixeldrain.com           | Lists, files, proxy support | None                                       |
+| Cyberdrop   | cyberdrop.\{cr,me,to\}   | Albums, single files        | None                                       |
+| GoFile      | gofile.io                | Folders, files              | password (kwarg)                           |
+| Fanbox      | {creator}.fanbox.cc      | Creator content             | session_id or FANBOX_SESSION_ID            |
+| Pixiv       | pixiv.net                | Artworks, galleries         | session_id or PIXIV_PHPSESSID              |
+| Rule34      | rule34.xxx               | Tags, posts, API            | api_key + user_id or environment variables |
+| ThotsLife   | thotslife.com            | Albums, posts               | None                                       |
+| ThotHub.VIP | thothub.vip              | Videos, albums              | None                                       |
+| ThotHub.TO  | thothub.\{ch,to\}        | Videos, albums              | None                                       |
+| Fapello     | fapello.com              | Model profiles              | None                                       |
 
 ## Core platforms
 
@@ -225,6 +225,33 @@ List all supported platforms:
 ```bash
 megaloader plugins
 ```
+
+::: details Output
+
+```
+Supported Platforms:
+
+  • bunkr.is             (Bunkr)
+  • bunkr.la             (Bunkr)
+  • bunkr.ru             (Bunkr)
+  • bunkr.si             (Bunkr)
+  • bunkr.su             (Bunkr)
+  • cyberdrop.cr         (Cyberdrop)
+  • cyberdrop.me         (Cyberdrop)
+  • cyberdrop.to         (Cyberdrop)
+  • fanbox.cc            (Fanbox)
+  • fapello.com          (Fapello)
+  • gofile.io            (Gofile)
+  • pixeldrain.com       (PixelDrain)
+  • pixiv.net            (Pixiv)
+  • rule34.xxx           (Rule34)
+  • thothub.ch           (ThothubTO)
+  • thothub.to           (ThothubTO)
+  • thothub.vip          (ThothubVIP)
+  • thotslife.com        (Thotslife)
+```
+
+:::
 
 Programmatically:
 
