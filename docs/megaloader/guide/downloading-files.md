@@ -184,7 +184,9 @@ Exponential backoff handles transient network failures.
 
 ## Resume support
 
-```python
+To support resuming, inspect the local file size and send the `Range` header.
+
+```python{12}
 def download_resumable(item, output_dir="./downloads"):
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -193,6 +195,8 @@ def download_resumable(item, output_dir="./downloads"):
 
     if filepath.exists():
         existing_size = filepath.stat().st_size
+
+        # Copy headers to avoid mutating the original item
         headers = item.headers.copy()
         headers['Range'] = f'bytes={existing_size}-'
         mode = 'ab'
@@ -218,7 +222,8 @@ def download_resumable(item, output_dir="./downloads"):
     return filepath
 ```
 
-Status 206 means resume is supported. Status 200 means start over.
+Status 206 means resume is supported. Status 200 means start over (server
+ignored Range header).
 
 ## Handling filename conflicts
 
