@@ -1,21 +1,31 @@
 # Getting started
 
-Megaloader extracts file metadata from hosting platforms. It gives you direct
-download URLs, filenames, and any required headers. You choose what to download
-and how to handle the requests.
+Megaloader extracts file metadata from hosting platforms (like PixelDrain,
+GoFile or Bunkr). It gives you direct download URLs, filenames, and any required
+headers. You choose what to download and how to handle the requests.
 
 ## Requirements
 
 Megaloader requires Python 3.10 or higher and can be installed with pip, uv, or
-any other compatible package manager. The project is split into two packages:
-the core library, which you use in your Python code, and an optional CLI tool
-for working from the terminal.
+any other compatible package manager.
+
+<!-- prettier-ignore -->
+::: info
+Python 3.10+ is required for modern type annotation syntax (`str | None`). See
+[PEP 604](https://peps.python.org/pep-0604/) for details.
+:::
 
 ## Installation
 
+The project is split into two packages:
+
+- `megaloader`, the core library, used in your Python code.
+- `megaloader-cli`, an optional command-line tool, for working from the
+  terminal.
+
 ### Core library
 
-Install the core library for use in your Python code:
+Install the core library to use `megaloader` in Python:
 
 ::: code-group
 
@@ -49,7 +59,8 @@ uv add megaloader-cli
 
 :::
 
-The CLI includes the core library as a dependency.
+The CLI includes the core library as a dependency, plus Click for command-line
+parsing and Rich for beautiful terminal output.
 
 Verify it works:
 
