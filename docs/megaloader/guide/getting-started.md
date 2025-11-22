@@ -4,6 +4,12 @@ Megaloader extracts file metadata from hosting platforms (like PixelDrain,
 GoFile or Bunkr). It gives you direct download URLs, filenames, and any required
 headers. You choose what to download and how to handle the requests.
 
+## Live demo
+
+You can try the API directly in your browser to see how it works. The implementation is available in the [/api/](https://github.com/totallynotdavid/megaloader/tree/main/api) folder of the repo and is deployed via Vercel.
+
+<ApiDemo />
+
 ## Requirements
 
 Megaloader requires Python 3.10 or higher and can be installed with pip, uv, or
