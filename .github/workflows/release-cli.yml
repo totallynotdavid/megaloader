@@ -53,11 +53,13 @@ jobs:
 
       - run: uv venv
 
+      - run: uv pip install -e packages/core -e packages/cli
+
       - run: uv pip install pyinstaller
 
       - run:
-          uv run pyinstaller --onefile --name megaloader-cli-${{ runner.os }} --paths
-          packages/core packages/cli/megaloader_cli/main.py
+          uv run pyinstaller --onefile --name megaloader-cli-${{ runner.os | lower }} --icon
+          # packages/cli/icon.ico --paths packages/core packages/cli/megaloader_cli/main.py
         shell: bash
 
       - uses: actions/upload-artifact@v5
