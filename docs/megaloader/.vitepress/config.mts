@@ -3,22 +3,31 @@ import { defineConfig, type DefaultTheme } from "vitepress";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Megaloader",
-  description: "Python library for extracting file metadata from 11+ hosting platforms",
+  description:
+    "Python library for extracting file metadata from 11+ hosting platforms",
 
   lastUpdated: true,
   cleanUrls: true,
   metaChunk: true,
-  
+
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: nav(),
 
     sidebar: {
       "/guide/": { base: "/guide/", items: sidebarGuide() },
-      "/reference/": { base: "/reference/", items: sidebarReference() },
+      "/reference/": {
+        base: "/reference/",
+        items: sidebarReference(),
+      },
     },
 
-    socialLinks: [{ icon: "github", link: "https://github.com/totallynotdavid/megaloader" }],
+    socialLinks: [
+      {
+        icon: "github",
+        link: "https://github.com/totallynotdavid/megaloader",
+      },
+    ],
 
     footer: {
       message: "Released under the Apache-2.0 License.",
@@ -26,7 +35,8 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: "https://github.com/totallynotdavid/megaloader/edit/main/docs/:path",
+      pattern:
+        "https://github.com/totallynotdavid/megaloader/edit/main/docs/:path",
       text: "Edit this page on GitHub",
     },
 
@@ -42,22 +52,31 @@ export default defineConfig({
 
 function nav(): DefaultTheme.NavItem[] {
   return [
-    { 
-      text: "Guide", 
+    {
+      text: "Guide",
       link: "/guide/getting-started",
-      activeMatch: "/guide/"
+      activeMatch: "/guide/",
     },
-    { 
-      text: "Reference", 
+    {
+      text: "Reference",
       link: "/reference/api",
-      activeMatch: "/reference/"
+      activeMatch: "/reference/",
     },
     {
       text: "More",
       items: [
-        { text: "Contributing", link: "/development/contributing" },
-        { text: "GitHub", link: "https://github.com/totallynotdavid/megaloader" },
-        { text: "PyPI", link: "https://pypi.org/project/megaloader/" },
+        {
+          text: "Contributing",
+          link: "/development/contributing",
+        },
+        {
+          text: "GitHub",
+          link: "https://github.com/totallynotdavid/megaloader",
+        },
+        {
+          text: "PyPI",
+          link: "https://pypi.org/project/megaloader/",
+        },
       ],
     },
   ];
@@ -69,7 +88,10 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
       text: "Getting started",
       collapsed: false,
       items: [
-        { text: "Getting started", link: "getting-started" },
+        {
+          text: "Getting started",
+          link: "getting-started",
+        },
       ],
     },
     {
@@ -77,22 +99,26 @@ function sidebarGuide(): DefaultTheme.SidebarItem[] {
       collapsed: false,
       items: [
         { text: "Basic usage", link: "basic-usage" },
-        { text: "Download implementation", link: "download-implementation" },
+        {
+          text: "Download implementation",
+          link: "download-implementation",
+        },
         { text: "Advanced usage", link: "advanced-usage" },
       ],
     },
     {
       text: "CLI tool",
       collapsed: false,
-      items: [
-        { text: "CLI usage", link: "cli-usage" },
-      ],
+      items: [{ text: "CLI usage", link: "cli-usage" }],
     },
     {
       text: "Plugin development",
       collapsed: false,
       items: [
-        { text: "Creating plugins", link: "creating-plugins" },
+        {
+          text: "Creating plugins",
+          link: "creating-plugins",
+        },
       ],
     },
   ];
@@ -103,22 +129,21 @@ function sidebarReference(): DefaultTheme.SidebarItem[] {
     {
       text: "API reference",
       collapsed: false,
-      items: [
-        { text: "API", link: "api" },
-      ],
+      items: [{ text: "API", link: "api" }],
     },
     {
       text: "CLI reference",
       collapsed: false,
-      items: [
-        { text: "CLI commands", link: "cli-commands" },
-      ],
+      items: [{ text: "CLI commands", link: "cli-commands" }],
     },
     {
       text: "Plugin reference",
       collapsed: false,
       items: [
-        { text: "Plugin platforms", link: "plugin-platforms" },
+        {
+          text: "Plugin platforms",
+          link: "plugin-platforms",
+        },
         { text: "Plugin options", link: "plugin-options" },
       ],
     },
