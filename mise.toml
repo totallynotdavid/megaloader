@@ -22,9 +22,13 @@ description = "List outdated dependencies"
 run = "uv pip list --outdated"
 
 [tasks.export-deps]
-description = "Export production dependencies for core package"
-run = "uv export --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file requirements.txt"
-dir = "packages/core"
+# dependabot still doesn't support pyproject.tml
+description = "Export production dependencies for all packages"
+run = [
+  "uv export --package megaloader --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file packages/core/requirements.txt",
+  "uv export --package megaloader-cli --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file packages/cli/requirements.txt",
+  "uv export --package megaloader-api --format requirements-txt --no-hashes --no-header --no-dev --no-annotate --output-file api/requirements.txt",
+]
 
 # Code quality
 [tasks.format]
