@@ -2,6 +2,7 @@
 python.uv_venv_auto = true
 
 [tools]
+python = "3.13.7"
 uv = "0.9.10"
 ruff = "0.14.5"
 bun = "1.3.2"
@@ -72,6 +73,14 @@ run = [
   "bun x prettier \"**/*.md\" --write --print-width=80 --prose-wrap=always",
 ]
 dir = "docs"
+
+# Build
+[tasks.build-bin]
+description = "Build CLI binary locally for testing (Windows only)"
+run = [
+  "uv pip install pyinstaller",
+  "uv run pyinstaller --onefile --name megaloader-cli-windows --paths packages/core packages/cli/megaloader_cli/main.py",
+]
 
 # Deploy
 [tasks.api-deploy]
