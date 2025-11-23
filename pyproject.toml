@@ -5,18 +5,13 @@ members = ["packages/*"]
 name = "megaloader-workspace"
 version = "0.1.0"
 description = "Megaloader monorepo workspace"
-license = { text = "MIT" }
 readme = "readme.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
 
-maintainers = [
+authors = [
     { name = "David Duran", email = "dadch1404@gmail.com" },
 ]
-
-dependencies = []
-
-[project.optional-dependencies]
-dev = []
 
 [tool.pytest.ini_options]
 testpaths = ["packages/core/tests"]

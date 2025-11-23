@@ -2,7 +2,13 @@
 name = "megaloader-api"
 version = "0.1.0"
 description = "FastAPI demo for Megaloader core library"
+readme = "readme.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
+
+authors = [
+    { name = "David Duran", email = "dadch1404@gmail.com" },
+]
 
 dependencies = [
     "fastapi>=0.104.1",
@@ -18,9 +24,8 @@ dependencies = [
 megaloader = { workspace = true }
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.setuptools]
-package-dir = {"api" = "."}
+[tool.hatch.build.targets.wheel]
 packages = ["api"]

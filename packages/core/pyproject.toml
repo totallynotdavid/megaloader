@@ -2,10 +2,9 @@
 name = "megaloader"
 version = "0.1.0"
 description = "Python library for extracting downloadable content metadata from file hosting platforms"
-
-license = "Apache-2.0"
 readme = "readme.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
 
 authors = [
     { name = "DURAND Malo", email = "malo.durand@epitech.eu" },
@@ -30,27 +29,11 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.setuptools]
-py-modules = []
-
-[tool.setuptools.package-dir]
-"" = "."
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["*"]
-exclude = ["tests*", "sample*", "*.egg-info"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-markers = [
-    "live: mark test as requiring live network access"
-]
-addopts = "-q"
+[tool.hatch.build.targets.wheel]
+packages = ["megaloader"]
 
 [tool.mypy]
 files = ["megaloader"]

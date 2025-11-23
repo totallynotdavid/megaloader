@@ -2,12 +2,11 @@
 name = "megaloader-cli"
 version = "0.1.0"
 description = "Command-line interface for Megaloader"
-
-license = "Apache-2.0"
 readme = "readme.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
 
-maintainers = [
+authors = [
     { name = "David Duran", email = "dadch1404@gmail.com" },
 ]
 
