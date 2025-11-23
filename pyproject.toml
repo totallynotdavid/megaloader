@@ -1,5 +1,6 @@
 [tool.uv.workspace]
 members = ["packages/*"]
+exclude = ["packages/api"]
 
 [project]
 name = "megaloader-workspace"
