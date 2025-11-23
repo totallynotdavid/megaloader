@@ -28,9 +28,12 @@ def find_markdown_files(docs_dir: Path) -> list[Path]:
 def extract_python_blocks(content: str) -> list[tuple[str, int]]:
     """Extract Python code blocks with their starting line numbers.
 
+    Supports VitePress syntax highlighting (e.g., python{16} or python{1,3-5}).
+
     Returns list of (code, line_number) tuples.
     """
     blocks = []
+    # Match: ```python or ```python{16} or ```python{1,3-5}
     pattern = r"```python(?:\{[\d,\-]+\})?\n(.*?)```"
 
     for match in re.finditer(pattern, content, re.DOTALL):
@@ -53,10 +56,8 @@ def should_skip_block(code: str) -> bool:
         if not stripped or stripped.startswith("#"):
             continue
 
-        if stripped.startswith(("def ", "@")) and not stripped.endswith(":"):
-            return True
-
-        if "def " in stripped and "->" in stripped and not stripped.endswith(":"):
+        # Skip function/method signatures without bodies
+        if stripped.startswith("def ") and not stripped.endswith(":"):
             return True
 
     return False
@@ -109,17 +110,16 @@ def main() -> int:
 
     markdown_files = find_markdown_files(docs_dir)
     all_errors = []
-    validated_count = 0
+    files_with_errors = 0
 
     for filepath in markdown_files:
         errors = validate_file(filepath)
+        if errors:
+            files_with_errors += 1
         all_errors.extend(errors)
 
-        if errors:
-            validated_count += 1
-
     if all_errors:
-        print(f"Found {len(all_errors)} syntax errors:\n")
+        print(f"Found {len(all_errors)} syntax errors in {files_with_errors} files:\n")
         for error in all_errors:
             print(error)
         return 1
