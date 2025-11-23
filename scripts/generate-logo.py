@@ -162,7 +162,8 @@ def generate_logo():
                 # Else: leave transparent
 
     # Save the image
-    img.save("logo.png")
+    img.save("assets/logo.png")
+    print('Logo generated: assets/logo.png')
 
 
 if __name__ == "__main__":
