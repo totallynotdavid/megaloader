@@ -203,6 +203,3 @@ async def download_endpoint(
 
     finally:
         cleanup_temp(temp_dir)
-
-
-handler = app

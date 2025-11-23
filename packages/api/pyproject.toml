@@ -16,12 +16,15 @@ dependencies = [
     "pydantic>=2.0.0",
     "requests>=2.32.0",
     "chardet>=5.2.0", # caused by uvicorn, otherwise we have a warning
-    "megaloader",
     "httpx>=0.28.1",
+    "megaloader>=0.1.0",
 ]
 
-[tool.uv.sources]
-megaloader = { workspace = true }
+# Use the published package for Vercel deployments.
+# Uncomment for local development only.
+# DO NOT commit uncommented.
+# [tool.uv.sources]
+# megaloader = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
