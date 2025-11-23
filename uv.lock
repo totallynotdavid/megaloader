@@ -535,9 +535,6 @@ name = "megaloader-workspace"
 version = "0.1.0"
 source = { virtual = "." }
 
-[package.metadata]
-provides-extras = ["dev"]
-
 [[package]]
 name = "mypy"
 version = "1.18.2"
