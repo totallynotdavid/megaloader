@@ -1,19 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "packages/api/index.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "packages/api/index.py"
-    }
-  ],
-  "installCommand": "uv sync --package megaloader --package megaloader-api --no-dev && cp -r packages/core/megaloader packages/api/",
+  "buildCommand": "bash build.sh",
+  "outputDirectory": "packages/api",
+  "installCommand": "pip install uv",
+  "framework": null,
   "env": {
-    "PYTHONPATH": "/var/task/packages/api"
+    "PYTHONPATH": "packages/api"
   }
 }

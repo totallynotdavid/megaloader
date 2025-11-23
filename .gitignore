@@ -18,3 +18,9 @@ dist/
 .env
 *.ps1
 *.sh
+
+.vercel
+packages/api/megaloader
+
+.vercel
+!build.sh
