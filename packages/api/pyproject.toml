@@ -20,9 +20,6 @@ dependencies = [
     "megaloader>=0.1.0",
 ]
 
-# Use the published package for Vercel deployments.
-# Uncomment for local development only.
-# DO NOT commit uncommented.
 [tool.uv.sources]
 megaloader = { workspace = true }
 

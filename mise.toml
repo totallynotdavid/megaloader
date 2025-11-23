@@ -52,7 +52,7 @@ run = "uv run megaloader"
 # Development: API
 [tasks.api-serve]
 description = "Run local API server"
-run = "uv run uvicorn main:app --reload" # pass '--host 0.0.0.0' to expose on local network
+run = "uv run uvicorn index:app --reload" # pass '--host 0.0.0.0' to expose on local network
 dir = "packages/api"
 
 # Development: Docs
