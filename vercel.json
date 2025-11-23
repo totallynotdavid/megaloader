@@ -16,5 +16,8 @@
     }
   ],
   "buildCommand": "pip install ./packages/core && pip install -r requirements.txt",
-  "installCommand": "pip install --upgrade pip"
+  "installCommand": "pip install --upgrade pip",
+  "env": {
+    "PYTHONPATH": "/var/task/packages/api"
+  }
 }
