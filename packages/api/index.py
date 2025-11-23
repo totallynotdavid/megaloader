@@ -1,10 +1,5 @@
 import logging
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
-from megaloader.exceptions import ExtractionError, UnsupportedDomainError
-
 from api.config import (
     CORS_ORIGINS,
     IS_PRODUCTION,
@@ -25,6 +20,10 @@ from api.models import (
 from api.responses import create_file_response, create_zip
 from api.security import check_rate_limit, validate_domain_whitelist
 from api.utils import format_size
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
+from megaloader.exceptions import ExtractionError, UnsupportedDomainError
 
 
 configure_logging()
