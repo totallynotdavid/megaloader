@@ -16,9 +16,7 @@ maintainers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = [
-    "pillow",
-]
+dev = []
 
 [tool.pytest.ini_options]
 testpaths = ["packages/core/tests"]

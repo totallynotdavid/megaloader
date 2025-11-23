@@ -77,7 +77,7 @@ dir = "docs"
 # Logo
 [tasks.generate-logo]
 description = "Generate project logo using Python PIL"
-run = "uv run python scripts/generate-logo.py"
+run = ["uv pip install pillow", "uv run python scripts/generate-logo.py"]
 
 # Build
 [tasks.build-bin]
