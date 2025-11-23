@@ -29,3 +29,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["api"]
+
+[tool.ruff.lint.per-file-ignores]
+"index.py" = ["INP001"]  # entry point for Vercel/uvicorn
