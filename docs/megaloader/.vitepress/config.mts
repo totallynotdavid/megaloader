@@ -9,7 +9,12 @@ export default defineConfig({
   cleanUrls: true,
   metaChunk: true,
 
+  vite: {
+    publicDir: '../../assets'
+  },
+
   themeConfig: {
+    logo: '/logo.svg',
     nav: nav(),
 
     sidebar: {

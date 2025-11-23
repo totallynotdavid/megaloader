@@ -1,6 +1,6 @@
 # [monorepo]: megaloader
 
-<img src="assets/logo.png" alt="Megaloader Logo" width="200">
+<img src="assets/logo.svg" alt="Megaloader Logo" width="100">
 
 [![CodeQL](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml)
 [![lint and format check](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml)

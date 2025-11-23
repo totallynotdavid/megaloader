@@ -4,13 +4,13 @@ Utility scripts for the Megaloader project.
 
 ## generate-logo.py
 
-Generates the project logo using Python PIL.
+Generates the project logo as an SVG.
 
 ```bash
 mise run generate-logo
 ```
 
-Outputs `assets/logo.png` in the root directory.
+Outputs `assets/logo.svg` in the root directory.
 
 ## Future scripts
 
