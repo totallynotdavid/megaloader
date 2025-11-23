@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "packages/api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "packages/api/index.py"
+    }
+  ],
+  "installCommand": "pip install uv && uv sync --all-packages",
+  "buildCommand": "cd packages/api && uv sync"
+}
