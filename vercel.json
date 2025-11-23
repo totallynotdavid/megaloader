@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "packages/api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
     }
   ],
   "routes": [
@@ -12,6 +15,6 @@
       "dest": "packages/api/index.py"
     }
   ],
-  "installCommand": "pip install uv && uv sync --all-packages",
-  "buildCommand": "cd packages/api && uv sync"
+  "buildCommand": "pip install ./packages/core && pip install -r requirements.txt",
+  "installCommand": "pip install --upgrade pip"
 }

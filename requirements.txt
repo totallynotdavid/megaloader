@@ -1,0 +1,10 @@
+# Install core package first
+./packages/core
+
+# API dependencies
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+requests>=2.32.0
+chardet>=5.2.0
+httpx>=0.28.1
