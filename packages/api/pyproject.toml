@@ -23,8 +23,8 @@ dependencies = [
 # Use the published package for Vercel deployments.
 # Uncomment for local development only.
 # DO NOT commit uncommented.
-# [tool.uv.sources]
-# megaloader = { workspace = true }
+[tool.uv.sources]
+megaloader = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
