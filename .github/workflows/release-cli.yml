@@ -79,7 +79,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: cli-pkg-dist
           path: dist
@@ -98,15 +98,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: cli-pkg-dist
           path: dist
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: cli-bin-ubuntu-latest
           path: dist
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: cli-bin-windows-latest
           path: dist
