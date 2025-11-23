@@ -222,6 +222,67 @@ bun run docs:dev
 **Guidelines:** Clear language, complete examples, relative links. Update docs
 with code changes.
 
+Validate Python code snippets in documentation:
+
+::: code-group
+
+```bash [mise]
+mise run validate-snippets
+```
+
+```bash [manual]
+python scripts/validate-code-snippets.py
+```
+
+:::
+
+This checks syntax of all Python code blocks in markdown files. Automatically
+runs as part of `mise run check`.
+
+## Maintenance tasks
+
+### Updating tool versions
+
+Update Python, uv, ruff, or other tool versions consistently across the
+repository.
+
+Preview changes (dry run):
+
+```bash
+python scripts/update-tool-versions.py --tool python --version 3.14.0 --dry-run
+```
+
+Update Python exact version in `mise.toml`, workflows, `.python-version`:
+
+```bash
+python scripts/update-tool-versions.py --tool python --version 3.14.0
+```
+
+Update uv across `mise.toml` and all workflows:
+
+```bash
+python scripts/update-tool-versions.py --tool uv --version 0.10.0
+```
+
+Update Python test matrix in workflows:
+
+```bash
+python scripts/update-tool-versions.py --tool python-matrix --matrix-versions "3.13,3.14"
+```
+
+Update minimum Python requirement (`>=3.10` a `>=3.11`):
+
+```bash
+python scripts/update-tool-versions.py --tool python-min --version 3.11
+```
+
+Supported tools: `python`, `python-min`, `python-matrix`, `uv`, `ruff`, `bun`,
+`biome`, `mypy`, `pytest`.
+
+The script uses pattern-based matching to update versions across
+`.python-version`, `mise.toml`, all `pyproject.toml` files, and GitHub Actions
+workflows. Always use `--dry-run` first to preview changes.
+
 ## Releasing
 
 I use GitHub Actions to automate the release workflows for both the core library
