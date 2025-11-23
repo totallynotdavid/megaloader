@@ -222,6 +222,53 @@ bun run docs:dev
 **Guidelines:** Clear language, complete examples, relative links. Update docs
 with code changes.
 
+## Releasing
+
+I use GitHub Actions to automate the release workflows for both the core library
+and the CLI (see
+[release-core.yml](https://github.com/totallynotdavid/megaloader/blob/main/.github/workflows/release-core.yml)
+and
+[release-cli.yml](https://github.com/totallynotdavid/megaloader/blob/main/.github/workflows/release-cli.yml)).
+No manual steps are required beyond tagging. Both workflows use PyPI's
+[Trusted Publisher](https://docs.pypi.org/trusted-publishers/) system.
+
+Before tagging a release, you should test builds locally:
+
+```bash
+mise run build-bin
+```
+
+**For core library releases**:
+
+1. Update the version in `packages/core/pyproject.toml`.
+2. Commit and push the change.
+3. Tag the release and push the tag:
+
+   ```bash
+   git tag vcore-X.Y.Z
+   git push origin vcore-X.Y.Z
+   ```
+
+The workflow automatically publishes the core package to PyPI.
+
+**For CLI releases**:
+
+1. Update the version in `packages/cli/pyproject.toml`.
+2. Commit and push the change.
+3. Tag the release and push the tag:
+
+   ```bash
+   git tag vcli-X.Y.Z
+   git push origin vcli-X.Y.Z
+   ```
+
+The workflow builds cross-platform binaries, publishes to PyPI, and,
+additionally, creates a GitHub release. For security reasons, I have to manually
+approve the publishing step.
+
+All releases are available at:
+[https://github.com/totallynotdavid/megaloader/releases](https://github.com/totallynotdavid/megaloader/releases)
+
 ## Getting help
 
 For questions, ideas, or feedback, use
