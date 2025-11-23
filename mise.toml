@@ -84,7 +84,7 @@ run = "uv run python scripts/validate-code-snippets.py"
 # Logo
 [tasks.generate-logo]
 description = "Generate project logo as SVG"
-run = ["uv run python scripts/generate-logo.py"]
+run = "uv run python scripts/generate-logo.py"
 
 # Build
 [tasks.build-bin]
