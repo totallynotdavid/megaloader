@@ -136,3 +136,24 @@
 .DocSearch {
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
+
+/**
+ * Component: Announcement
+ * -------------------------------------------------------------------------- */
+
+.announcement {
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  background: var(--vp-c-default-soft);
+  padding: 4px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+}
+
+.announcement:hover {
+  background: var(--vp-c-default-2);
+}
