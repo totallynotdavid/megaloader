@@ -15,8 +15,7 @@
       "dest": "packages/api/index.py"
     }
   ],
-  "buildCommand": "pip install ./packages/core && pip install -r requirements.txt",
-  "installCommand": "pip install --upgrade pip",
+  "buildCommand": "pip install -r requirements.txt && cp -r packages/core/megaloader packages/api/",
   "env": {
     "PYTHONPATH": "/var/task/packages/api"
   }
