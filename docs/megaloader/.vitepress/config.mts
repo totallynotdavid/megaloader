@@ -34,7 +34,8 @@ export default defineConfig({
 
     footer: {
       message: "Released under the Apache-2.0 License.",
-      copyright: "Copyright © 2024-The Megaloader Authors",
+      copyright:
+        'Copyright © 2024 - <a href="/team">The Megaloader Authors</a>',
     },
 
     editLink: {
@@ -69,12 +70,20 @@ function nav(): DefaultTheme.NavItem[] {
       text: "More",
       items: [
         {
+          text: "Team",
+          link: "/team",
+        },
+        {
           text: "Contributing",
           link: "/development/contributing",
         },
         {
-          text: "PyPI",
+          text: "PyPI: megaloader",
           link: "https://pypi.org/project/megaloader/",
+        },
+        {
+          text: "PyPI: megaloader-cli",
+          link: "https://pypi.org/project/megaloader-cli/",
         },
       ],
     },
