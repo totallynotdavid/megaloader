@@ -10,11 +10,11 @@ export default defineConfig({
   metaChunk: true,
 
   vite: {
-    publicDir: '../../assets'
+    publicDir: "../../assets",
   },
 
   themeConfig: {
-    logo: '/logo.svg',
+    logo: "/logo.svg",
     nav: nav(),
 
     sidebar: {
