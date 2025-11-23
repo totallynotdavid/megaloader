@@ -32,8 +32,8 @@ description = "Run type checking"
 run = "uv run mypy ."
 
 [tasks.check]
-description = "Quick pre-push checks: format, lint, test-unit"
-depends = ["format", "lint", "test-unit"]
+description = "Quick pre-push checks: format, lint, test-unit, validate-snippets"
+depends = ["format", "lint", "test-unit", "validate-snippets"]
 
 # Testing
 [tasks.test]
@@ -52,13 +52,16 @@ run = "uv run megaloader"
 # Development: API
 [tasks.api-serve]
 description = "Run local API server"
-run = "uv run uvicorn main:app --reload"
+run = "uv run uvicorn main:app --reload" # pass '--host 0.0.0.0' to expose on local network
 dir = "packages/api"
 
 # Development: Docs
 [tasks.docs-serve]
 description = "Serve documentation locally"
-run = ["bun install", "bun run docs:dev"]
+run = [
+  "bun install",
+  "bun run docs:dev",
+] # pass '--host' to expose the server in local network
 dir = "docs"
 
 [tasks.docs-build]
@@ -73,6 +76,15 @@ run = [
   "bun x prettier \"**/*.md\" --write --print-width=80 --prose-wrap=always",
 ]
 dir = "docs"
+
+[tasks.validate-snippets]
+description = "Validate Python code snippets in documentation"
+run = "uv run python scripts/validate-code-snippets.py"
+
+# Logo
+[tasks.generate-logo]
+description = "Generate project logo as SVG"
+run = "uv run python scripts/generate-logo.py"
 
 # Build
 [tasks.build-bin]
