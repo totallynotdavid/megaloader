@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "pip"
-    directory: "/api"
+    directory: "/packages/api"
     schedule:
       interval: "daily"
 

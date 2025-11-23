@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["packages/*", "api"]
+members = ["packages/*"]
 
 [project]
 name = "megaloader-workspace"

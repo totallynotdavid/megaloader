@@ -53,7 +53,7 @@ run = "uv run megaloader"
 [tasks.api-serve]
 description = "Run local API server"
 run = "uv run uvicorn main:app --reload"
-dir = "api"
+dir = "packages/api"
 
 # Development: Docs
 [tasks.docs-serve]
@@ -86,4 +86,4 @@ run = [
 [tasks.api-deploy]
 description = "Deploy API to Vercel"
 run = "vercel --prod"
-dir = "api"
+dir = "packages/api"
