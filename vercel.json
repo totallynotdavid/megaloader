@@ -3,10 +3,7 @@
   "builds": [
     {
       "src": "packages/api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb"
-      }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -15,7 +12,7 @@
       "dest": "packages/api/index.py"
     }
   ],
-  "buildCommand": "pip install -r requirements.txt && cp -r packages/core/megaloader packages/api/",
+  "installCommand": "uv sync --package megaloader --package megaloader-api --no-dev && cp -r packages/core/megaloader packages/api/",
   "env": {
     "PYTHONPATH": "/var/task/packages/api"
   }
