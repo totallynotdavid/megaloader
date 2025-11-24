@@ -1,10 +1,13 @@
 import { defineConfig, type DefaultTheme } from "vitepress";
 
+const baseUrl = process.env.VITE_BASE || "/";
+
 export default defineConfig({
   title: "Megaloader",
   description:
     "Python library for extracting file metadata from 11+ hosting platforms",
 
+  base: baseUrl,
   lastUpdated: true,
   cleanUrls: true,
   metaChunk: true,
@@ -40,7 +43,7 @@ export default defineConfig({
 
     editLink: {
       pattern:
-        "https://github.com/totallynotdavid/megaloader/edit/main/docs/:path",
+        "https://github.com/totallynotdavid/megaloader/edit/main/apps/docs/megaloader/:path",
       text: "Edit this page on GitHub",
     },
 
