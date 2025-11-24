@@ -28,7 +28,11 @@ jobs:
 
       - run: uv python install 3.13.7
 
-      - run: uv sync --all-packages --extra dev
+      - name: Install workspace dependencies
+        run: uv sync --all-packages --extra dev
+
+      - name: Install API dependencies
+        run: cd apps/api && uv sync --extra dev
 
       - uses: astral-sh/ruff-action@b08f7b47e5c97c539fcd4ccc6dc06a64a6621742 # v3.5.1
         with:
@@ -38,4 +42,8 @@ jobs:
         with:
           args: "check"
 
-      - run: uv run mypy .
+      - name: Type check workspace
+        run: uv run mypy packages/core packages/cli
+
+      - name: Type check API
+        run: cd apps/api && uv run mypy .

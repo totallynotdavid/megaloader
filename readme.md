@@ -73,6 +73,24 @@ This monorepo uses uv workspaces. The core library lives in
 [`packages/cli/`](packages/cli/). Both are published independently to PyPI.
 Development tools are configured at the root.
 
+### Repository structure
+
+```
+megaloader/
+├── apps/            # Deployment targets
+│   ├── api/        # FastAPI server (deployed to Vercel)
+│   └── docs/       # Documentation site (VitePress)
+├── packages/        # Published packages (PyPI)
+│   ├── core/       # megaloader - Core extraction library
+│   └── cli/        # megaloader-cli - Command-line interface
+├── scripts/         # Development utilities
+└── assets/          # Static resources (logos, etc.)
+```
+
+### Setup
+
+### Setup
+
 Clone the repository and install dependencies:
 
 ```bash

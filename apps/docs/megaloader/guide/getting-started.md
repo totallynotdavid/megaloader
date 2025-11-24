@@ -8,7 +8,7 @@ headers. You choose what to download and how to handle the requests.
 
 You can try the API directly in your browser to see how it works. The
 implementation is available in the
-[/packages/api/](https://github.com/totallynotdavid/megaloader/tree/main/packages/api)
+[/apps/api/](https://github.com/totallynotdavid/megaloader/tree/main/apps/api)
 folder of the repo and is deployed via Vercel.
 
 <ApiDemo />
