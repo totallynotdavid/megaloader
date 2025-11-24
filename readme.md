@@ -100,7 +100,7 @@ If you prefer to manage tools with mise, run:
 
 ```bash
 mise install
-mise run install
+mise run sync
 ```
 
 This installs the toolchain versions defined in `mise.toml`.
