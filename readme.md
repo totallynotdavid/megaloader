@@ -64,7 +64,7 @@ may break without immediate fixes.
 | Fapello     | fapello.com            | Model profiles                                | Extended |
 
 Additional notes on authentication and platform-specific features are documented
-in the core library readme.
+in the core library's [readme](packages/core/readme.md).
 
 ## Development
 
