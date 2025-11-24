@@ -11,7 +11,10 @@ biome = "2.3.6"
 # Dependencies
 [tasks.sync]
 description = "Install all dependencies (workspace + API)"
-run = ["uv sync --all-packages --extra dev", "cd apps/api && uv sync --extra dev"]
+run = [
+  "uv sync --all-packages --extra dev",
+  "cd apps/api && uv sync --extra dev",
+]
 
 [tasks.update]
 description = "Update all dependencies"
@@ -29,10 +32,7 @@ run = ["ruff format", "ruff check --fix"]
 
 [tasks.lint]
 description = "Run type checking on all packages"
-run = [
-    "uv run mypy --exclude apps/api .",
-    "cd apps/api && uv run python -m mypy ."
-]
+run = ["uv run mypy --exclude apps/api .", "cd apps/api && uv run mypy ."]
 
 [tasks.check]
 description = "Quick pre-push checks: format, lint, test-unit, validate-snippets"
@@ -101,4 +101,4 @@ run = [
 [tasks.api-deploy]
 description = "Deploy API to Vercel"
 run = "vercel --prod"
-dir = "packages/api"
+dir = "apps/api"

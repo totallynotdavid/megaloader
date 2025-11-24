@@ -43,7 +43,7 @@ jobs:
           args: "check"
 
       - name: Type check workspace
-        run: uv run mypy packages/core packages/cli
+        run: uv run mypy --exclude apps/api .
 
       - name: Type check API
         run: cd apps/api && uv run mypy .
