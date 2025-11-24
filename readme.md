@@ -111,7 +111,7 @@ Before submitting changes, run the formatters, linters, and tests:
 uv run ruff format .        # mise run format
 uv run ruff check --fix .   # mise run format
 uv run mypy packages/core   # mise run mypy
-uv run pytest               # mise run test, mise run test-unit, mise run test-integration
+uv run pytest               # mise run test, mise run test-unit
 ```
 
 These commands format the code, fix lint issues, check types, and run the test
