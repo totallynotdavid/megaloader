@@ -20,11 +20,11 @@ dependencies = [
     "megaloader>=0.1.0",
 ]
 
-# Use the published package for Vercel deployments.
-# Uncomment for local development only.
-# DO NOT commit uncommented.
-# [tool.uv.sources]
-# megaloader = { workspace = true }
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.13.0",
+    "types-requests>=2.32.4.20250913",
+]
 
 [build-system]
 requires = ["hatchling"]

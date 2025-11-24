@@ -10,8 +10,11 @@ biome = "2.3.6"
 
 # Dependencies
 [tasks.sync]
-description = "Install all workspace dependencies"
-run = "uv sync --all-packages --extra dev"
+description = "Install all dependencies (workspace + API)"
+run = [
+  "uv sync --all-packages --extra dev",
+  "cd apps/api && uv sync --extra dev",
+]
 
 [tasks.update]
 description = "Update all dependencies"
@@ -28,8 +31,8 @@ description = "Format and fix linting issues"
 run = ["ruff format", "ruff check --fix"]
 
 [tasks.lint]
-description = "Run type checking"
-run = "uv run mypy ."
+description = "Run type checking on all packages"
+run = ["uv run mypy --exclude apps/api .", "cd apps/api && uv run mypy ."]
 
 [tasks.check]
 description = "Quick pre-push checks: format, lint, test-unit, validate-snippets"
@@ -52,8 +55,8 @@ run = "uv run megaloader"
 # Development: API
 [tasks.api-serve]
 description = "Run local API server"
-run = "uv run uvicorn main:app --reload" # pass '--host 0.0.0.0' to expose on local network
-dir = "packages/api"
+run = "uv run uvicorn index:app --reload" # pass '--host 0.0.0.0' to expose on local network
+dir = "apps/api"
 
 # Development: Docs
 [tasks.docs-serve]
@@ -62,12 +65,12 @@ run = [
   "bun install",
   "bun run docs:dev",
 ] # pass '--host' to expose the server in local network
-dir = "docs"
+dir = "apps/docs"
 
 [tasks.docs-build]
 description = "Build documentation"
 run = ["bun install", "bun run docs:build"]
-dir = "docs"
+dir = "apps/docs"
 
 [tasks.format-docs]
 description = "Format docs with biome (Vue only, markdown not supported)"
@@ -75,7 +78,7 @@ run = [
   "biome format --write .",
   "bun x prettier \"**/*.md\" --write --print-width=80 --prose-wrap=always",
 ]
-dir = "docs"
+dir = "apps/docs"
 
 [tasks.validate-snippets]
 description = "Validate Python code snippets in documentation"
@@ -98,4 +101,4 @@ run = [
 [tasks.api-deploy]
 description = "Deploy API to Vercel"
 run = "vercel --prod"
-dir = "packages/api"
+dir = "apps/api"

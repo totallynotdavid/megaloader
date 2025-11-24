@@ -79,7 +79,7 @@ class ToolVersionUpdater:
             self.repo_root / "pyproject.toml",
             self.repo_root / "packages/core/pyproject.toml",
             self.repo_root / "packages/cli/pyproject.toml",
-            self.repo_root / "packages/api/pyproject.toml",
+            self.repo_root / "apps/api/pyproject.toml",
         ]
 
         for file_path in pyproject_files:

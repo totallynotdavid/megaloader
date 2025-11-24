@@ -64,16 +64,31 @@ may break without immediate fixes.
 | Fapello     | fapello.com            | Model profiles                                | Extended |
 
 Additional notes on authentication and platform-specific features are documented
-in the core library readme.
+in the core library's [readme](packages/core/readme.md).
 
 ## Development
 
-This monorepo uses uv workspaces. The core library lives in
-[`packages/core/`](packages/core/) and the CLI in
-[`packages/cli/`](packages/cli/). Both are published independently to PyPI.
-Development tools are configured at the root.
+This monorepo uses a uv workspace. The core library is in
+[`packages/core/`](packages/core/) and the CLI tool is in
+[`packages/cli/`](packages/cli/). Each one is published to PyPI as a separate
+package.
 
-Clone the repository and install dependencies:
+The repository is organized like this:
+
+```
+megaloader/
+├── apps/
+│   ├── api/        # FastAPI server (deployed to Vercel)
+│   └── docs/       # VitePress site (deployed to GitHub Pages)
+├── packages/
+│   ├── core/       # megaloader, the core library
+│   └── cli/        # megaloader-cli, the command-line interface
+├── scripts/        # Development utilities
+└── assets/         # Static files
+```
+
+To set up a development environment, clone the repository and install all
+workspace dependencies:
 
 ```bash
 git clone https://github.com/totallynotdavid/megaloader
@@ -81,18 +96,26 @@ cd megaloader
 uv sync
 ```
 
-Run quality checks before submitting changes:
+If you prefer to manage tools with mise, run:
+
+```bash
+mise install
+mise run sync
+```
+
+This installs the toolchain versions defined in [`mise.toml`](mise.toml).
+
+Before submitting changes, run the formatters, linters, and tests:
 
 ```bash
 uv run ruff format .        # mise run format
 uv run ruff check --fix .   # mise run format
 uv run mypy packages/core   # mise run mypy
-uv run pytest               # mise run test, mise run test-unit, mise run test-integration
+uv run pytest               # mise run test, mise run test-unit
 ```
 
-The project includes mise configuration for automatic tool management. Use
-`mise install` followed by `mise run install` to set up the environment. See
-[mise.toml](mise.toml) or run `mise tasks` for details.
+These commands format the code, fix lint issues, check types, and run the test
+suite.
 
 See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for plugin development
 guidelines.
