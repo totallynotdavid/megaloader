@@ -103,7 +103,7 @@ mise install
 mise run sync
 ```
 
-This installs the toolchain versions defined in `mise.toml`.
+This installs the toolchain versions defined in [`mise.toml`](mise.toml).
 
 Before submitting changes, run the formatters, linters, and tests:
 
