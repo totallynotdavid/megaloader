@@ -3,6 +3,7 @@ name: deploy docs (gh-pages)
 on:
   push:
     branches: [main]
+    paths: ["apps/docs/**"]
 
   workflow_dispatch:
 
@@ -37,6 +38,7 @@ jobs:
       - run: bun run docs:build
         env:
           VITE_BASE: "/megaloader/"
+          VITE_API_URL: "https://megaloader-api.vercel.app"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
