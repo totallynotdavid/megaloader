@@ -26,8 +26,8 @@ def find_markdown_files(docs_dir: Path) -> list[Path]:
 
 
 def extract_python_blocks(content: str) -> list[tuple[str, int]]:
-    """Extract Python code blocks with their starting line numbers.
-
+    """
+    Extract Python code blocks with their starting line numbers.
     Supports VitePress syntax highlighting (e.g., python{16} or python{1,3-5}).
 
     Returns list of (code, line_number) tuples.
@@ -64,7 +64,8 @@ def should_skip_block(code: str) -> bool:
 
 
 def validate_python_syntax(code: str) -> tuple[bool, str]:
-    """Check if code has valid Python syntax.
+    """
+    Check if code has valid Python syntax.
 
     Returns (is_valid, error_message) tuple.
     """
@@ -81,7 +82,8 @@ def format_error(filepath: Path, line_number: int, message: str) -> str:
 
 
 def validate_file(filepath: Path) -> list[str]:
-    """Validate all Python blocks in a file.
+    """
+    Validate all Python blocks in a file.
 
     Returns list of error messages.
     """
@@ -102,7 +104,7 @@ def validate_file(filepath: Path) -> list[str]:
 
 def main() -> int:
     """Run validation on all documentation files."""
-    docs_dir = Path("docs")
+    docs_dir = Path("apps/docs")
 
     if not docs_dir.exists():
         print(f"Error: {docs_dir} directory not found", file=sys.stderr)
