@@ -82,6 +82,6 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
     except (UnsupportedDomainError, ValueError):
         raise
     except Exception as e:
-        logger.debug("Extraction failed for %s: %s", url, e, exc_info=True)
+        logger.debug("Extraction failed for %r: %r", url, e, exc_info=True)
         msg = f"Failed to extract from {url}: {e}"
         raise ExtractionError(msg) from e
