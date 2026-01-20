@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: astral-sh/setup-uv@be7fc19b4169c26a2aa1b8a430af391f2a96b3c9 # v7.1.4
+      - uses: astral-sh/setup-uv@9cfd02964306b527feff5fee75acfd028cce4260 # v7.2.0
         with:
           version: "0.9.10"
 
@@ -34,11 +34,11 @@ jobs:
       - name: Install API dependencies
         run: cd apps/api && uv sync --extra dev
 
-      - uses: astral-sh/ruff-action@cd51da8b6c236530bcbda64f26d5f13b98f61c73 # v3.5.1
+      - uses: astral-sh/ruff-action@deb632007bfb6d4a15bb00646af6eb714a34f079 # v3.5.1
         with:
           args: "format --check --diff"
 
-      - uses: astral-sh/ruff-action@cd51da8b6c236530bcbda64f26d5f13b98f61c73 # v3.5.1
+      - uses: astral-sh/ruff-action@deb632007bfb6d4a15bb00646af6eb714a34f079 # v3.5.1
         with:
           args: "check"
 

@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@be7fc19b4169c26a2aa1b8a430af391f2a96b3c9 # v7.1.4
+      - uses: astral-sh/setup-uv@9cfd02964306b527feff5fee75acfd028cce4260 # v7.2.0
         with:
           version: "0.9.10"
 
@@ -57,13 +57,13 @@ jobs:
         continue-on-error: true
 
       - if: matrix.python-version == '3.13'
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           files: ./coverage.xml
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           files: ./junit.xml
           report_type: test_results
