@@ -175,8 +175,7 @@ def generate_logo():
 </svg>"""
 
     # Save the SVG
-    with pathlib.Path("assets/logo.svg").open("w") as f:
-        f.write(svg_content)
+    pathlib.Path("assets/logo.svg").write_text(svg_content)
     print("Logo generated: assets/logo.svg")
 
 
