@@ -24,9 +24,9 @@ jobs:
 
       - uses: astral-sh/setup-uv@9cfd02964306b527feff5fee75acfd028cce4260 # v7.2.0
         with:
-          version: "0.9.10"
+          version: "0.11.16"
 
-      - run: uv python install 3.13.7
+      - run: uv python install 3.14.5
 
       - name: Install workspace dependencies
         run: uv sync --all-packages --extra dev
