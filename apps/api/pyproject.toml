@@ -11,19 +11,19 @@ authors = [
 ]
 
 dependencies = [
-    "fastapi>=0.104.1",
-    "uvicorn[standard]>=0.24.0",
+    "fastapi>=0.136.3",
+    "uvicorn[standard]>=0.47.0",
     "pydantic>=2.0.0",
-    "requests>=2.32.0",
-    "chardet>=5.2.0", # caused by uvicorn, otherwise we have a warning
+    "requests>=2.34.2",
+    "chardet>=7.4.3", # caused by uvicorn, otherwise we have a warning
     "httpx>=0.28.1",
     "megaloader>=0.1.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "mypy>=1.13.0",
-    "types-requests>=2.32.4.20250913",
+    "mypy>=2.1.0",
+    "types-requests>=2.33.0.20260518",
 ]
 
 [build-system]

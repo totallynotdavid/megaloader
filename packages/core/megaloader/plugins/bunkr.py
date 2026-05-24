@@ -7,8 +7,7 @@ import re
 from collections.abc import Generator
 from urllib.parse import quote, urljoin, urlparse
 
-import requests
-
+from megaloader.error_policy import raise_extraction_error
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -34,13 +33,7 @@ class Bunkr(BasePlugin):
             logger.warning("Unrecognized Bunkr URL format")
 
     def _extract_album(self) -> Generator[DownloadItem, None, None]:
-        """Extract all files from an album page."""
-        try:
-            response = self.session.get(self.url, allow_redirects=True, timeout=30)
-            response.raise_for_status()
-        except Exception:
-            logger.exception("Failed to fetch album page")
-            return
+        response = self._get(self.url, allow_redirects=True)
 
         file_links = re.findall(r'href="(/f/[^"]+)"', response.text)
 
@@ -62,86 +55,70 @@ class Bunkr(BasePlugin):
             yield from self._extract_file(file_url)
 
     def _extract_file(self, file_url: str) -> Generator[DownloadItem, None, None]:
-        """Extract download URL from a file page."""
-        try:
-            response = self.session.get(file_url, timeout=30)
-            response.raise_for_status()
-        except requests.RequestException:
-            logger.debug("Failed to fetch file page %s", file_url, exc_info=True)
-            return
+        response = self._get(file_url)
 
-        # Find download button
         download_match = re.search(
             r'<a[^>]+class="[^"]*btn-main[^"]*"[^>]+href="([^"]+)"[^>]*>Download</a>',
             response.text,
         )
 
         if not download_match:
-            logger.debug("No download button found for %s", file_url)
-            return
+            raise_extraction_error(
+                f"No download button found: {file_url}",
+                source="bunkr",
+                url=file_url,
+                category="protocol",
+            )
 
         download_page_url = urljoin(file_url, download_match.group(1))
 
         # Extract file ID from download page URL
-        if match := re.search(r"/file/(\w+)", download_page_url):
-            file_id = match.group(1)
-        else:
-            logger.debug("Could not extract file ID from %s", download_page_url)
-            return
-
-        filename = self._extract_filename(response.text) or f"bunkr_file_{file_id}"
-
-        if direct_url := self._fetch_direct_url(file_id, filename):
-            yield DownloadItem(
-                download_url=direct_url,
-                filename=filename,
-                source_id=file_id,
-                headers={"Referer": "https://get.bunkrr.su/"},
+        match = re.search(r"/file/(\w+)", download_page_url)
+        if not match:
+            raise_extraction_error(
+                f"Could not extract file ID from: {download_page_url}",
+                source="bunkr",
+                url=file_url,
+                category="protocol",
             )
 
+        file_id = match.group(1)
+        filename = self._extract_filename(response.text) or f"bunkr_file_{file_id}"
+        direct_url = self._fetch_direct_url(file_id, filename)
+
+        yield DownloadItem(
+            download_url=direct_url,
+            filename=filename,
+            source_id=file_id,
+            headers={"Referer": "https://get.bunkrr.su/"},
+        )
+
     def _extract_filename(self, content: str) -> str | None:
-        """Extract original filename from page metadata."""
-        # Try og:title meta tag
         if match := re.search(r'<meta property="og:title" content="([^"]+)"', content):
             return html.unescape(match.group(1)).strip()
 
-        # Try JavaScript variable
         if match := re.search(r'var ogname\s*=\s*"([^"]+)"', content):
             return html.unescape(match.group(1)).strip()
 
         return None
 
-    def _fetch_direct_url(self, file_id: str, filename: str) -> str | None:
-        """Get direct CDN URL using Bunkr's API."""
-        try:
-            response = self.session.post(
-                self.API_BASE,
-                json={"id": file_id},
-                timeout=30,
-            )
-            response.raise_for_status()
-            data = response.json()
+    def _fetch_direct_url(self, file_id: str, filename: str) -> str:
+        """Get direct CDN URL via Bunkr's API (uses XOR decryption with a time-based key)."""
+        response = self._post(self.API_BASE, json={"id": file_id})
+        data = response.json()
 
-            # Decrypt the URL
-            timestamp = data["timestamp"]
-            encrypted_b64 = data["url"]
+        timestamp = data["timestamp"]
+        encrypted_b64 = data["url"]
 
-            # Generate time-based decryption key
-            key_str = f"SECRET_KEY_{math.floor(timestamp / 3600)}"
-            key_bytes = key_str.encode("utf-8")
+        # Time-bucketed key changes hourly; decryption is simple XOR
+        key_str = f"SECRET_KEY_{math.floor(timestamp / 3600)}"
+        key_bytes = key_str.encode("utf-8")
 
-            # XOR decrypt
-            encrypted_bytes = base64.b64decode(encrypted_b64)
-            decrypted = bytearray(
-                encrypted_bytes[i] ^ key_bytes[i % len(key_bytes)]
-                for i in range(len(encrypted_bytes))
-            )
+        encrypted_bytes = base64.b64decode(encrypted_b64)
+        decrypted = bytearray(
+            encrypted_bytes[i] ^ key_bytes[i % len(key_bytes)]
+            for i in range(len(encrypted_bytes))
+        )
 
-            base_url = decrypted.decode("utf-8")
-            return f"{base_url}?n={quote(filename)}"
-
-        except Exception:
-            logger.debug(
-                "Failed to fetch direct URL for file ID %s", file_id, exc_info=True
-            )
-            return None
+        base_url = decrypted.decode("utf-8")
+        return f"{base_url}?n={quote(filename)}"

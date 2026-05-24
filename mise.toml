@@ -41,11 +41,16 @@ depends = ["format", "lint", "test-unit", "validate-snippets"]
 # Testing
 [tasks.test]
 description = "Run all tests including live network tests (~100 secs)"
-run = "uv run pytest packages/core/tests --run-live"
+run = "uv run --env-file .env pytest -vv -s -rA --log-cli-level=INFO packages/core/tests --run-live"
 
 [tasks.test-unit]
 description = "Run unit tests only (fast: <1 sec)"
-run = "uv run pytest packages/core/tests/unit"
+run = "uv run --env-file .env pytest -vv -s -rA packages/core/tests/unit"
+
+[tasks.test-live-serial]
+description = "Run one live test by nodeid with full output (no parallel)"
+# usage example: mise run test-live-serial -- packages/core/tests/live/test_gofile_live.py::test_gofile_folder_images
+run = "uv run --env-file .env pytest -vv -s -rA --log-cli-level=INFO --run-live"
 
 # Development: CLI
 [tasks.dev-cli]

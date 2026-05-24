@@ -8,6 +8,7 @@ from typing import Any
 
 import requests
 
+from megaloader.error_policy import raise_extraction_error
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -25,7 +26,6 @@ class Pixiv(BasePlugin):
         self.content_id, self.is_artwork = self._parse_url()
 
     def _parse_url(self) -> tuple[str, bool]:
-        """Determine if URL is artwork or user profile."""
         if match := re.search(r"artworks/(\d+)", self.url):
             return match.group(1), True
 
@@ -38,7 +38,6 @@ class Pixiv(BasePlugin):
     def _configure_session(self, session: requests.Session) -> None:
         session.headers["Referer"] = f"{self.SITE_BASE}/"
 
-        # Credentials: kwargs > env var
         session_id = self.options.get("session_id") or os.getenv("PIXIV_PHPSESSID")
         if session_id:
             session.cookies.set("PHPSESSID", session_id, domain=".pixiv.net")
@@ -51,29 +50,30 @@ class Pixiv(BasePlugin):
             yield from self._extract_user(self.content_id)
 
     def _api_request(self, endpoint: str, params: dict[str, Any] | None = None) -> Any:
-        """Make API request and return body or None."""
-        try:
-            response = self.session.get(
-                f"{self.SITE_BASE}/ajax{endpoint}",
-                params=params,
-                timeout=30,
+        request_url = f"{self.SITE_BASE}/ajax{endpoint}"
+        response = self._get(request_url, params=params)
+        data = response.json()
+
+        if data.get("error"):
+            msg = data.get("message") or "Pixiv API returned an error"
+            raise_extraction_error(
+                msg,
+                source="pixiv",
+                url=request_url,
+                provider_status=str(data.get("error")),
             )
-            response.raise_for_status()
-            data = response.json()
-            return data.get("body") if not data.get("error") else None
-        except (requests.RequestException, ValueError):
-            logger.debug("Pixiv API error: %s", endpoint, exc_info=True)
-            return None
+
+        return data.get("body")
 
     def _extract_artwork(
         self,
         artwork_id: str,
         collection_name: str | None = None,
     ) -> Generator[DownloadItem, None, None]:
-        """Extract images from a single artwork."""
         pages = self._api_request(f"/illust/{artwork_id}/pages")
 
-        # Fallback for single-page artworks
+        info: Any = None
+
         if not pages:
             info = self._api_request(f"/illust/{artwork_id}")
             if info and (url := info.get("urls", {}).get("original")):
@@ -82,7 +82,7 @@ class Pixiv(BasePlugin):
                 return
 
         if not collection_name:
-            info = self._api_request(f"/illust/{artwork_id}")
+            info = info or self._api_request(f"/illust/{artwork_id}")
             username = info.get("userName", "unknown") if info else "artwork"
             collection_name = f"{username}_{artwork_id}"
 
@@ -102,7 +102,6 @@ class Pixiv(BasePlugin):
             )
 
     def _extract_user(self, user_id: str) -> Generator[DownloadItem, None, None]:
-        """Extract all works from a user."""
         profile = self._api_request(f"/user/{user_id}", params={"full": 1})
         if not profile:
             return
@@ -110,7 +109,6 @@ class Pixiv(BasePlugin):
         username = profile.get("name", user_id)
         collection_name = f"{user_id}_{username}"
 
-        # Profile images
         if avatar_url := profile.get("imageBig"):
             yield DownloadItem(
                 download_url=avatar_url,
@@ -125,7 +123,6 @@ class Pixiv(BasePlugin):
                 collection_name=collection_name,
             )
 
-        # All artworks
         all_works = self._api_request(f"/user/{user_id}/profile/all") or {}
         work_ids = list(all_works.get("illusts", {}).keys()) + list(
             all_works.get("manga", {}).keys()

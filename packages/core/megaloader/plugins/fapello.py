@@ -22,10 +22,9 @@ class Fapello(BasePlugin):
 
     def __init__(self, url: str, **options: Any) -> None:
         super().__init__(url, **options)
-        self.model_name = self._parse_model_name(url)
+        self.model_name = self._parse_model_name(self.url)
 
     def _parse_model_name(self, url: str) -> str:
-        """Extract model name from URL."""
         match = re.search(r"fapello\.com/([a-zA-Z0-9_\-~\.]+)", url)
         if not match or not match.group(1):
             msg = "Invalid Fapello URL"
@@ -39,19 +38,13 @@ class Fapello(BasePlugin):
         logger.debug("Extracting Fapello model: %s", self.model_name)
 
         page = 1
-        seen_urls = set()
+        seen_urls: set[str] = set()
 
         while True:
             ajax_url = f"https://fapello.com/ajax/model/{self.model_name}/page-{page}/"
+            response = self._get(ajax_url)
 
-            try:
-                response = self.session.get(ajax_url, timeout=30)
-                response.raise_for_status()
-
-                if not response.text.strip():
-                    break
-            except requests.RequestException:
-                logger.debug("Failed to fetch page %d", page, exc_info=True)
+            if not response.text.strip():
                 break
 
             soup = BeautifulSoup(response.text, "html.parser")

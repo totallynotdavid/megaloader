@@ -18,6 +18,9 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "bunkr.is": Bunkr,
     "bunkr.ru": Bunkr,
     "bunkr.su": Bunkr,
+    "bunkr.fi": Bunkr,
+    "bunkr.black": Bunkr,
+    "bunkr.ax": Bunkr,
     "cyberdrop.cr": Cyberdrop,
     "cyberdrop.me": Cyberdrop,
     "cyberdrop.to": Cyberdrop,
@@ -35,15 +38,28 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
 
 SUBDOMAIN_SUPPORTED: set[str] = {"fanbox.cc"}
 
+PLUGIN_NAME_REGISTRY: dict[str, type[BasePlugin]] = {
+    "bunkr": Bunkr,
+    "cyberdrop": Cyberdrop,
+    "fanbox": Fanbox,
+    "fapello": Fapello,
+    "gofile": Gofile,
+    "pixeldrain": PixelDrain,
+    "pixiv": Pixiv,
+    "rule34": Rule34,
+    "thothub-to": ThothubTO,
+    "thothub-vip": ThothubVIP,
+    "thotslife": Thotslife,
+}
 
-def get_plugin_class(domain: str) -> type[BasePlugin] | None:
+
+def get_plugin_for_domain(domain: str) -> type[BasePlugin] | None:
     """
     Resolve domain to plugin class.
 
     Resolution order:
     1. Exact match in PLUGIN_REGISTRY
     2. Subdomain match for supported domains
-    3. Partial match (fallback for domain variations)
     """
     domain = domain.lower().strip()
 
@@ -54,8 +70,8 @@ def get_plugin_class(domain: str) -> type[BasePlugin] | None:
         if domain.endswith(f".{base_domain}") and base_domain in PLUGIN_REGISTRY:
             return PLUGIN_REGISTRY[base_domain]
 
-    for registered_domain, plugin_class in PLUGIN_REGISTRY.items():
-        if registered_domain in domain:
-            return plugin_class
-
     return None
+
+
+def get_plugin_by_name(name: str) -> type[BasePlugin] | None:
+    return PLUGIN_NAME_REGISTRY.get(name.lower().strip())

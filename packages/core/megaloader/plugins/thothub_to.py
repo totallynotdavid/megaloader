@@ -6,10 +6,9 @@ from collections.abc import Generator
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
-import requests
-
 from bs4 import BeautifulSoup
 
+from megaloader.exceptions import ExtractionError
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -24,8 +23,7 @@ class ThothubTO(BasePlugin):
         path = urlparse(self.url).path
 
         if path.startswith("/videos/"):
-            if item := self._extract_video(self.url):
-                yield item
+            yield self._extract_video(self.url)
         elif path.startswith("/models/"):
             yield from self._extract_model()
         elif path.startswith("/albums/"):
@@ -35,50 +33,46 @@ class ThothubTO(BasePlugin):
 
     def _extract_video(
         self, url: str, collection_name: str | None = None
-    ) -> DownloadItem | None:
-        """Extract video from page."""
-        try:
-            response = self.session.get(url, timeout=30)
-            response.raise_for_status()
-            content = response.text
+    ) -> DownloadItem:
+        response = self._get(url)
+        content = response.text
 
-            # Extract flashvars
-            video_id = re.search(r"video_id:\s*'(\d+)'", content)
-            video_url = re.search(r"video_url:\s*'([^']+)'", content)
-            license_code = re.search(r"license_code:\s*'(\$.+?)'", content)
+        video_id = re.search(r"video_id:\s*'(\d+)'", content)
+        video_url = re.search(r"video_url:\s*'([^']+)'", content)
+        license_code = re.search(r"license_code:\s*'(\$.+?)'", content)
 
-            if not (video_id and video_url and license_code):
-                return None
+        if not (video_id and video_url and license_code):
+            from megaloader.error_policy import raise_extraction_error
 
-            # Deobfuscate URL
-            obfuscated = video_url.group(1).replace("function/0/", "")
-            key = self._generate_key(license_code.group(1))
-            parts = obfuscated.split("/")
-            parts[5] = self._deobfuscate_hash(parts[5], key)
-
-            final_url = "/".join(parts) + f"?rnd={int(time.time() * 1000)}"
-
-            # Extract title
-            soup = BeautifulSoup(content, "html.parser")
-            h1 = soup.find("h1")
-            title = h1.text.strip() if h1 else f"video_{video_id.group(1)}"
-
-            return DownloadItem(
-                download_url=final_url,
-                filename=f"{title}.mp4",
-                collection_name=collection_name,
-                headers={"Referer": url},
+            raise_extraction_error(
+                f"Could not extract video metadata: {url}",
+                source="thothubto",
+                url=url,
+                category="protocol",
             )
-        except (requests.RequestException, ValueError, AttributeError):
-            logger.debug("Video extraction failed", exc_info=True)
-            return None
+
+        obfuscated = video_url.group(1).replace("function/0/", "")
+        key = self._generate_key(license_code.group(1))
+        parts = obfuscated.split("/")
+        parts[5] = self._deobfuscate_hash(parts[5], key)
+
+        final_url = "/".join(parts) + f"?rnd={int(time.time() * 1000)}"
+
+        soup = BeautifulSoup(content, "html.parser")
+        h1 = soup.find("h1")
+        title = h1.text.strip() if h1 else f"video_{video_id.group(1)}"
+
+        return DownloadItem(
+            download_url=final_url,
+            filename=f"{title}.mp4",
+            collection_name=collection_name,
+            headers={"Referer": url},
+        )
 
     def _extract_album(self) -> Generator[DownloadItem, None, None]:
-        """Extract images from album."""
-        response = self.session.get(self.url)
-        response.raise_for_status()
-
+        response = self._get(self.url)
         soup = BeautifulSoup(response.text, "html.parser")
+
         h1 = soup.find("h1")
         collection_name = h1.text.strip() if h1 else "album"
 
@@ -94,16 +88,27 @@ class ThothubTO(BasePlugin):
                 )
 
     def _extract_model(self) -> Generator[DownloadItem, None, None]:
-        """Extract all videos from model page."""
-        model_name = urlparse(self.url).path.split("/")[2]
+        parsed = urlparse(self.url)
+        base_url = f"{parsed.scheme}://{parsed.netloc}"
+        model_name = parsed.path.split("/")[2]
         page = 1
-        seen = set()
+        seen: set[str] = set()
 
         while True:
-            url = f"https://thothub.to/models/{model_name}/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from={page}"
+            pagination_url = (
+                f"{base_url}/models/{model_name}/"
+                f"?mode=async&function=get_block&block_id=list_videos_common_videos_list"
+                f"&sort_by=post_date&from={page}"
+            )
 
-            response = self.session.get(url)
-            if response.status_code == 404 or not response.text.strip():
+            try:
+                response = self._get(pagination_url)
+            except ExtractionError as e:
+                if e.http_status == 404:
+                    break
+                raise
+
+            if not response.text.strip():
                 break
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -117,18 +122,17 @@ class ThothubTO(BasePlugin):
                 break
 
             for link in links:
-                full_url = urljoin("https://thothub.to/", link)
+                full_url = urljoin(base_url, link)
                 if full_url in seen:
                     continue
 
                 seen.add(full_url)
-                if item := self._extract_video(full_url, model_name):
-                    yield item
+                yield self._extract_video(full_url, model_name)
 
             page += 1
 
     def _generate_key(self, code: str) -> str:
-        """Generate deobfuscation key."""
+        """Deobfuscation key derivation from license_code (site-specific algorithm)."""
         f_str = "".join(
             str(int(c)) if c.isdigit() and int(c) != 0 else "1" for c in code[1:]
         )
@@ -152,7 +156,7 @@ class ThothubTO(BasePlugin):
         return key
 
     def _deobfuscate_hash(self, h: str, key: str) -> str:
-        """Deobfuscate video hash."""
+        """Hash deobfuscation to reconstruct the CDN path segment."""
         hl = list(h)
         prefix = hl[:32]
         suffix = hl[32:]

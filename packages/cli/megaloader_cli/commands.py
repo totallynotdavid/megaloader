@@ -8,7 +8,7 @@ from typing import Any
 import megaloader as mgl
 
 from megaloader.exceptions import MegaloaderError
-from megaloader.plugins import get_plugin_class
+from megaloader.plugins import get_plugin_for_domain
 from rich.progress import (
     BarColumn,
     DownloadColumn,
@@ -193,7 +193,7 @@ def _get_plugin_name(url: str) -> str | None:
     from urllib.parse import urlparse
 
     domain = urlparse(url).netloc
-    plugin_class = get_plugin_class(domain)
+    plugin_class = get_plugin_for_domain(domain)
     return plugin_class.__name__ if plugin_class else None
 
 

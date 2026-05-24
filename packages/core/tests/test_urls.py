@@ -7,18 +7,18 @@ BUNKR_URLS = {
 CYBERDROP_URLS = {
     "images": "https://cyberdrop.cr/a/w4iUzGgx",
     "videos": "https://cyberdrop.cr/a/9ZwBUxsC",
-    "single_file": "https://cyberdrop.cr/f/7rw3VENyC62mB",  # first item from first album (images)
+    "single_file": "https://cyberdrop.cr/f/ntY9Vvkh73rUB",  # first item from first album (images)
 }
 
 GOFILE_URLS = {
-    "images": "https://gofile.io/d/wUbPe1",
-    "videos": "https://gofile.io/d/8ZQdNo",
+    "images": "https://gofile.io/d/fhGIJu",
+    "videos": "https://gofile.io/d/sFMknK",
 }
 
 PIXELDRAIN_URLS = {
-    "images": "https://pixeldrain.com/l/DDGtvvTU",
-    "videos": "https://pixeldrain.com/l/zqoz6uFE",
-    "single_file": "https://pixeldrain.com/u/WnQte6cf",  # first item from the images album
+    "images": "https://pixeldrain.com/l/GSLKgrYj",
+    "videos": "https://pixeldrain.com/l/skg46Hqr",
+    "single_file": "https://pixeldrain.com/u/Hu11GYvH",  # first item from the images album
 }
 
 FAPELLO_URLS = {
@@ -47,7 +47,7 @@ THOTHUB_TO_URLS = {
 THOTHUB_VIP_URLS = {
     "model": "https://thothub.vip/models/inkyung/",
     "album": "https://thothub.vip/album/14055/the-sexy-asian-office-manager/",
-    "single_video": "https://thothub.vip/video/147988/sophie-rain-striptease-non-nude-e0f0e5e/",
+    "single_video": "https://thothub.vip/video/101851/sky-bri-couch-sextape-naked-and-humping-interview-video-fc516a2/",
 }
 
 THOTSLIFE_URLS = {

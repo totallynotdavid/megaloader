@@ -4,16 +4,27 @@ import urllib.parse
 from collections.abc import Generator
 from typing import Any
 
+import requests
+
+from megaloader.error_policy import build_extraction_error
 from megaloader.exceptions import ExtractionError, UnsupportedDomainError
 from megaloader.item import DownloadItem
-from megaloader.plugins.registry import get_plugin_class
+from megaloader.plugin import BasePlugin
+from megaloader.plugins.registry import get_plugin_by_name, get_plugin_for_domain
 
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 logger = logging.getLogger(__name__)
 
 
-def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
+def extract(
+    url: str,
+    *,
+    plugin: str | type[BasePlugin] | None = None,
+    session: requests.Session | None = None,
+    timeout: float | tuple[float, float] | None = None,
+    **options: Any,
+) -> Generator[DownloadItem, None, None]:
     """
     Extract downloadable items from a URL.
 
@@ -21,20 +32,19 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
     Network requests happen during iteration, not at call time.
 
     Args:
-        url: The source URL to extract from
-        **options: Plugin-specific options:
-            - password: str (Gofile)
-            - session_id: str (Fanbox, Pixiv)
-            - api_key: str (Rule34)
-            - user_id: str (Rule34)
+        url: The source URL to extract from.
+        plugin: Optional plugin override (name or plugin class).
+        session: Optional caller-provided requests.Session.
+        timeout: Optional per-extraction timeout override.
+        **options: Plugin-specific options.
 
     Yields:
         DownloadItem: Metadata for each downloadable file
 
     Raises:
-        ValueError: Invalid URL format
-        UnsupportedDomainError: No plugin available for domain
-        ExtractionError: Network or parsing failure
+        ValueError: Invalid URL or plugin override.
+        UnsupportedDomainError: No plugin available for domain.
+        ExtractionError: Network/API/parsing extraction failures.
 
     Example:
         >>> for item in extract("https://pixeldrain.com/l/abc123"):
@@ -51,7 +61,20 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
         msg = f"Invalid URL: Could not parse domain from '{url}'"
         raise ValueError(msg)
 
-    plugin_class = get_plugin_class(parsed.netloc)
+    plugin_class: type[BasePlugin] | None
+    if isinstance(plugin, str):
+        plugin_class = get_plugin_by_name(plugin)
+        if plugin_class is None:
+            msg = f"Unknown plugin name: {plugin}"
+            raise ValueError(msg)
+    elif isinstance(plugin, type):
+        if not issubclass(plugin, BasePlugin):
+            msg = "plugin class must inherit from BasePlugin"
+            raise TypeError(msg)
+        plugin_class = plugin
+    else:
+        plugin_class = get_plugin_for_domain(parsed.netloc)
+
     if plugin_class is None:
         raise UnsupportedDomainError(parsed.netloc)
 
@@ -60,11 +83,23 @@ def extract(url: str, **options: Any) -> Generator[DownloadItem, None, None]:
     )
 
     try:
-        plugin = plugin_class(url, **options)
-        yield from plugin.extract()
-    except (UnsupportedDomainError, ValueError):
+        extractor = plugin_class(url, session=session, timeout=timeout, **options)
+        yield from extractor.extract()
+    except (ExtractionError, UnsupportedDomainError, ValueError):
         raise
     except Exception as e:
-        logger.debug("Extraction failed for %r: %r", url, e, exc_info=True)
-        msg = f"Failed to extract from {url}: {e}"
-        raise ExtractionError(msg) from e
+        logger.debug(
+            "Unexpected error from %s for %r: %r",
+            plugin_class.__name__,
+            url,
+            e,
+            exc_info=True,
+        )
+        detail = f"Unexpected error from {plugin_class.__name__}: {e}"
+        raise build_extraction_error(
+            detail,
+            source=plugin_class.__name__.lower(),
+            url=url,
+            category="unknown",
+            cause=e,
+        ) from e

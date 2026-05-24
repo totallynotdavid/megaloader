@@ -477,13 +477,13 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.14.2" },
-    { name = "lxml", specifier = ">=6.0.2" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.18.2" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4.2" },
-    { name = "requests", specifier = ">=2.32.5" },
+    { name = "lxml", specifier = ">=6.1.1" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.1.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.3" },
+    { name = "requests", specifier = ">=2.34.2" },
     { name = "requests-mock", marker = "extra == 'dev'", specifier = ">=1.12.1" },
     { name = "types-beautifulsoup4", marker = "extra == 'dev'", specifier = ">=4.12.0.20250516" },
-    { name = "types-requests", marker = "extra == 'dev'", specifier = ">=2.32.0" },
+    { name = "types-requests", marker = "extra == 'dev'", specifier = ">=2.33.0.20260518" },
 ]
 provides-extras = ["dev"]
 
@@ -502,7 +502,7 @@ dependencies = [
 requires-dist = [
     { name = "click", specifier = ">=8.1.0" },
     { name = "megaloader", editable = "packages/core" },
-    { name = "requests", specifier = ">=2.32.0" },
+    { name = "requests", specifier = ">=2.34.2" },
     { name = "rich", specifier = ">=13.7.0" },
 ]
 
