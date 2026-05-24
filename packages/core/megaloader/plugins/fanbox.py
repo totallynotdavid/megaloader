@@ -155,11 +155,12 @@ class Fanbox(BasePlugin):
             return
 
         seen_urls.add(url)
-
-        full_filename = str(Path(subfolder) / filename) if subfolder else filename
+        collection_name = self.creator_id
+        if subfolder:
+            collection_name = f"{self.creator_id}_{subfolder}"
 
         yield DownloadItem(
             download_url=url,
-            filename=full_filename,
-            collection_name=self.creator_id,
+            filename=filename,
+            collection_name=collection_name,
         )
