@@ -30,3 +30,9 @@ class DownloadItem:
         if not self.filename:
             msg = "filename cannot be empty"
             raise ValueError(msg)
+        if "/" in self.filename or "\\" in self.filename:
+            msg = "filename must be a leaf name, not a path"
+            raise ValueError(msg)
+        if ".." in self.filename:
+            msg = "filename cannot contain path traversal"
+            raise ValueError(msg)
