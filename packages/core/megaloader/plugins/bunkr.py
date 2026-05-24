@@ -140,7 +140,7 @@ class Bunkr(BasePlugin):
             base_url = decrypted.decode("utf-8")
             return f"{base_url}?n={quote(filename)}"
 
-        except Exception:  # noqa: BLE001
+        except Exception:
             logger.debug(
                 "Failed to fetch direct URL for file ID %s", file_id, exc_info=True
             )
