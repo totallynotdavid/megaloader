@@ -15,7 +15,7 @@ maintainers = [
 
 dependencies = [
     "beautifulsoup4>=4.14.2",
-    "lxml>=6.0.2",
+    "lxml>=6.1.1",
     "requests>=2.34.2",
 ]
 
