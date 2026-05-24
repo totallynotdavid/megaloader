@@ -22,8 +22,8 @@ class Fanbox(BasePlugin):
     API_BASE = "https://api.fanbox.cc"
 
     def __init__(self, url: str, **options: Any) -> None:
-        self.creator_id = self._parse_creator_id(url)
         super().__init__(url, **options)
+        self.creator_id = self._parse_creator_id(self.url)
 
     def _parse_creator_id(self, url: str) -> str:
         match = re.search(
@@ -42,7 +42,6 @@ class Fanbox(BasePlugin):
             }
         )
 
-        # Credentials: kwargs > env var
         session_id = self.options.get("session_id") or os.getenv("FANBOX_SESSION_ID")
         if session_id:
             session.cookies.set("FANBOXSESSID", session_id, domain=".fanbox.cc")
@@ -52,54 +51,34 @@ class Fanbox(BasePlugin):
         logger.debug("Starting Fanbox extraction for creator: %s", self.creator_id)
 
         seen_urls: set[str] = set()
-
-        # Profile assets
         yield from self._extract_profile(seen_urls)
-
-        # All posts
         yield from self._extract_posts(seen_urls)
 
     def _api_request(self, endpoint: str) -> Any:
-        """Make API request and return body or None on error."""
         url = endpoint if endpoint.startswith("http") else self.API_BASE + endpoint
-
-        try:
-            response = self.session.get(url, timeout=30)
-
-            if response.status_code == 403:
-                logger.warning("Access forbidden (auth required?): %s", url)
-                return None
-
-            response.raise_for_status()
-            return response.json().get("body")
-        except (requests.RequestException, ValueError):
-            logger.debug("API request failed: %s", url, exc_info=True)
-            return None
+        response = self._get(url)
+        return response.json().get("body")
 
     def _extract_profile(
         self, seen_urls: set[str]
     ) -> Generator[DownloadItem, None, None]:
-        """Extract profile images (avatar, banner)."""
         data = self._api_request(f"/creator.get?creatorId={self.creator_id}")
         if not data:
             return
 
-        # Avatar
         if icon_url := data.get("user", {}).get("iconUrl"):
-            yield from self._create_item(
-                icon_url, f"avatar{Path(icon_url).suffix}", seen_urls, "profile"
-            )
+            if icon_url not in seen_urls:
+                seen_urls.add(icon_url)
+                yield self._make_item(icon_url, f"avatar{Path(icon_url).suffix}", "profile")
 
-        # Banner
         if cover_url := data.get("coverImageUrl"):
-            yield from self._create_item(
-                cover_url, f"banner{Path(cover_url).suffix}", seen_urls, "profile"
-            )
+            if cover_url not in seen_urls:
+                seen_urls.add(cover_url)
+                yield self._make_item(cover_url, f"banner{Path(cover_url).suffix}", "profile")
 
     def _extract_posts(
         self, seen_urls: set[str]
     ) -> Generator[DownloadItem, None, None]:
-        """Extract all posts from creator."""
         page_urls = self._api_request(
             f"/post.paginateCreator?creatorId={self.creator_id}"
         )
@@ -114,7 +93,6 @@ class Fanbox(BasePlugin):
     def _extract_post(
         self, post_id: str, seen_urls: set[str]
     ) -> Generator[DownloadItem, None, None]:
-        """Extract files from a single post."""
         info = self._api_request(f"/post.info?postId={post_id}")
         if not info:
             return
@@ -123,43 +101,30 @@ class Fanbox(BasePlugin):
         subfolder = f"{post_id}_{title}"
         body = info.get("body", {})
 
-        # Cover image (for posts without body)
         if not body:
             if cover_url := info.get("coverImageUrl"):
-                yield from self._create_item(
-                    cover_url, f"cover{Path(cover_url).suffix}", seen_urls, subfolder
-                )
+                if cover_url not in seen_urls:
+                    seen_urls.add(cover_url)
+                    yield self._make_item(cover_url, f"cover{Path(cover_url).suffix}", subfolder)
             return
 
-        # Images
         for img in body.get("imageMap", {}).values():
             if url := img.get("originalUrl"):
-                filename = Path(unquote(urlparse(url).path)).name or "image.jpg"
-                yield from self._create_item(url, filename, seen_urls, subfolder)
+                if url not in seen_urls:
+                    seen_urls.add(url)
+                    filename = Path(unquote(urlparse(url).path)).name or "image.jpg"
+                    yield self._make_item(url, filename, subfolder)
 
-        # File attachments
         for f in body.get("fileMap", {}).values():
             if url := f.get("url"):
-                filename = f"{f.get('name')}.{f.get('extension')}"
-                yield from self._create_item(url, filename, seen_urls, subfolder)
+                if url not in seen_urls:
+                    seen_urls.add(url)
+                    filename = f"{f.get('name')}.{f.get('extension')}"
+                    yield self._make_item(url, filename, subfolder)
 
-    def _create_item(
-        self,
-        url: str,
-        filename: str,
-        seen_urls: set[str],
-        subfolder: str = "",
-    ) -> Generator[DownloadItem, None, None]:
-        """Create item if not already seen."""
-        if url in seen_urls:
-            return
-
-        seen_urls.add(url)
-        collection_name = self.creator_id
-        if subfolder:
-            collection_name = f"{self.creator_id}_{subfolder}"
-
-        yield DownloadItem(
+    def _make_item(self, url: str, filename: str, subfolder: str = "") -> DownloadItem:
+        collection_name = f"{self.creator_id}_{subfolder}" if subfolder else self.creator_id
+        return DownloadItem(
             download_url=url,
             filename=filename,
             collection_name=collection_name,

@@ -17,12 +17,9 @@ class Thotslife(BasePlugin):
     """Extract media from Thotslife posts."""
 
     def extract(self) -> Generator[DownloadItem, None, None]:
-        response = self.session.get(self.url, timeout=30)
-        response.raise_for_status()
-
+        response = self._get(self.url)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Get post title
         title_tag = soup.find("h1", class_="entry-title")
         collection_name = title_tag.text.strip() if title_tag else "thotslife_post"
 
@@ -30,9 +27,8 @@ class Thotslife(BasePlugin):
         if not isinstance(body, Tag):
             return
 
-        seen = set()
+        seen: set[str] = set()
 
-        # Extract videos
         for source in body.select("video > source[src]"):
             if src := source.get("src"):
                 src_str = str(src)
@@ -49,7 +45,6 @@ class Thotslife(BasePlugin):
                         collection_name=collection_name,
                     )
 
-        # Extract images
         for img in body.select("img[data-src]"):
             if src := img.get("data-src"):
                 src_str = str(src)

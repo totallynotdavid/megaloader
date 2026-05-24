@@ -1,15 +1,19 @@
 import hashlib
 import logging
+import os
 import re
 
 from collections.abc import Generator
 from typing import Any
 
+from megaloader.error_policy import raise_extraction_error, raise_for_api_status
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
 
 logger = logging.getLogger(__name__)
+
+_token_cache: dict[str, str] = {}
 
 
 class Gofile(BasePlugin):
@@ -23,7 +27,6 @@ class Gofile(BasePlugin):
         self.password_hash = self._hash_password(self.options.get("password"))
 
     def _parse_content_id(self, url: str) -> str:
-        """Extract content ID from URL."""
         match = re.search(r"gofile\.io/(?:d|f)/([\w-]+)", url)
         if not match:
             msg = f"Invalid Gofile URL: {url}"
@@ -31,36 +34,37 @@ class Gofile(BasePlugin):
         return match.group(1)
 
     def _hash_password(self, password: str | None) -> str | None:
-        """Hash password for API if provided."""
         if password:
             return hashlib.sha256(password.encode()).hexdigest()
         return None
 
     def extract(self) -> Generator[DownloadItem, None, None]:
-        # Get required tokens
         website_token = self._get_website_token()
-        api_token = self._create_account()
+        api_token = self._get_api_token()
 
-        # Build API request
         api_url = f"{self.API_BASE}/contents/{self.content_id}"
-        params = {"wt": website_token}
+        params: dict[str, str] = {"wt": website_token}
 
         if self.password_hash:
             params["password"] = self.password_hash
             logger.debug("Using password protection")
 
-        headers = {"Authorization": f"Bearer {api_token}"}
-
-        # Fetch content
-        response = self.session.get(api_url, params=params, headers=headers, timeout=30)
-        response.raise_for_status()
+        response = self._get(
+            api_url,
+            params=params,
+            headers={
+                "Authorization": f"Bearer {api_token}",
+                "X-Website-Token": website_token,
+            },
+        )
 
         data = response.json()
-
-        if data.get("status") != "ok":
-            error_msg = data.get("data", {}).get("message", "Unknown error")
-            msg = f"Gofile API error: {error_msg}"
-            raise RuntimeError(msg)
+        raise_for_api_status(
+            "gofile",
+            api_url,
+            data.get("status", "unknown"),
+            message=data.get("data", {}).get("message"),
+        )
 
         content = data.get("data", {})
         collection_name = content.get("name", self.content_id)
@@ -81,25 +85,41 @@ class Gofile(BasePlugin):
                 )
 
     def _get_website_token(self) -> str:
-        """Extract website token from JS file."""
-        response = self.session.get("https://gofile.io/dist/js/global.js", timeout=30)
-        response.raise_for_status()
+        config_url = "https://gofile.io/dist/js/config.js"
+        response = self._get(config_url)
 
-        if match := re.search(r'\.wt\s*=\s*"([^"]+)"', response.text):
+        if match := re.search(r'appdata\.wt\s*=\s*"([^"]+)"', response.text):
             return match.group(1)
 
-        msg = "Could not extract Gofile website token"
-        raise RuntimeError(msg)
+        raise_extraction_error(
+            "Could not extract Gofile website token",
+            source="gofile",
+            url=config_url,
+            category="protocol",
+        )
 
-    def _create_account(self) -> str:
-        """Create temporary account and return API token."""
-        response = self.session.post(f"{self.API_BASE}/accounts", timeout=30)
-        response.raise_for_status()
+    def _get_api_token(self) -> str:
+        """Return caller-provided token, cached guest token, or create a new guest account."""
+        token = self.options.get("token") or os.getenv("GOFILE_TOKEN")
+        if token:
+            return str(token)
 
+        if cached := _token_cache.get("gofile"):
+            return cached
+
+        accounts_url = f"{self.API_BASE}/accounts"
+        response = self._post(accounts_url)
         data = response.json()
 
-        if data.get("status") == "ok":
-            return data["data"]["token"]  # type: ignore [no-any-return]
+        status = data.get("status", "unknown")
+        if status != "ok":
+            raise_extraction_error(
+                f"Failed to create Gofile guest account: {status}",
+                source="gofile",
+                url=accounts_url,
+                provider_status=status,
+            )
 
-        msg = "Failed to create Gofile guest account"
-        raise RuntimeError(msg)
+        api_token = str(data["data"]["token"])
+        _token_cache["gofile"] = api_token
+        return api_token

@@ -7,8 +7,6 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
-import requests
-
 from bs4 import BeautifulSoup
 
 from megaloader.item import DownloadItem
@@ -31,7 +29,6 @@ class Rule34(BasePlugin):
             msg = "URL must contain 'id' or 'tags' parameter"
             raise ValueError(msg)
 
-        # Credentials: kwargs > env vars
         self.api_key = self.options.get("api_key") or os.getenv("RULE34_API_KEY")
         self.user_id = self.options.get("user_id") or os.getenv("RULE34_USER_ID")
 
@@ -48,13 +45,12 @@ class Rule34(BasePlugin):
             yield from self._extract_via_scraper()
 
     def _extract_single_post(self) -> Generator[DownloadItem, None, None]:
-        """Extract a single post by ID."""
         url = f"https://rule34.xxx/index.php?page=post&s=view&id={self.post_id}"
+        response = self._get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-        if response := self._safe_get(url):
-            soup = BeautifulSoup(response.text, "html.parser")
-            if media_url := self._extract_media_url(soup):
-                yield self._create_item(media_url, f"post_{self.post_id}", self.post_id)
+        if media_url := self._extract_media_url(soup):
+            yield self._create_item(media_url, f"post_{self.post_id}", self.post_id)
 
     def _extract_via_api(self) -> Generator[DownloadItem, None, None]:
         """Extract using official API (faster, more reliable)."""
@@ -73,9 +69,7 @@ class Rule34(BasePlugin):
                 "user_id": self.user_id,
             }
 
-            response = self._safe_get("https://api.rule34.xxx/index.php", params)
-            if not response:
-                break
+            response = self._get("https://api.rule34.xxx/index.php", params=params)
 
             try:
                 root = ET.fromstring(response.content)
@@ -96,7 +90,7 @@ class Rule34(BasePlugin):
         """Extract by scraping web pages (fallback method)."""
         collection_name = "_".join(sorted(self.tags))
         pid = 0
-        seen_urls = set()
+        seen_urls: set[str] = set()
 
         while True:
             params = {
@@ -106,10 +100,7 @@ class Rule34(BasePlugin):
                 "pid": pid,
             }
 
-            response = self._safe_get("https://rule34.xxx/index.php", params)
-            if not response:
-                break
-
+            response = self._get("https://rule34.xxx/index.php", params=params)
             soup = BeautifulSoup(response.text, "html.parser")
             links = soup.select("div.image-list span.thumb > a")
 
@@ -121,40 +112,24 @@ class Rule34(BasePlugin):
                 if not href or href in seen_urls:
                     continue
 
-                seen_urls.add(href)
+                seen_urls.add(str(href))
                 full_url = urljoin("https://rule34.xxx/", str(href))
+                post_response = self._get(full_url)
+                post_soup = BeautifulSoup(post_response.text, "html.parser")
 
-                if post_response := self._safe_get(full_url):
-                    soup = BeautifulSoup(post_response.text, "html.parser")
-                    if media_url := self._extract_media_url(soup):
-                        yield self._create_item(media_url, collection_name)
+                if media_url := self._extract_media_url(post_soup):
+                    yield self._create_item(media_url, collection_name)
 
             pid += 42  # Rule34 pagination increment
 
-    def _safe_get(
-        self, url: str, params: dict[str, Any] | None = None
-    ) -> requests.Response | None:
-        """Make GET request with error handling."""
-        try:
-            response = self.session.get(url, params=params, timeout=30)
-            response.raise_for_status()
-            return response
-        except requests.RequestException:
-            logger.debug("Request failed: %s", url, exc_info=True)
-            return None
-
     def _extract_media_url(self, soup: BeautifulSoup) -> str | None:
-        """Extract media URL from post page."""
-        # Original image link
         for link in soup.find_all("a"):
             if "Original image" in str(link.string) and (href := link.get("href")):
                 return str(href)
 
-        # Video source
         if (video := soup.select_one("video > source")) and (src := video.get("src")):
             return str(src)
 
-        # Image fallback
         if (img := soup.select_one("img#image")) and (src := img.get("src")):
             return str(src)
 
@@ -163,7 +138,6 @@ class Rule34(BasePlugin):
     def _create_item(
         self, url: str, collection_name: str, post_id: str | None = None
     ) -> DownloadItem:
-        """Create DownloadItem from URL."""
         url = f"https:{url}" if url.startswith("//") else url
 
         return DownloadItem(
