@@ -4,6 +4,8 @@ import sys
 
 from typing import Literal
 
+from api.formatters import EscapingFormatter
+
 
 # Size limits
 MAX_SIZE_MB = float(os.getenv("API_MAX_SIZE_MB", "4.0"))
@@ -74,14 +76,14 @@ def configure_logging() -> None:
                     if hasattr(record, key):
                         log_data[key] = getattr(record, key)
 
+                # json.dumps encodes newlines as \n, so injection is not possible here.
                 return json.dumps(log_data)
 
         handler.setFormatter(JSONFormatter())
     else:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        handler.setFormatter(
+            EscapingFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
-        handler.setFormatter(formatter)
 
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
