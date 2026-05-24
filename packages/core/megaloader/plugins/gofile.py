@@ -6,7 +6,11 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from megaloader.error_policy import raise_extraction_error, raise_for_api_status
+from megaloader.error_policy import (
+    build_extraction_error,
+    raise_extraction_error,
+    raise_for_api_status,
+)
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -91,11 +95,9 @@ class Gofile(BasePlugin):
         if match := re.search(r'appdata\.wt\s*=\s*"([^"]+)"', response.text):
             return match.group(1)
 
-        raise_extraction_error(
-            "Could not extract Gofile website token",
-            source="gofile",
-            url=config_url,
-            category="protocol",
+        detail = "Could not extract Gofile website token"
+        raise build_extraction_error(
+            detail, source="gofile", url=config_url, category="protocol"
         )
 
     def _get_api_token(self) -> str:

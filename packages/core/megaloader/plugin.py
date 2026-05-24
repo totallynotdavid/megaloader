@@ -108,36 +108,24 @@ class BasePlugin(ABC):
             return response
         except requests.HTTPError as e:
             status = e.response.status_code if e.response is not None else None
+            detail = f"{source} request failed ({status}): {url}"
             raise build_extraction_error(
-                f"{source} request failed ({status}): {url}",
-                source=source,
-                url=url,
-                http_status=status,
-                cause=e,
+                detail, source=source, url=url, http_status=status, cause=e
             ) from e
         except requests.Timeout as e:
+            detail = f"{source} request timed out: {url}"
             raise build_extraction_error(
-                f"{source} request timed out: {url}",
-                source=source,
-                url=url,
-                category="timeout",
-                cause=e,
+                detail, source=source, url=url, category="timeout", cause=e
             ) from e
         except requests.ConnectionError as e:
+            detail = f"{source} connection failed: {url}"
             raise build_extraction_error(
-                f"{source} connection failed: {url}",
-                source=source,
-                url=url,
-                category="network",
-                cause=e,
+                detail, source=source, url=url, category="network", cause=e
             ) from e
         except requests.RequestException as e:
+            detail = f"{source} request failed: {url}"
             raise build_extraction_error(
-                f"{source} request failed: {url}",
-                source=source,
-                url=url,
-                category="network",
-                cause=e,
+                detail, source=source, url=url, category="network", cause=e
             ) from e
 
     def _get(self, url: str, **kwargs: Any) -> requests.Response:

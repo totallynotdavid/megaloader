@@ -88,9 +88,16 @@ def extract(
     except (ExtractionError, UnsupportedDomainError, ValueError):
         raise
     except Exception as e:
-        logger.debug("Unexpected error from %s for %r: %r", plugin_class.__name__, url, e, exc_info=True)
+        logger.debug(
+            "Unexpected error from %s for %r: %r",
+            plugin_class.__name__,
+            url,
+            e,
+            exc_info=True,
+        )
+        detail = f"Unexpected error from {plugin_class.__name__}: {e}"
         raise build_extraction_error(
-            f"Unexpected error from {plugin_class.__name__}: {e}",
+            detail,
             source=plugin_class.__name__.lower(),
             url=url,
             category="unknown",

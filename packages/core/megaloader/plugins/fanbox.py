@@ -66,15 +66,17 @@ class Fanbox(BasePlugin):
         if not data:
             return
 
-        if icon_url := data.get("user", {}).get("iconUrl"):
-            if icon_url not in seen_urls:
-                seen_urls.add(icon_url)
-                yield self._make_item(icon_url, f"avatar{Path(icon_url).suffix}", "profile")
+        if (
+            icon_url := data.get("user", {}).get("iconUrl")
+        ) and icon_url not in seen_urls:
+            seen_urls.add(icon_url)
+            yield self._make_item(icon_url, f"avatar{Path(icon_url).suffix}", "profile")
 
-        if cover_url := data.get("coverImageUrl"):
-            if cover_url not in seen_urls:
-                seen_urls.add(cover_url)
-                yield self._make_item(cover_url, f"banner{Path(cover_url).suffix}", "profile")
+        if (cover_url := data.get("coverImageUrl")) and cover_url not in seen_urls:
+            seen_urls.add(cover_url)
+            yield self._make_item(
+                cover_url, f"banner{Path(cover_url).suffix}", "profile"
+            )
 
     def _extract_posts(
         self, seen_urls: set[str]
@@ -102,28 +104,29 @@ class Fanbox(BasePlugin):
         body = info.get("body", {})
 
         if not body:
-            if cover_url := info.get("coverImageUrl"):
-                if cover_url not in seen_urls:
-                    seen_urls.add(cover_url)
-                    yield self._make_item(cover_url, f"cover{Path(cover_url).suffix}", subfolder)
+            if (cover_url := info.get("coverImageUrl")) and cover_url not in seen_urls:
+                seen_urls.add(cover_url)
+                yield self._make_item(
+                    cover_url, f"cover{Path(cover_url).suffix}", subfolder
+                )
             return
 
         for img in body.get("imageMap", {}).values():
-            if url := img.get("originalUrl"):
-                if url not in seen_urls:
-                    seen_urls.add(url)
-                    filename = Path(unquote(urlparse(url).path)).name or "image.jpg"
-                    yield self._make_item(url, filename, subfolder)
+            if (url := img.get("originalUrl")) and url not in seen_urls:
+                seen_urls.add(url)
+                filename = Path(unquote(urlparse(url).path)).name or "image.jpg"
+                yield self._make_item(url, filename, subfolder)
 
         for f in body.get("fileMap", {}).values():
-            if url := f.get("url"):
-                if url not in seen_urls:
-                    seen_urls.add(url)
-                    filename = f"{f.get('name')}.{f.get('extension')}"
-                    yield self._make_item(url, filename, subfolder)
+            if (url := f.get("url")) and url not in seen_urls:
+                seen_urls.add(url)
+                filename = f"{f.get('name')}.{f.get('extension')}"
+                yield self._make_item(url, filename, subfolder)
 
     def _make_item(self, url: str, filename: str, subfolder: str = "") -> DownloadItem:
-        collection_name = f"{self.creator_id}_{subfolder}" if subfolder else self.creator_id
+        collection_name = (
+            f"{self.creator_id}_{subfolder}" if subfolder else self.creator_id
+        )
         return DownloadItem(
             download_url=url,
             filename=filename,
