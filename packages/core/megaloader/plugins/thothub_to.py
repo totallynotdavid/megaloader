@@ -43,6 +43,7 @@ class ThothubTO(BasePlugin):
 
         if not (video_id and video_url and license_code):
             from megaloader.error_policy import raise_extraction_error
+
             raise_extraction_error(
                 f"Could not extract video metadata: {url}",
                 source="thothubto",

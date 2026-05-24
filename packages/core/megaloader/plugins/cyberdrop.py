@@ -67,7 +67,11 @@ class Cyberdrop(BasePlugin):
         response = self._get(api_url)
         data = response.json()
 
-        if not isinstance(data, dict) or not data.get("name") or not data.get("auth_url"):
+        if (
+            not isinstance(data, dict)
+            or not data.get("name")
+            or not data.get("auth_url")
+        ):
             raise_extraction_error(
                 f"Unexpected API response for file {file_id}",
                 source="cyberdrop",

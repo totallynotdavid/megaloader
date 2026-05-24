@@ -73,13 +73,17 @@ class TestBasePluginRequest:
     def _plugin(self) -> DummyPlugin:
         return DummyPlugin("https://example.com/file.txt")
 
-    def test_get_returns_response_on_success(self, requests_mock: req_mock.Mocker) -> None:
+    def test_get_returns_response_on_success(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
         requests_mock.get("https://example.com/data", text="ok")
         plugin = self._plugin()
         response = plugin._get("https://example.com/data")
         assert response.text == "ok"
 
-    def test_get_maps_http_error_to_extraction_error(self, requests_mock: req_mock.Mocker) -> None:
+    def test_get_maps_http_error_to_extraction_error(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
         requests_mock.get("https://example.com/data", status_code=404)
         plugin = self._plugin()
 
@@ -110,8 +114,12 @@ class TestBasePluginRequest:
 
         assert exc_info.value.category == "auth"
 
-    def test_get_maps_connection_error_to_extraction_error(self, requests_mock: req_mock.Mocker) -> None:
-        requests_mock.get("https://example.com/data", exc=requests.ConnectionError("refused"))
+    def test_get_maps_connection_error_to_extraction_error(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
+        requests_mock.get(
+            "https://example.com/data", exc=requests.ConnectionError("refused")
+        )
         plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
@@ -119,7 +127,9 @@ class TestBasePluginRequest:
 
         assert exc_info.value.category == "network"
 
-    def test_get_maps_timeout_to_extraction_error(self, requests_mock: req_mock.Mocker) -> None:
+    def test_get_maps_timeout_to_extraction_error(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
         requests_mock.get("https://example.com/data", exc=requests.Timeout("timed out"))
         plugin = self._plugin()
 
@@ -128,13 +138,17 @@ class TestBasePluginRequest:
 
         assert exc_info.value.category == "timeout"
 
-    def test_post_returns_response_on_success(self, requests_mock: req_mock.Mocker) -> None:
+    def test_post_returns_response_on_success(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
         requests_mock.post("https://example.com/api", json={"status": "ok"})
         plugin = self._plugin()
         response = plugin._post("https://example.com/api")
         assert response.json() == {"status": "ok"}
 
-    def test_post_maps_http_error_to_extraction_error(self, requests_mock: req_mock.Mocker) -> None:
+    def test_post_maps_http_error_to_extraction_error(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
         requests_mock.post("https://example.com/api", status_code=403)
         plugin = self._plugin()
 
@@ -144,7 +158,9 @@ class TestBasePluginRequest:
         assert exc_info.value.http_status == 403
         assert exc_info.value.category == "access"
 
-    def test_extraction_error_preserves_cause(self, requests_mock: req_mock.Mocker) -> None:
+    def test_extraction_error_preserves_cause(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
         requests_mock.get("https://example.com/data", status_code=500)
         plugin = self._plugin()
 
