@@ -4,8 +4,7 @@ const baseUrl = process.env.VITE_BASE || "/";
 
 export default defineConfig({
   title: "Megaloader",
-  description:
-    "Python library for extracting file metadata from 11+ hosting platforms",
+  description: "Python library for extracting file metadata from 11+ hosting platforms",
 
   base: baseUrl,
   lastUpdated: true,
@@ -37,13 +36,11 @@ export default defineConfig({
 
     footer: {
       message: "Released under the Apache-2.0 License.",
-      copyright:
-        'Copyright © 2024 - <a href="/team">The Megaloader Authors</a>',
+      copyright: `Copyright © 2024 - <a href="${baseUrl}team">The Megaloader Authors</a>`,
     },
 
     editLink: {
-      pattern:
-        "https://github.com/totallynotdavid/megaloader/edit/main/apps/docs/megaloader/:path",
+      pattern: "https://github.com/totallynotdavid/megaloader/edit/main/apps/docs/megaloader/:path",
       text: "Edit this page on GitHub",
     },
 
