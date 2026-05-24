@@ -33,6 +33,13 @@ for item in extract("https://pixeldrain.com/l/abc123"):
 Each item contains the download URL, filename, and optional metadata like
 collection name and file size. Network requests happen lazily during iteration.
 
+You can also force a plugin explicitly:
+
+```python
+for item in extract("https://example.invalid/path", plugin="gofile"):
+    print(item.filename)
+```
+
 ## Downloading files
 
 The library extracts metadata only. Use `requests` or similar to download:
@@ -58,6 +65,30 @@ for item in extract("https://pixeldrain.com/l/abc123"):
 The `headers` attribute contains any required HTTP headers for the download
 request.
 
+## API options
+
+`extract()` accepts optional transport and plugin controls:
+
+```python
+import requests
+from megaloader import extract
+from megaloader.plugins.gofile import Gofile
+
+session = requests.Session()
+
+# Force plugin by name
+items = extract("https://example.invalid/path", plugin="gofile")
+
+# Force plugin by class
+items = extract("https://example.invalid/path", plugin=Gofile)
+
+# Inject your own session and timeout
+items = extract("https://gofile.io/d/fhGIJu", session=session, timeout=20)
+```
+
+This keeps extraction in core while letting downstream apps decide transport
+policy.
+
 ## Supported platforms
 
 Four core platforms receive active development. Seven extended platforms are
@@ -78,25 +109,24 @@ Fanbox ({creator}.fanbox.cc), Pixiv (pixiv.net), Rule34 (rule34.xxx), ThotsLife
 All platforms support albums, galleries, or lists. Single-file URLs work where
 applicable.
 
-Extended platforms marked as working as of November 2025.
-
 ## Platform-specific features
 
-GoFile supports password-protected folders through the password parameter:
+GoFile supports password-protected folders:
 
 ```python
 items = extract("https://gofile.io/d/folder", password="secret123")
 ```
 
 Fanbox and Pixiv require session cookies for full results. Without
-authentication, only limited data is returned:
+authentication, only public content is returned (which is very limited):
 
 ```python
 items = extract("https://creator.fanbox.cc", session_id="your_session_cookie")
 items = extract("https://pixiv.net/artworks/12345", session_id="your_session_cookie")
 ```
 
-Rule34 accepts optional API credentials for higher rate limits:
+Rule34 accepts optional API credentials for higher rate limits and faster
+extraction. Without them, scraping is used as a fallback:
 
 ```python
 items = extract(
@@ -105,8 +135,6 @@ items = extract(
     user_id="your_user_id"
 )
 ```
-
-Authentication improves results but is not required.
 
 <!-- prettier-ignore -->
 > [!WARNING]  
@@ -119,7 +147,7 @@ The `DownloadItem` dataclass contains file metadata:
 ```python
 for item in extract(url):
     item.download_url     # Direct download URL (required)
-    item.filename         # Original filename (required)
+    item.filename         # Leaf filename only (required, no path separators)
     item.collection_name  # Album/gallery name (optional)
     item.source_id        # Platform-specific ID (optional)
     item.size_bytes       # File size in bytes (optional)
@@ -131,63 +159,86 @@ platform and content type.
 
 ## Direct plugin usage
 
-Import plugin classes directly when you need fine-grained control or want to
-force a specific plugin:
+Import plugin classes directly when you need plugin-specific control:
 
 ```python
-from megaloader.plugins import Cyberdrop
+from megaloader.plugins.cyberdrop import Cyberdrop
 
 plugin = Cyberdrop("https://cyberdrop.me/a/album_id")
 items = list(plugin.extract())
 print(f"Found {len(items)} files")
 ```
 
-This bypasses automatic detection. Useful when a platform introduces new domains
-before the package updates.
+This bypasses automatic detection and gives direct access to plugin internals.
 
 ## Error handling
 
-Handle extraction failures as needed:
+Then use commas and make the sentence structurally explicit instead of
+interruptive.
+
+Best version without em dashes:
+
+All extraction failures surface as typed exceptions. Malformed URLs raise
+`ValueError`. Unknown hosts raise `UnsupportedDomainError`. All other failures,
+including HTTP errors, network failures, and unexpected API responses, raise
+`ExtractionError` with structured metadata:
 
 ```python
-from megaloader import extract, ExtractionError, UnsupportedDomainError
+from megaloader import (
+    ExtractionError,
+    UnsupportedDomainError,
+    extract,
+)
 
 try:
     items = list(extract(url))
 except UnsupportedDomainError:
     print("Platform not supported")
 except ExtractionError as e:
-    print(f"Extraction failed: {e}")
+    print(f"Extraction failed: {e.detail}")
+    print(f"source={e.source} category={e.category} http={e.http_status}")
 except ValueError:
     print("Invalid URL format")
 ```
 
-Network failures raise `ExtractionError`. Unsupported URLs raise
-`UnsupportedDomainError`. Malformed URLs raise `ValueError`.
+`ExtractionError.category` is one of `"rate_limit"`, `"auth"`, `"access"`,
+`"network"`, `"timeout"`, `"protocol"`, or `"unknown"`. HTTP status codes are
+classified automatically: a 429 always surfaces as `"rate_limit"`, a 401 as
+`"auth"`, and so on, regardless of which plugin handled the request.
 
-## API reference
+## Writing a plugin
 
-The `extract()` function takes a URL and platform-specific options. Returns a
-generator of `DownloadItem` objects. Raises `ValueError` for invalid URLs,
-`UnsupportedDomainError` when no plugin exists, `ExtractionError` on network or
-parsing failures.
+Subclass `BasePlugin` and implement `extract()`:
 
-The `DownloadItem` dataclass has required fields `download_url` and `filename`.
-Optional fields are `collection_name`, `source_id`, `size_bytes`, and `headers`.
+```python
+from collections.abc import Generator
+from megaloader.plugin import BasePlugin
+from megaloader.item import DownloadItem
 
-The `BasePlugin` abstract class defines the plugin interface. Override
-`extract()` to yield items. Override `_configure_session()` to add custom
-headers or authentication. The `session` property provides a configured requests
-session. The `url` and `options` properties contain constructor arguments.
+class MyPlugin(BasePlugin):
+    def _configure_session(self, session):
+        session.headers["Referer"] = "https://example.com/"
 
-Exception hierarchy: `ExtractionError` for network and parsing failures,
-`UnsupportedDomainError` for unknown domains, both inherit from `Exception`.
+    def extract(self) -> Generator[DownloadItem, None, None]:
+        response = self._get(self.url)  # raises ExtractionError on failure
+        data = response.json()
+        for file in data["files"]:
+            yield DownloadItem(
+                download_url=file["url"],
+                filename=file["name"],
+            )
+```
+
+Use `self._get(url)` and `self._post(url, ...)` instead of the session directly.
+Both methods map HTTP and network failures to `ExtractionError` automatically,
+so `extract()` only needs to handle business logic. Override
+`_configure_session()` to add authentication headers or cookies.
 
 ## Contributing
 
-The project welcomes contributions. Install dependencies with `uv sync` from the
-repository root. Run `uv run ruff format .` and `uv run mypy packages/core`
-before committing. See the repository contributing guide for plugin development
+Install dependencies with `uv sync` from the repository root. Run
+`mise run check` before committing; it covers formatting, type checking, and
+unit tests. See the repository contributing guide for plugin development
 details.
 
 Report bugs and request features through GitHub Discussions. Include Python
