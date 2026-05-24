@@ -22,7 +22,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "mypy>=1.13.0",
+    "mypy>=2.1.0",
     "types-requests>=2.33.0.20260518",
 ]
 
