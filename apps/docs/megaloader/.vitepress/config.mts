@@ -4,16 +4,13 @@ const baseUrl = process.env.VITE_BASE || "/";
 
 export default defineConfig({
   title: "Megaloader",
-  description: "Python library for extracting file metadata from 11+ hosting platforms",
+  description:
+    "Python library for extracting file metadata from 11+ hosting platforms",
 
   base: baseUrl,
   lastUpdated: true,
   cleanUrls: true,
   metaChunk: true,
-
-  vite: {
-    publicDir: "../../assets",
-  },
 
   themeConfig: {
     logo: "/logo.svg",
@@ -40,7 +37,8 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: "https://github.com/totallynotdavid/megaloader/edit/main/apps/docs/megaloader/:path",
+      pattern:
+        "https://github.com/totallynotdavid/megaloader/edit/main/apps/docs/megaloader/:path",
       text: "Edit this page on GitHub",
     },
 

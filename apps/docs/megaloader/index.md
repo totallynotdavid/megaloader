@@ -25,9 +25,9 @@ hero:
     - theme: alt
       text: View on GitHub
       link: https://github.com/totallynotdavid/megaloader
-  # image:
-  #   src: /logo.svg
-  #   alt: The megaloader logo
+  image:
+    src: /logo.svg
+    alt: The megaloader logo
 
 features:
   - icon: ⚙️

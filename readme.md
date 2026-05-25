@@ -1,6 +1,6 @@
 # [monorepo]: megaloader
 
-<img src="assets/logo.svg" alt="Megaloader Logo" width="100">
+<img src="https://raw.githubusercontent.com/totallynotdavid/megaloader/main/apps/docs/megaloader/public/logo.svg" alt="Megaloader Logo" width="100">
 
 [![CodeQL](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml)
 [![lint and format check](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml)
@@ -83,8 +83,7 @@ megaloader/
 ├── packages/
 │   ├── core/       # megaloader, the core library
 │   └── cli/        # megaloader-cli, the command-line interface
-├── scripts/        # Development utilities
-└── assets/         # Static files
+└── scripts/        # Development utilities
 ```
 
 To set up a development environment, clone the repository and install all

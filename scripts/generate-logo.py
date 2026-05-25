@@ -175,8 +175,8 @@ def generate_logo():
 </svg>"""
 
     # Save the SVG
-    pathlib.Path("assets/logo.svg").write_text(svg_content)
-    print("Logo generated: assets/logo.svg")
+    pathlib.Path("apps/docs/megaloader/public/logo.svg").write_text(svg_content)
+    print("Logo generated: apps/docs/megaloader/public/logo.svg")
 
 
 if __name__ == "__main__":
