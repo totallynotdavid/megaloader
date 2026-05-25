@@ -22,7 +22,7 @@ from megaloader_cli.io import download_file
 from megaloader_cli.utils import console, sanitize_for_filesystem
 
 
-def extract_command(url: str, output_json: bool) -> None:
+def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> None:
     """
     Handle extract command logic.
 
@@ -37,7 +37,7 @@ def extract_command(url: str, output_json: bool) -> None:
         items = []
         if output_json:
             # Silent extraction for JSON mode
-            for item in mgl.extract(url):
+            for item in mgl.extract(url, **options):
                 items.append(item)
         else:
             # Show progress for human-readable mode
@@ -48,7 +48,7 @@ def extract_command(url: str, output_json: bool) -> None:
             ) as progress:
                 task = progress.add_task("", total=None)
 
-                for item in mgl.extract(url):
+                for item in mgl.extract(url, **options):
                     items.append(item)
                     progress.update(task, advance=1)
 

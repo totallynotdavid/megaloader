@@ -1,3 +1,5 @@
+from typing import Any
+
 import click
 
 from megaloader.plugins import PLUGIN_REGISTRY
@@ -28,14 +30,23 @@ def cli() -> None:
     help="Output JSON instead of human-readable text",
 )
 @click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
-def extract_cmd(url: str, output_json: bool, verbose: bool) -> None:
+@click.option("--password", help="Password for protected content (Gofile)")
+@click.option("--token", help="API token for authenticated access (Gofile)")
+def extract_cmd(
+    url: str, output_json: bool, verbose: bool, password: str | None, token: str | None
+) -> None:
     """
     Extract metadata from URL without downloading (dry run).
 
     Shows what would be downloaded including filenames, sizes, and URLs.
     """
     setup_logging(verbose)
-    extract_command(url, output_json)
+    options: dict[str, Any] = {}
+    if password:
+        options["password"] = password
+    if token:
+        options["token"] = token
+    extract_command(url, output_json, options)
 
 
 @cli.command(name="download")
@@ -56,6 +67,10 @@ def extract_cmd(url: str, output_json: bool, verbose: bool) -> None:
     "--password",
     help="Password for protected content (Gofile)",
 )
+@click.option(
+    "--token",
+    help="API token for authenticated access (Gofile)",
+)
 def download_cmd(
     url: str,
     output_dir: str,
@@ -63,6 +78,7 @@ def download_cmd(
     flat: bool,
     pattern: str | None,
     password: str | None,
+    token: str | None,
 ) -> None:
     """
     Download content from URL to OUTPUT_DIR.
@@ -71,11 +87,11 @@ def download_cmd(
     Use --flat to disable this behavior.
     """
     setup_logging(verbose)
-
-    options = {}
+    options: dict[str, Any] = {}
     if password:
         options["password"] = password
-
+    if token:
+        options["token"] = token
     download_command(url, output_dir, flat, pattern, options)
 
 
