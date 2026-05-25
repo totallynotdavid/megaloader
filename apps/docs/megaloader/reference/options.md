@@ -27,15 +27,17 @@ mgl.extract("https://creator.fanbox.cc", session_id="kwarg_value")  # Uses "kwar
 
 ### token (string, optional)
 
-Gofile API token for authenticated access, avoiding automatic guest account creation.
+Gofile API token for authenticated access, avoiding automatic guest account
+creation.
 
 **Environment variable:** `GOFILE_TOKEN`
 
 **How to obtain:**
 
 1. Sign up at gofile.io
-2. Go to your account settings → API Token
-3. Copy the token value
+2. Go to your profile (https://gofile.io/myprofile)
+3. Find the Developer information section
+4. Copy the account token value
 
 **Example:**
 
@@ -64,7 +66,8 @@ export GOFILE_TOKEN="your_api_token"
 megaloader download "https://gofile.io/d/abc123" ./output
 ```
 
-Providing a token is optional. Without it, Gofile creates a guest account automatically per session.
+Providing a token is optional. Without it, Gofile creates a guest account
+automatically per session.
 
 ### password (string, optional)
 
@@ -85,6 +88,7 @@ for item in mgl.extract("https://gofile.io/d/xyz789", password="secret"):
 **CLI:**
 
 ```bash
+megaloader extract "https://gofile.io/d/xyz789" --password secret
 megaloader download "https://gofile.io/d/xyz789" ./output --password secret
 ```
 
@@ -115,8 +119,11 @@ for item in mgl.extract(
     session_id="your_session_cookie"
 ):
     print(item.filename)
+```
 
+```python
 import os
+
 os.environ["FANBOX_SESSION_ID"] = "your_session_cookie"
 
 for item in mgl.extract("https://creator.fanbox.cc"):

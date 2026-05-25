@@ -41,9 +41,11 @@ def extract_cmd(
     Shows what would be downloaded including filenames, sizes, and URLs.
     """
     setup_logging(verbose)
-    options: dict[str, Any] = {
-        k: v for k, v in {"password": password, "token": token}.items() if v
-    }
+    options: dict[str, Any] = {}
+    if password:
+        options["password"] = password
+    if token:
+        options["token"] = token
     extract_command(url, output_json, options)
 
 
@@ -85,9 +87,11 @@ def download_cmd(
     Use --flat to disable this behavior.
     """
     setup_logging(verbose)
-    options: dict[str, Any] = {
-        k: v for k, v in {"password": password, "token": token}.items() if v
-    }
+    options: dict[str, Any] = {}
+    if password:
+        options["password"] = password
+    if token:
+        options["token"] = token
     download_command(url, output_dir, flat, pattern, options)
 
 
