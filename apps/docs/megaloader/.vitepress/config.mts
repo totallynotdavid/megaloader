@@ -12,10 +12,6 @@ export default defineConfig({
   cleanUrls: true,
   metaChunk: true,
 
-  vite: {
-    publicDir: "../../assets",
-  },
-
   themeConfig: {
     logo: "/logo.svg",
     nav: nav(),
@@ -37,8 +33,7 @@ export default defineConfig({
 
     footer: {
       message: "Released under the Apache-2.0 License.",
-      copyright:
-        'Copyright © 2024 - <a href="/team">The Megaloader Authors</a>',
+      copyright: `Copyright © 2024 - <a href="${baseUrl}team">The Megaloader Authors</a>`,
     },
 
     editLink: {

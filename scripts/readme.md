@@ -10,7 +10,7 @@ Generates the project logo as an SVG.
 mise run generate-logo
 ```
 
-The script outputs `assets/logo.svg` at the repository root.
+The script outputs `apps/docs/megaloader/public/logo.svg` for use in the VitePress docs site.
 
 ## validate-code-snippets.py
 
