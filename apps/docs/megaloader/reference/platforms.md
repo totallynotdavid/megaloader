@@ -11,7 +11,7 @@ In summary:
 | Bunkr       | bunkr.\{is,la,ru,si,su\} | Albums, single files        | None                                       |
 | PixelDrain  | pixeldrain.com           | Lists, files, proxy support | None                                       |
 | Cyberdrop   | cyberdrop.\{cr,me,to\}   | Albums, single files        | None                                       |
-| GoFile      | gofile.io                | Folders, files              | password (kwarg)                           |
+| GoFile      | gofile.io                | Folders, files              | password, token (kwargs)                   |
 | Fanbox      | {creator}.fanbox.cc      | Creator content             | session_id or FANBOX_SESSION_ID            |
 | Pixiv       | pixiv.net                | Artworks, galleries         | session_id or PIXIV_PHPSESSID              |
 | Rule34      | rule34.xxx               | Tags, posts, API            | api_key + user_id or environment variables |
@@ -59,9 +59,10 @@ File hosting with password protection.
 **Domains:** gofile.io
 
 **Features:** Folder extraction, password-protected content, automatic guest
-accounts
+accounts, optional API token for authenticated access
 
-**Requires:** Password for protected folders
+**Authentication:** `password` for protected folders; `token` to skip automatic
+guest account creation (both optional)
 
 **Example:**
 
@@ -70,6 +71,9 @@ for item in mgl.extract("https://gofile.io/d/abc123"):
     print(item.filename)
 
 for item in mgl.extract("https://gofile.io/d/xyz789", password="secret"):
+    print(item.filename)
+
+for item in mgl.extract("https://gofile.io/d/abc123", token="your_api_token"):
     print(item.filename)
 ```
 

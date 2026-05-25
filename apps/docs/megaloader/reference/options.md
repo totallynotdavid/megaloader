@@ -25,6 +25,47 @@ mgl.extract("https://creator.fanbox.cc", session_id="kwarg_value")  # Uses "kwar
 
 ## GoFile
 
+### token (string, optional)
+
+Gofile API token for authenticated access, avoiding automatic guest account creation.
+
+**Environment variable:** `GOFILE_TOKEN`
+
+**How to obtain:**
+
+1. Sign up at gofile.io
+2. Go to your account settings → API Token
+3. Copy the token value
+
+**Example:**
+
+```python
+for item in mgl.extract("https://gofile.io/d/abc123", token="your_api_token"):
+    print(item.filename)
+```
+
+```python
+import os
+
+os.environ["GOFILE_TOKEN"] = "your_api_token"
+
+for item in mgl.extract("https://gofile.io/d/abc123"):
+    print(item.filename)
+```
+
+**CLI:**
+
+```bash
+megaloader extract "https://gofile.io/d/abc123" --token your_api_token
+megaloader download "https://gofile.io/d/abc123" ./output --token your_api_token
+
+# Or via environment variable:
+export GOFILE_TOKEN="your_api_token"
+megaloader download "https://gofile.io/d/abc123" ./output
+```
+
+Providing a token is optional. Without it, Gofile creates a guest account automatically per session.
+
 ### password (string, optional)
 
 Password for accessing password-protected folders.
@@ -209,6 +250,7 @@ FANBOX_SESSION_ID=your_session_value
 PIXIV_PHPSESSID=your_session_value
 RULE34_API_KEY=your_api_key
 RULE34_USER_ID=your_user_id
+GOFILE_TOKEN=your_api_token
 ```
 
 Load them in code:
