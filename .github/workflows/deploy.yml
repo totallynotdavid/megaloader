@@ -41,7 +41,7 @@ jobs:
           VITE_API_URL: "https://megaloader-api.vercel.app"
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: apps/docs/megaloader/.vitepress/dist
 
