@@ -57,13 +57,13 @@ jobs:
         continue-on-error: true
 
       - if: matrix.python-version == '3.13'
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        uses: codecov/codecov-action@ca0a928a4cb3911011e868128a5cd90437c12db1 # v6.0.1
         with:
           files: ./coverage.xml
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        uses: codecov/codecov-action@ca0a928a4cb3911011e868128a5cd90437c12db1 # v6.0.1
         with:
           files: ./junit.xml
           report_type: test_results
