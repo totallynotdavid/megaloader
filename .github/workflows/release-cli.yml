@@ -110,7 +110,7 @@ jobs:
         with:
           name: cli-bin-windows-latest
           path: dist
-      - uses: softprops/action-gh-release@403a5240f3837fa857f642062e05aad6bb3391ca # v3.0.0
+      - uses: softprops/action-gh-release@9ed3cf9a6863b31f005d951c8d19de20628cf4eb # v3.0.0
         with:
           files: dist/*
           generate_release_notes: true
