@@ -1,0 +1,54 @@
+# serializer version: 1
+# name: test_rule34_single_post
+  list([
+    dict({
+      'collection_name': 'post_15121890',
+      'download_url': 'https://wimg.rule34.xxx//images/3485/854ef84384124ac5756f712470d25d1a.jpeg',
+      'filename': '854ef84384124ac5756f712470d25d1a.jpeg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': '15121890',
+    }),
+  ])
+# ---
+# name: test_rule34_tags_scraping
+  list([
+    dict({
+      'collection_name': 'blame!_vest',
+      'download_url': 'https://wimg.rule34.xxx//images/6321/45fb6a23d01a22e09e203f18b1a33f2c.jpeg',
+      'filename': '45fb6a23d01a22e09e203f18b1a33f2c.jpeg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'blame!_vest',
+      'download_url': 'https://wimg.rule34.xxx//images/7315/b8b3c531231d6d04c09b20794199dd54.jpeg',
+      'filename': 'b8b3c531231d6d04c09b20794199dd54.jpeg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'blame!_vest',
+      'download_url': 'https://wimg.rule34.xxx//images/7306/14ee5a51a24fea0b9fd07f9c57902797.jpeg',
+      'filename': '14ee5a51a24fea0b9fd07f9c57902797.jpeg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'blame!_vest',
+      'download_url': 'https://wimg.rule34.xxx//images/7545/388129c2dc5ebb6d612a3d4d59ba9e0d.jpeg',
+      'filename': '388129c2dc5ebb6d612a3d4d59ba9e0d.jpeg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---

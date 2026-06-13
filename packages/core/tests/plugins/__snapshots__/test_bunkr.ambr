@@ -1,0 +1,123 @@
+# serializer version: 1
+# name: test_bunkr_album_images
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/3e48b142-bc3b-4b8d-bbc9-db9f891687d3.jpg',
+      'filename': 'sample-image-06.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418273',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/8c385ba6-9650-4bbe-a4a2-45557ad137e1.jpg',
+      'filename': 'sample-image-04.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418269',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/69dba5f7-a16b-4b98-ae1d-ca3ef6818899.jpg',
+      'filename': 'sample-image-05.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418270',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/d22ca346-5485-4250-bd55-dcd5d5823700.jpg',
+      'filename': 'sample-image-03.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418266',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/f0d95583-c09d-40f2-ab04-740423936c29.jpg',
+      'filename': 'sample-image-01.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418262',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/4b0b3fcf-15a1-4ad4-8d1a-2939281b24c3.jpg',
+      'filename': 'sample-image-02.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418263',
+    }),
+  ])
+# ---
+# name: test_bunkr_album_videos
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c4s9-b.cdn.cr/ff90e525-4fcd-4755-ab6a-f5317201ecaa.mkv',
+      'filename': 'sample-video-jellyfish.mkv',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '60368730',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c3su-b.cdn.cr/7a7f64b5-75a3-45f9-b87b-8d7e0593024e.mov',
+      'filename': 'sample-video-planet.mov',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418334',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c3su-b.cdn.cr/169d420d-244a-448f-8447-82dfdc4663d6.mp4',
+      'filename': 'sample-video-rick.mp4',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418333',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c3su-b.cdn.cr/90d932d9-f03e-4664-bec0-0baaaddab86f.webm',
+      'filename': 'sample-video-bunny.webm',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418332',
+    }),
+  ])
+# ---
+# name: test_bunkr_single_file
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://c1mp-b.cdn.cr/f0d95583-c09d-40f2-ab04-740423936c29.jpg',
+      'filename': 'sample-image-01.jpg',
+      'headers': dict({
+        'Referer': 'https://get.bunkrr.su/',
+      }),
+      'size_bytes': None,
+      'source_id': '55418262',
+    }),
+  ])
+# ---

@@ -1,0 +1,158 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: POST
+    uri: https://api.gofile.io/accounts
+  response:
+    body:
+      string: '{"status":"ok","data":{"id":"78237700-361d-408b-9c32-d33e2d99f5a1","rootFolder":"32c8ba3e-db49-4c3f-9184-136615f0c689","tier":"guest","token":"hetPSTiYes75QISWaa6Ip1MFxSgiGESE"}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - Content-Type, Authorization, X-Website-Token, X-BL
+      Access-Control-Allow-Methods:
+      - GET, POST, OPTIONS, PUT, DELETE, HEAD
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Security-Policy:
+      - 'default-src ''self'';base-uri ''self'';font-src ''self'' https: data:;form-action
+        ''self'';frame-ancestors ''self'';img-src ''self'' data:;object-src ''none'';script-src
+        ''self'';script-src-attr ''none'';style-src ''self'' https: ''unsafe-inline'';upgrade-insecure-requests'
+      Content-Type:
+      - application/json; charset=utf-8
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Sat, 13 Jun 2026 19:12:59 GMT
+      ETag:
+      - W/"b2-gnMUH4GALMz0tScZjt9TJPVyNB8"
+      Origin-Agent-Cluster:
+      - ?1
+      Referrer-Policy:
+      - no-referrer
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-DNS-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Robots-Tag:
+      - noindex, nofollow
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '178'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Origin:
+      - https://gofile.io
+      Referer:
+      - https://gofile.io/
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+      X-BL:
+      - en-US
+      X-Website-Token:
+      - 79561537131b7b76ba384dcda63dd0bbf619dee288f761d61951aa46e5bb51a2
+    method: GET
+    uri: https://api.gofile.io/contents/RQxQ4Q?contentFilter=&sortField=name&sortDirection=1&pageSize=1000&page=1
+  response:
+    body:
+      string: '{"status":"ok","data":{"canAccess":true,"id":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"folder","name":"images","createTime":1781375800,"modTime":1781375828,"code":"RQxQ4Q","public":true,"totalDownloadCount":0,"totalSize":1603583,"childrenCount":6,"children":{"6bfdbe5e-e2cc-46a6-9893-9d7c9e38403f":{"canAccess":true,"id":"6bfdbe5e-e2cc-46a6-9893-9d7c9e38403f","parentFolder":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"file","name":"sample-image-01.jpg","createTime":1781375825,"modTime":1781375825,"size":207558,"downloadCount":0,"md5":"4b9289c992138becd4c25261e644f5bd","mimetype":"image/jpeg","servers":["cold-na-phx-6"],"serverSelected":"cold-na-phx-6","link":"https://cold-na-phx-6.gofile.io/download/web/6bfdbe5e-e2cc-46a6-9893-9d7c9e38403f/sample-image-01.jpg","thumbnail":"https://cold-na-phx-6.gofile.io/download/web/6bfdbe5e-e2cc-46a6-9893-9d7c9e38403f/thumb_4b9289c992138becd4c25261e644f5bd"},"3a17e45f-793f-49ae-a66b-aede06bd560e":{"canAccess":true,"id":"3a17e45f-793f-49ae-a66b-aede06bd560e","parentFolder":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"file","name":"sample-image-02.jpg","createTime":1781375825,"modTime":1781375825,"size":405661,"downloadCount":0,"md5":"e02422661c2544bb16678a264c6b1204","mimetype":"image/jpeg","servers":["cold-na-phx-6"],"serverSelected":"cold-na-phx-6","link":"https://cold-na-phx-6.gofile.io/download/web/3a17e45f-793f-49ae-a66b-aede06bd560e/sample-image-02.jpg","thumbnail":"https://cold-na-phx-6.gofile.io/download/web/3a17e45f-793f-49ae-a66b-aede06bd560e/thumb_e02422661c2544bb16678a264c6b1204"},"625ab522-5881-4c1c-afcb-de1b7858dc26":{"canAccess":true,"id":"625ab522-5881-4c1c-afcb-de1b7858dc26","parentFolder":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"file","name":"sample-image-03.jpg","createTime":1781375827,"modTime":1781375827,"size":286359,"downloadCount":0,"md5":"693084a76c64e5355d174e08f98fb323","mimetype":"image/jpeg","servers":["cold-na-phx-10"],"serverSelected":"cold-na-phx-10","link":"https://cold-na-phx-10.gofile.io/download/web/625ab522-5881-4c1c-afcb-de1b7858dc26/sample-image-03.jpg","thumbnail":"https://cold-na-phx-10.gofile.io/download/web/625ab522-5881-4c1c-afcb-de1b7858dc26/thumb_693084a76c64e5355d174e08f98fb323"},"1948fa2b-b55a-4eb9-9ed2-e51ab018b44d":{"canAccess":true,"id":"1948fa2b-b55a-4eb9-9ed2-e51ab018b44d","parentFolder":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"file","name":"sample-image-04.jpg","createTime":1781375827,"modTime":1781375827,"size":412156,"downloadCount":0,"md5":"bd7c3d426afc606f58270f70b8b1963a","mimetype":"image/jpeg","servers":["cold-na-phx-9"],"serverSelected":"cold-na-phx-9","link":"https://cold-na-phx-9.gofile.io/download/web/1948fa2b-b55a-4eb9-9ed2-e51ab018b44d/sample-image-04.jpg","thumbnail":"https://cold-na-phx-9.gofile.io/download/web/1948fa2b-b55a-4eb9-9ed2-e51ab018b44d/thumb_bd7c3d426afc606f58270f70b8b1963a"},"11e2000f-f439-4ae2-929c-9cae60fbee24":{"canAccess":true,"id":"11e2000f-f439-4ae2-929c-9cae60fbee24","parentFolder":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"file","name":"sample-image-05.jpg","createTime":1781375828,"modTime":1781375828,"size":202748,"downloadCount":0,"md5":"5263d09e8456dcb625a7ab2371eea634","mimetype":"image/jpeg","servers":["cold-na-phx-3"],"serverSelected":"cold-na-phx-3","link":"https://cold-na-phx-3.gofile.io/download/web/11e2000f-f439-4ae2-929c-9cae60fbee24/sample-image-05.jpg","thumbnail":"https://cold-na-phx-3.gofile.io/download/web/11e2000f-f439-4ae2-929c-9cae60fbee24/thumb_5263d09e8456dcb625a7ab2371eea634"},"45365702-c4f5-464c-b887-e1df28bbcd9f":{"canAccess":true,"id":"45365702-c4f5-464c-b887-e1df28bbcd9f","parentFolder":"b0c56df6-a03f-4a6b-9d83-ab8855d55b24","type":"file","name":"sample-image-06.jpg","createTime":1781375828,"modTime":1781375828,"size":89101,"downloadCount":0,"md5":"af63b1719a3a755e84e57fd5eaedf31d","mimetype":"image/jpeg","servers":["cold-eu-par-2"],"serverSelected":"cold-eu-par-2","link":"https://cold-eu-par-2.gofile.io/download/web/45365702-c4f5-464c-b887-e1df28bbcd9f/sample-image-06.jpg","thumbnail":"https://cold-eu-par-2.gofile.io/download/web/45365702-c4f5-464c-b887-e1df28bbcd9f/thumb_af63b1719a3a755e84e57fd5eaedf31d"}}},"metadata":{"totalCount":6,"totalPages":1,"page":1,"pageSize":1000,"hasNextPage":false}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - Content-Type, Authorization, X-Website-Token, X-BL
+      Access-Control-Allow-Methods:
+      - GET, POST, OPTIONS, PUT, DELETE, HEAD
+      Access-Control-Allow-Origin:
+      - https://gofile.io
+      Connection:
+      - keep-alive
+      Content-Security-Policy:
+      - 'default-src ''self'';base-uri ''self'';font-src ''self'' https: data:;form-action
+        ''self'';frame-ancestors ''self'';img-src ''self'' data:;object-src ''none'';script-src
+        ''self'';script-src-attr ''none'';style-src ''self'' https: ''unsafe-inline'';upgrade-insecure-requests'
+      Content-Type:
+      - application/json; charset=utf-8
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Sat, 13 Jun 2026 19:13:17 GMT
+      ETag:
+      - W/"1095-VP+2GAvX1tpRC7xN5K1eMiFn4x0"
+      Origin-Agent-Cluster:
+      - ?1
+      Referrer-Policy:
+      - no-referrer
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-DNS-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Robots-Tag:
+      - noindex, nofollow
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '4245'
+    status:
+      code: 200
+      message: OK
+version: 1

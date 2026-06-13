@@ -1,0 +1,491 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Referer:
+      - https://fapello.com/
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://fapello.com/ajax/model/narabask/page-1/
+  response:
+    body:
+      string: "\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a href=\"https://fapello.com/narabask/83/\">\n\t\t\t\t\t\t\t<div
+        class=\"max-w-full lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\"
+        tabindex=\"0\"> \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0083_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/82/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0082_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/81/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0081_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/80/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0080_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/79/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0079_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/78/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0078_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/77/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0077_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/76/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0076_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/75/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0075_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/74/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0074_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/73/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0073_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/72/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0072_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/71/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0071_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/70/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0070_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/69/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0069_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/68/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0068_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/67/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0067_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/66/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0066_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/65/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0065_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/62/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0062_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/61/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0061_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/60/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0060_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/59/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0059_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/58/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0058_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/57/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0057_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/56/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0056_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/55/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0055_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/54/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0054_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/53/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0053_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/52/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0052_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/51/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0051_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/50/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0050_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\n"
+    headers:
+      CF-RAY:
+      - a0b2d1c8feec6014-SIN
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Sat, 13 Jun 2026 17:29:47 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '11938'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Referer:
+      - https://fapello.com/
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://fapello.com/ajax/model/narabask/page-2/
+  response:
+    body:
+      string: "\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a href=\"https://fapello.com/narabask/49/\">\n\t\t\t\t\t\t\t<div
+        class=\"max-w-full lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\"
+        tabindex=\"0\"> \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0049_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/48/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0048_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/47/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0047_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/46/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0046_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/45/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0045_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/44/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0044_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/43/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0043_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/42/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0042_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/41/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0041_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/40/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0040_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/39/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0039_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/38/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0038_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/37/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0037_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/36/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0036_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/35/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0035_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/34/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0034_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/33/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0033_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/32/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0032_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/31/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0031_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/30/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0030_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/29/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0029_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/28/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0028_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/27/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0027_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/26/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0026_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/25/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0025_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/24/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0024_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/23/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0023_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/22/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0022_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/21/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0021_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/20/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0020_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/19/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0019_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/18/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0018_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\n"
+    headers:
+      CF-RAY:
+      - a0b2d20b3a6d4ec2-JNB
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Sat, 13 Jun 2026 17:29:58 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '11938'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Referer:
+      - https://fapello.com/
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://fapello.com/ajax/model/narabask/page-3/
+  response:
+    body:
+      string: "\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a href=\"https://fapello.com/narabask/17/\">\n\t\t\t\t\t\t\t<div
+        class=\"max-w-full lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\"
+        tabindex=\"0\"> \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0017_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/16/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0016_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/15/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0015_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/14/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0014_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/13/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0013_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/12/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0012_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/11/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0011_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/10/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0010_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/9/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0009_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/8/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0008_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/7/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0007_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/5/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0005_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/4/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0004_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/3/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0003_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/2/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0002_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\t\t\t\t\t<div>\n\t\t\t\t\t\t<a
+        href=\"https://fapello.com/narabask/1/\">\n\t\t\t\t\t\t\t<div class=\"max-w-full
+        lg:h-64 h-40 rounded-md relative overflow-hidden uk-transition-toggle\" tabindex=\"0\">
+        \n\t\t\t\t\t\t\t\t<img src=\"https://fapello.com/content/n/a/narabask/1000/narabask_0001_300px.jpg\"
+        class=\"w-full h-full absolute object-cover inset-0\">\n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</div>\t\t\t\t\t\n\n\n\n"
+    headers:
+      CF-RAY:
+      - a0b2d229bdc530d6-FRA
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Sat, 13 Jun 2026 17:30:03 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '5962'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Referer:
+      - https://fapello.com/
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://fapello.com/ajax/model/narabask/page-4/
+  response:
+    body:
+      string: ''
+    headers:
+      CF-RAY:
+      - a0b2d258dcdbb07a-ATL
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Sat, 13 Jun 2026 17:30:10 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      cf-cache-status:
+      - DYNAMIC
+    status:
+      code: 200
+      message: OK
+version: 1

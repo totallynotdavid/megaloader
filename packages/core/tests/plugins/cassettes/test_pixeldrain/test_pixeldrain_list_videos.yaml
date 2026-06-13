@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://pixeldrain.com/l/skg46Hqr
+  response:
+    body:
+      string: "\n<!DOCTYPE html>\n<html lang=\"en\">\n\t<head>\n\t\t<title>videos
+        ~ pixeldrain</title>\n\t\t<meta charset=\"UTF-8\"/>\n\t\t<meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1.0\"/>\n\t\t<meta name=\"robots\"
+        content=\"noindex, nofollow\">\n\n\t\t\n\n\n<meta property=\"og:title\" content=\"videos\"
+        />\n\n<meta property=\"og:site_name\" content=\"pixeldrain\" />\n\n<meta property=\"og:description\"
+        content=\"This file has been shared with you on pixeldrain\" />\n\n<meta property=\"og:url\"
+        content=\"https://pixeldrain.com/l/skg46Hqr\" />\n\n<meta property=\"description\"
+        content=\"This file has been shared with you on pixeldrain\" />\n\n<meta property=\"og:type\"
+        content=\"video.other\" />\n\n<meta property=\"og:image\" content=\"https://pixeldrain.com/api/file/gZ74hCoS/thumbnail\"
+        />\n\n<meta property=\"og:video\" content=\"https://pixeldrain.com/api/file/gZ74hCoS\"
+        />\n\n<meta property=\"og:video:url\" content=\"https://pixeldrain.com/api/file/gZ74hCoS\"
+        />\n\n<meta property=\"og:video:secure_url\" content=\"https://pixeldrain.com/api/file/gZ74hCoS\"
+        />\n\n<meta property=\"og:video:type\" content=\"video/mp4\" />\n\n\n<meta
+        name=\"description\" content=\"This file has been shared with you on pixeldrain\"
+        />\n\n<meta name=\"keywords\" content=\"pixeldrain,shared,sharing,upload,file,free\"
+        />\n\n<meta name=\"twitter:title\" content=\"videos\" />\n\n<meta name=\"twitter:site\"
+        content=\"@Fornax96\" />\n\n<meta name=\"twitter:domain\" content=\"pixeldrain.com\"
+        />\n\n<meta name=\"theme-color\" content=\"#220735\" />\n\n<meta name=\"twitter:card\"
+        content=\"player\" />\n\n<meta name=\"twitter:image\" content=\"https://pixeldrain.com/api/file/gZ74hCoS/thumbnail\"
+        />\n\n<meta name=\"twitter:player\" content=\"https://pixeldrain.com/api/file/gZ74hCoS\"
+        />\n\n<meta name=\"twitter:player:stream\" content=\"https://pixeldrain.com/api/file/gZ74hCoS\"
+        />\n\n<meta name=\"twitter:player:stream:content_type\" content=\"video/mp4\"
+        />\n\n\n<link rel=\"image_src\" href=\"https://pixeldrain.com/api/file/gZ74hCoS/thumbnail\"
+        />\n\n\n\n\n\t\t<link id=\"stylesheet_layout\" rel=\"stylesheet\" type=\"text/css\"
+        href=\"/res/style/layout.css?v494759\"/>\n\t\t<link id=\"stylesheet_layout\"
+        rel=\"stylesheet\" type=\"text/css\" href=\"/theme.css\"/>\n\n\t\t<link rel=\"icon\"
+        sizes=\"32x32\" href=\"/res/img/pixeldrain_32.png\" />\n\t\t<link rel=\"icon\"
+        sizes=\"128x128\" href=\"/res/img/pixeldrain_128.png\" />\n\t\t<link rel=\"icon\"
+        sizes=\"152x152\" href=\"/res/img/pixeldrain_152.png\" />\n\t\t<link rel=\"icon\"
+        sizes=\"180x180\" href=\"/res/img/pixeldrain_180.png\" />\n\t\t<link rel=\"icon\"
+        sizes=\"192x192\" href=\"/res/img/pixeldrain_192.png\" />\n\t\t<link rel=\"icon\"
+        sizes=\"196x196\" href=\"/res/img/pixeldrain_196.png\" />\n\t\t<link rel=\"icon\"
+        sizes=\"256x256\" href=\"/res/img/pixeldrain_256.png\" />\n\t\t<link rel=\"apple-touch-icon\"
+        sizes=\"152x152\" href=\"/res/img/pixeldrain_152.png\" />\n\t\t<link rel=\"apple-touch-icon\"
+        sizes=\"180x180\" href=\"/res/img/pixeldrain_180.png\" />\n\t\t<link rel=\"shortcut
+        icon\" sizes=\"196x196\" href=\"/res/img/pixeldrain_196.png\" />\n\n\t\t<script>\n\t\t\twindow.api_endpoint
+        = '\\/api';\n\t\t\twindow.viewer_data = {\"type\":\"list\",\"api_response\":{\"id\":\"skg46Hqr\",\"title\":\"videos\",\"date_created\":\"2026-05-24T06:39:17.187Z\",\"file_count\":4,\"files\":[{\"detail_href\":\"/file/gZ74hCoS/info\",\"description\":\"\",\"id\":\"gZ74hCoS\",\"name\":\"sample-video-rick.mp4\",\"size\":1575527,\"views\":0,\"bandwidth_used\":0,\"bandwidth_used_paid\":0,\"downloads\":0,\"date_upload\":\"2026-05-24T06:39:02.328Z\",\"date_last_view\":\"2026-05-24T06:39:02.328Z\",\"mime_type\":\"video/mp4\",\"thumbnail_href\":\"/file/gZ74hCoS/thumbnail\",\"hash_sha256\":\"a465ecf4800f194033f3587132fea18fd1f19034416d20b716f1e6d6ad428fe0\",\"delete_after_date\":\"0001-01-01T00:00:00Z\",\"delete_after_downloads\":0,\"availability\":\"\",\"availability_message\":\"\",\"abuse_type\":\"\",\"abuse_reporter_name\":\"\",\"can_edit\":false,\"can_download\":true,\"show_ads\":true,\"allow_video_player\":true,\"download_speed_limit\":0},{\"detail_href\":\"/file/REKE9eYk/info\",\"description\":\"\",\"id\":\"REKE9eYk\",\"name\":\"sample-video-bunny.webm\",\"size\":5243523,\"views\":0,\"bandwidth_used\":0,\"bandwidth_used_paid\":0,\"downloads\":0,\"date_upload\":\"2026-05-24T06:38:59.292Z\",\"date_last_view\":\"2026-05-24T06:38:59.292Z\",\"mime_type\":\"video/webm\",\"thumbnail_href\":\"/file/REKE9eYk/thumbnail\",\"hash_sha256\":\"3011a3d7dc742d6c0f37194ba8273e6b09b90fe768d5f11386ff140bc6745d52\",\"delete_after_date\":\"0001-01-01T00:00:00Z\",\"delete_after_downloads\":0,\"availability\":\"\",\"availability_message\":\"\",\"abuse_type\":\"\",\"abuse_reporter_name\":\"\",\"can_edit\":false,\"can_download\":true,\"show_ads\":true,\"allow_video_player\":true,\"download_speed_limit\":0},{\"detail_href\":\"/file/HNcGyxX9/info\",\"description\":\"\",\"id\":\"HNcGyxX9\",\"name\":\"sample-video-jellyfish.mkv\",\"size\":5207169,\"views\":0,\"bandwidth_used\":0,\"bandwidth_used_paid\":0,\"downloads\":0,\"date_upload\":\"2026-05-24T06:38:58.824Z\",\"date_last_view\":\"2026-05-24T06:38:58.824Z\",\"mime_type\":\"video/x-matroska\",\"thumbnail_href\":\"/file/HNcGyxX9/thumbnail\",\"hash_sha256\":\"014f31add51e2859a05e8ea4555fe75296e18c9eb365cf3d61c75125e7dfa69b\",\"delete_after_date\":\"0001-01-01T00:00:00Z\",\"delete_after_downloads\":0,\"availability\":\"\",\"availability_message\":\"\",\"abuse_type\":\"\",\"abuse_reporter_name\":\"\",\"can_edit\":false,\"can_download\":true,\"show_ads\":true,\"allow_video_player\":true,\"download_speed_limit\":0},{\"detail_href\":\"/file/gEiQ2Hiy/info\",\"description\":\"\",\"id\":\"gEiQ2Hiy\",\"name\":\"sample-video-planet.mov\",\"size\":2247200,\"views\":0,\"bandwidth_used\":0,\"bandwidth_used_paid\":0,\"downloads\":0,\"date_upload\":\"2026-05-24T06:38:58.381Z\",\"date_last_view\":\"2026-05-24T06:38:58.381Z\",\"mime_type\":\"video/quicktime\",\"thumbnail_href\":\"/file/gEiQ2Hiy/thumbnail\",\"hash_sha256\":\"ead8b50cf8baddc028a1607c7519667a5e22396f5b6040de709d684fc1e40c62\",\"delete_after_date\":\"0001-01-01T00:00:00Z\",\"delete_after_downloads\":0,\"availability\":\"\",\"availability_message\":\"\",\"abuse_type\":\"\",\"abuse_reporter_name\":\"\",\"can_edit\":false,\"can_download\":true,\"show_ads\":true,\"allow_video_player\":true,\"download_speed_limit\":0}],\"can_edit\":false},\"captcha_key\":\"6Lfbzz4UAAAAAAaBgox1R7jU0axiGneLDkOA-PKf\",\"embedded\":false,\"user_ads_enabled\":true,\"theme_uri\":\"/theme.css\"};\n\t\t\twindow.user_authenticated
+        =  false ;\n\t\t\twindow.user = {\"username\":\"\",\"email\":\"\",\"email_verified\":false,\"otp_enabled\":false,\"subscription\":{\"id\":\"\",\"name\":\"\",\"type\":\"\",\"file_size_limit\":0,\"file_expiry_days\":0,\"storage_space\":0,\"price_per_tb_storage\":0,\"price_per_tb_bandwidth\":0,\"monthly_transfer_cap\":0,\"file_viewer_branding\":false,\"filesystem_access\":false,\"filesystem_storage_limit\":0},\"storage_space_used\":0,\"filesystem_storage_used\":0,\"file_count\":0,\"filesystem_node_count\":0,\"is_admin\":false,\"balance_micro_eur\":0,\"hotlinking_enabled\":false,\"monthly_transfer_cap\":0,\"monthly_transfer_used\":0,\"file_viewer_branding\":null,\"file_embed_domains\":\"\",\"skip_file_viewer\":false,\"affiliate_user_name\":\"\",\"checkout_country\":\"\",\"checkout_name\":\"\",\"checkout_provider\":\"\"};\n\t\t</script>\n\n\t\t<script
+        defer src='/res/svelte/file_viewer.js?v494759'></script>\n\n\t\t<script defer
+        data-domain=\"pixeldrain.com\" src=\"https://stats.pixeldrain.com/js/script.js\"></script>\n\t</head>\n\n\t<body
+        id=\"body\"></body>\n</html>\n"
+    headers:
+      Content-Security-Policy:
+      - frame-ancestors 'self'
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Sat, 13 Jun 2026 17:25:04 GMT
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      X-Robots-Tag:
+      - noindex, nofollow
+    status:
+      code: 200
+      message: OK
+version: 1

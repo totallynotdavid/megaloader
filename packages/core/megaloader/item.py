@@ -23,7 +23,7 @@ class DownloadItem:
     size_bytes: int | None = None
 
     def __post_init__(self) -> None:
-        """Validate required fields."""
+        """Reject empty URLs and filenames that could escape the download dir."""
         if not self.download_url:
             msg = "download_url cannot be empty"
             raise ValueError(msg)

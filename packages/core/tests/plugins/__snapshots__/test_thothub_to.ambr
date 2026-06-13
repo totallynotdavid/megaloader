@@ -1,0 +1,64 @@
+# serializer version: 1
+# name: test_thothub_to_album
+  list([
+    dict({
+      'collection_name': 'Yurasweb',
+      'download_url': 'https://thothub.to/get_image/45/a441f3a77065ac3aafbe84d380646901/sources/42000/42718/2106619.jpg/',
+      'filename': '2106619.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'Yurasweb',
+      'download_url': 'https://thothub.to/get_image/45/91ed22ed8dd8d9e56079cca93b3efbf6/sources/42000/42718/2106620.jpg/',
+      'filename': '2106620.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'Yurasweb',
+      'download_url': 'https://thothub.to/get_image/45/866232c8fa2840875f14c07a0ee6aedd/sources/42000/42718/2106621.jpg/',
+      'filename': '2106621.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'Yurasweb',
+      'download_url': 'https://thothub.to/get_image/45/bbc3f535b7c864ccfa7e649087d49972/sources/42000/42718/2106622.jpg/',
+      'filename': '2106622.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'Yurasweb',
+      'download_url': 'https://thothub.to/get_image/45/450c3ec8676d664ee17f17c6006a54f4/sources/42000/42718/2106623.jpg/',
+      'filename': '2106623.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---
+# name: test_thothub_to_single_video
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://thothub.to/get_file/39/a5101059fc8d939c7bac291d67869d2b1d6bb9e2c8/726000/726266/726266.mp4/',
+      'filename': 'roses_are_rosie.mp4',
+      'headers': dict({
+        'Referer': 'https://thothub.to/videos/726266/roses-are-rosie/',
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---

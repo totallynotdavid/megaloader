@@ -1,0 +1,126 @@
+# serializer version: 1
+# name: test_thothub_vip_album
+  list([
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/47360f5d2ce4ba9b758caba95886dac4/sources/14000/14055/921280.jpg/',
+      'filename': '921280.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/e737030eba546f8557f583104122ac92/sources/14000/14055/921281.jpg/',
+      'filename': '921281.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/85dc324f2888b2f0ab11059132f8d704/sources/14000/14055/921282.jpg/',
+      'filename': '921282.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/f988dbfc132d219d87e6f0a60abecbe8/sources/14000/14055/921283.jpg/',
+      'filename': '921283.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/93a014032e0857f93b371c0d4e3cff69/sources/14000/14055/921284.jpg/',
+      'filename': '921284.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/338499de2cc6c79f3c24f102ca0fda9b/sources/14000/14055/921285.jpg/',
+      'filename': '921285.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/c8afab1ecd8fd83b9f106d6437f2684b/sources/14000/14055/921286.jpg/',
+      'filename': '921286.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/e62729760a8e0d5157111dfe8fc30429/sources/14000/14055/921287.jpg/',
+      'filename': '921287.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/1f4df399b4b147d78657992c36a7132e/sources/14000/14055/921288.jpg/',
+      'filename': '921288.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/e5bdb9fcb4c1b89c74d3cae75509d2af/sources/14000/14055/921289.jpg/',
+      'filename': '921289.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/60bbc55e793d19c27f765a3667e5bc3d/sources/14000/14055/921290.jpg/',
+      'filename': '921290.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'The Sexy Asian Office Manager',
+      'download_url': 'https://thothub.vip/get_image/4/b42919e5c6c2d348c948314e842b5214/sources/14000/14055/921291.jpg/',
+      'filename': '921291.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---
+# name: test_thothub_vip_single_video
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://thothub.vip/get_file/3/a4dbf93e5981adee677393938c796934/101000/101851/101851_1080p.mp4/',
+      'filename': 'Sky Bri Couch Sextape Naked And Humping Interview Video.mp4',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---

@@ -3,16 +3,8 @@ import requests
 import requests_mock as req_mock
 
 from megaloader.exceptions import ExtractionError
+from megaloader.fetcher import Request, RequestsFetcher
 from megaloader.item import DownloadItem
-from megaloader.plugin import BasePlugin
-
-
-class DummyPlugin(BasePlugin):
-    def extract(self):
-        yield DownloadItem(
-            download_url="https://example.com/file.txt",
-            filename="file.txt",
-        )
 
 
 @pytest.mark.unit
@@ -69,72 +61,66 @@ class TestDownloadItem:
 
 
 @pytest.mark.unit
-class TestBasePluginRequest:
-    def _plugin(self) -> DummyPlugin:
-        return DummyPlugin("https://example.com/file.txt")
+class TestRequestsFetcher:
+    def _fetch(self) -> RequestsFetcher:
+        return RequestsFetcher("dummyplugin")
 
     def test_get_returns_response_on_success(
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.get("https://example.com/data", text="ok")
-        plugin = self._plugin()
-        response = plugin._get("https://example.com/data")
+        response = self._fetch()(Request("https://example.com/data"))
         assert response.text == "ok"
 
-    def test_get_maps_http_error_to_extraction_error(
+    def test_maps_http_error_to_extraction_error(
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.get("https://example.com/data", status_code=404)
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._get("https://example.com/data")
+            self._fetch()(Request("https://example.com/data"))
 
         err = exc_info.value
         assert err.http_status == 404
         assert err.category == "access"
         assert err.source == "dummyplugin"
 
-    def test_get_classifies_rate_limit(self, requests_mock: req_mock.Mocker) -> None:
+    def test_classifies_rate_limit(self, requests_mock: req_mock.Mocker) -> None:
         requests_mock.get("https://example.com/data", status_code=429)
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._get("https://example.com/data")
+            self._fetch()(Request("https://example.com/data"))
 
         assert exc_info.value.category == "rate_limit"
         assert exc_info.value.http_status == 429
 
-    def test_get_classifies_auth_error(self, requests_mock: req_mock.Mocker) -> None:
+    def test_classifies_auth_error(self, requests_mock: req_mock.Mocker) -> None:
         requests_mock.get("https://example.com/data", status_code=401)
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._get("https://example.com/data")
+            self._fetch()(Request("https://example.com/data"))
 
         assert exc_info.value.category == "auth"
 
-    def test_get_maps_connection_error_to_extraction_error(
+    def test_maps_connection_error_to_extraction_error(
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.get(
             "https://example.com/data", exc=requests.ConnectionError("refused")
         )
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._get("https://example.com/data")
+            self._fetch()(Request("https://example.com/data"))
 
         assert exc_info.value.category == "network"
 
-    def test_get_maps_timeout_to_extraction_error(
+    def test_maps_timeout_to_extraction_error(
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.get("https://example.com/data", exc=requests.Timeout("timed out"))
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._get("https://example.com/data")
+            self._fetch()(Request("https://example.com/data"))
 
         assert exc_info.value.category == "timeout"
 
@@ -142,18 +128,16 @@ class TestBasePluginRequest:
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.post("https://example.com/api", json={"status": "ok"})
-        plugin = self._plugin()
-        response = plugin._post("https://example.com/api")
+        response = self._fetch()(Request("https://example.com/api", method="POST"))
         assert response.json() == {"status": "ok"}
 
     def test_post_maps_http_error_to_extraction_error(
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.post("https://example.com/api", status_code=403)
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._post("https://example.com/api")
+            self._fetch()(Request("https://example.com/api", method="POST"))
 
         assert exc_info.value.http_status == 403
         assert exc_info.value.category == "access"
@@ -162,10 +146,9 @@ class TestBasePluginRequest:
         self, requests_mock: req_mock.Mocker
     ) -> None:
         requests_mock.get("https://example.com/data", status_code=500)
-        plugin = self._plugin()
 
         with pytest.raises(ExtractionError) as exc_info:
-            plugin._get("https://example.com/data")
+            self._fetch()(Request("https://example.com/data"))
 
         assert exc_info.value.__cause__ is not None
         assert isinstance(exc_info.value.__cause__, requests.HTTPError)

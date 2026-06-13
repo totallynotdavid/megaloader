@@ -3,17 +3,42 @@ import os
 import re
 
 from collections.abc import Generator
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import requests
-
 from megaloader.error_policy import raise_extraction_error
+from megaloader.fetcher import Cookie, Fetcher, Request, SessionConfig
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class Artwork:
+    artwork_id: str
+
+
+@dataclass(frozen=True)
+class User:
+    user_id: str
+
+
+Target = Artwork | User
+
+
+def parse_target(url: str) -> Target:
+    """Classify a Pixiv URL as a single artwork or a user gallery."""
+    if match := re.search(r"artworks/(\d+)", url):
+        return Artwork(match.group(1))
+
+    if match := re.search(r"users/(\d+)|member\.php\?id=(\d+)", url):
+        return User(match.group(1) or match.group(2))
+
+    msg = "Invalid Pixiv URL"
+    raise ValueError(msg)
 
 
 class Pixiv(BasePlugin):
@@ -23,35 +48,28 @@ class Pixiv(BasePlugin):
 
     def __init__(self, url: str, **options: Any) -> None:
         super().__init__(url, **options)
-        self.content_id, self.is_artwork = self._parse_url()
+        self.target = parse_target(self.url)
 
-    def _parse_url(self) -> tuple[str, bool]:
-        if match := re.search(r"artworks/(\d+)", self.url):
-            return match.group(1), True
-
-        if match := re.search(r"users/(\d+)|member\.php\?id=(\d+)", self.url):
-            return match.group(1) or match.group(2), False
-
-        msg = "Invalid Pixiv URL"
-        raise ValueError(msg)
-
-    def _configure_session(self, session: requests.Session) -> None:
-        session.headers["Referer"] = f"{self.SITE_BASE}/"
-
+    def session_config(self) -> SessionConfig:
+        cookies: tuple[Cookie, ...] = ()
         session_id = self.options.get("session_id") or os.getenv("PIXIV_PHPSESSID")
         if session_id:
-            session.cookies.set("PHPSESSID", session_id, domain=".pixiv.net")
+            cookies = (Cookie("PHPSESSID", session_id, ".pixiv.net"),)
             logger.debug("Using Pixiv session authentication")
 
-    def extract(self) -> Generator[DownloadItem, None, None]:
-        if self.is_artwork:
-            yield from self._extract_artwork(self.content_id)
-        else:
-            yield from self._extract_user(self.content_id)
+        return SessionConfig(headers={"Referer": f"{self.SITE_BASE}/"}, cookies=cookies)
 
-    def _api_request(self, endpoint: str, params: dict[str, Any] | None = None) -> Any:
+    def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+        if isinstance(self.target, Artwork):
+            yield from self._extract_artwork(fetch, self.target.artwork_id)
+        else:
+            yield from self._extract_user(fetch, self.target.user_id)
+
+    def _api_request(
+        self, fetch: Fetcher, endpoint: str, params: dict[str, Any] | None = None
+    ) -> Any:
         request_url = f"{self.SITE_BASE}/ajax{endpoint}"
-        response = self._get(request_url, params=params)
+        response = fetch(Request(request_url, params=params))
         data = response.json()
 
         if data.get("error"):
@@ -67,22 +85,23 @@ class Pixiv(BasePlugin):
 
     def _extract_artwork(
         self,
+        fetch: Fetcher,
         artwork_id: str,
         collection_name: str | None = None,
     ) -> Generator[DownloadItem, None, None]:
-        pages = self._api_request(f"/illust/{artwork_id}/pages")
+        pages = self._api_request(fetch, f"/illust/{artwork_id}/pages")
 
         info: Any = None
 
         if not pages:
-            info = self._api_request(f"/illust/{artwork_id}")
+            info = self._api_request(fetch, f"/illust/{artwork_id}")
             if info and (url := info.get("urls", {}).get("original")):
                 pages = [{"urls": {"original": url}}]
             else:
                 return
 
         if not collection_name:
-            info = info or self._api_request(f"/illust/{artwork_id}")
+            info = info or self._api_request(fetch, f"/illust/{artwork_id}")
             username = info.get("userName", "unknown") if info else "artwork"
             collection_name = f"{username}_{artwork_id}"
 
@@ -101,8 +120,10 @@ class Pixiv(BasePlugin):
                 headers={"Referer": f"{self.SITE_BASE}/artworks/{artwork_id}"},
             )
 
-    def _extract_user(self, user_id: str) -> Generator[DownloadItem, None, None]:
-        profile = self._api_request(f"/user/{user_id}", params={"full": 1})
+    def _extract_user(
+        self, fetch: Fetcher, user_id: str
+    ) -> Generator[DownloadItem, None, None]:
+        profile = self._api_request(fetch, f"/user/{user_id}", params={"full": 1})
         if not profile:
             return
 
@@ -123,10 +144,10 @@ class Pixiv(BasePlugin):
                 collection_name=collection_name,
             )
 
-        all_works = self._api_request(f"/user/{user_id}/profile/all") or {}
+        all_works = self._api_request(fetch, f"/user/{user_id}/profile/all") or {}
         work_ids = list(all_works.get("illusts", {}).keys()) + list(
             all_works.get("manga", {}).keys()
         )
 
         for work_id in work_ids:
-            yield from self._extract_artwork(work_id, collection_name)
+            yield from self._extract_artwork(fetch, work_id, collection_name)

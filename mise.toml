@@ -40,17 +40,21 @@ depends = ["format", "lint", "test-unit", "validate-snippets"]
 
 # Testing
 [tasks.test]
-description = "Run all tests including live network tests (~100 secs)"
-run = "uv run --env-file .env pytest -vv -s -rA --log-cli-level=INFO packages/core/tests --run-live"
+description = "Run the full offline suite: unit + cassette replay (no network, <1 sec)"
+run = "uv run pytest --block-network packages/core/tests"
 
 [tasks.test-unit]
 description = "Run unit tests only (fast: <1 sec)"
-run = "uv run --env-file .env pytest -vv -s -rA packages/core/tests/unit"
+run = "uv run pytest packages/core/tests/unit"
 
-[tasks.test-live-serial]
-description = "Run one live test by nodeid with full output (no parallel)"
-# usage example: mise run test-live-serial -- packages/core/tests/live/test_gofile_live.py::test_gofile_folder_images
-run = "uv run --env-file .env pytest -vv -s -rA --log-cli-level=INFO --run-live"
+[tasks.test-record]
+description = "Re-fetch every plugin fixture through the proxy, refresh cassettes + snapshots"
+run = "uv run --env-file .env pytest -vv -rA --log-cli-level=INFO packages/core/tests/plugins --record-mode=rewrite --snapshot-update"
+
+[tasks.proxy-probe]
+description = "Make an ad-hoc request through the rotating proxy (e.g. mise run proxy-probe -- <url> -X POST)"
+run = "uv run --env-file .env python -m tests.plugins.probe"
+dir = "packages/core"
 
 # Development: CLI
 [tasks.dev-cli]
