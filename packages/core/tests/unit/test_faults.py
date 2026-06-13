@@ -33,7 +33,7 @@ def test_model_traversal_stops_on_404() -> None:
     not_found = build_extraction_error(
         "missing", source="thothubto", url=_pagination_url(2), http_status=404
     )
-    routes = {
+    routes: dict[str, str | BaseException] = {
         _pagination_url(1): page1,
         video_url: video_page,
         _pagination_url(2): not_found,

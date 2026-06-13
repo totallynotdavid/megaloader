@@ -1,8 +1,10 @@
+from collections.abc import Mapping
+
 from megaloader.fetcher import Fetcher, Request, Response
 from megaloader.item import DownloadItem
 
 
-def fake_fetcher(routes: dict[str, Response | str | BaseException]) -> Fetcher:
+def fake_fetcher(routes: Mapping[str, Response | str | BaseException]) -> Fetcher:
     """Build a Fetcher that serves canned outcomes by request URL.
 
     Lets a plugin's traversal run offline: map each URL it will request to a
