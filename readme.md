@@ -55,7 +55,6 @@ may break without immediate fixes.
 | PixelDrain  | pixeldrain.com         | Lists, files, proxy support                   | Core     |
 | Cyberdrop   | cyberdrop.{me,to,cr}   | Albums, single files                          | Core     |
 | GoFile      | gofile.io              | Folders (including password-protected), files | Core     |
-| Fanbox      | {creator}.fanbox.cc    | Creator content, authentication               | Extended |
 | Pixiv       | pixiv.net              | Artworks, galleries, authentication           | Extended |
 | Rule34      | rule34.xxx             | Tags, posts, API                              | Extended |
 | ThotsLife   | thotslife.com          | Albums, posts                                 | Extended |

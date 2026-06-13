@@ -1,7 +1,6 @@
 from megaloader.plugin import BasePlugin
 from megaloader.plugins.bunkr import Bunkr
 from megaloader.plugins.cyberdrop import Cyberdrop
-from megaloader.plugins.fanbox import Fanbox
 from megaloader.plugins.fapello import Fapello
 from megaloader.plugins.gofile import Gofile
 from megaloader.plugins.pixeldrain import PixelDrain
@@ -24,7 +23,6 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "cyberdrop.cr": Cyberdrop,
     "cyberdrop.me": Cyberdrop,
     "cyberdrop.to": Cyberdrop,
-    "fanbox.cc": Fanbox,
     "fapello.com": Fapello,
     "gofile.io": Gofile,
     "pixeldrain.com": PixelDrain,
@@ -36,12 +34,11 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     "thotslife.com": Thotslife,
 }
 
-SUBDOMAIN_SUPPORTED: set[str] = {"fanbox.cc"}
+SUBDOMAIN_SUPPORTED: set[str] = {"pixiv.net"}
 
 PLUGIN_NAME_REGISTRY: dict[str, type[BasePlugin]] = {
     "bunkr": Bunkr,
     "cyberdrop": Cyberdrop,
-    "fanbox": Fanbox,
     "fapello": Fapello,
     "gofile": Gofile,
     "pixeldrain": PixelDrain,
