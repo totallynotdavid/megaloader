@@ -16,11 +16,11 @@ All plugins follow this pattern:
 import os
 import megaloader as mgl
 
-os.environ["FANBOX_SESSION_ID"] = "env_value"
-mgl.extract("https://creator.fanbox.cc")  # Uses "env_value"
+os.environ["PIXIV_PHPSESSID"] = "env_value"
+mgl.extract("https://www.pixiv.net/en/artworks/12345")  # Uses "env_value"
 
-os.environ["FANBOX_SESSION_ID"] = "env_value"
-mgl.extract("https://creator.fanbox.cc", session_id="kwarg_value")  # Uses "kwarg_value"
+os.environ["PIXIV_PHPSESSID"] = "env_value"
+mgl.extract("https://www.pixiv.net/en/artworks/12345", session_id="kwarg_value")  # Uses "kwarg_value"
 ```
 
 ## GoFile
@@ -94,51 +94,6 @@ megaloader download "https://gofile.io/d/xyz789" ./output --password secret
 
 GoFile hashes passwords with SHA-256 before sending to the API. Invalid
 passwords result in empty file lists without raising errors.
-
-## Fanbox
-
-### session_id (string, required for most content)
-
-Authentication cookie for accessing creator content.
-
-**Environment variable:** `FANBOX_SESSION_ID`
-
-**How to obtain:**
-
-1. Log in to Fanbox
-2. Open browser DevTools (F12)
-3. Application/Storage → Cookies
-4. Find `FANBOXSESSID`
-5. Copy the value
-
-**Example:**
-
-```python
-for item in mgl.extract(
-    "https://creator.fanbox.cc",
-    session_id="your_session_cookie"
-):
-    print(item.filename)
-```
-
-```python
-import os
-
-os.environ["FANBOX_SESSION_ID"] = "your_session_cookie"
-
-for item in mgl.extract("https://creator.fanbox.cc"):
-    print(item.filename)
-```
-
-**CLI:**
-
-```bash
-export FANBOX_SESSION_ID="your_session_cookie"
-megaloader download "https://creator.fanbox.cc" ./output
-```
-
-Most creator content requires authentication. Session cookies expire
-periodically. Without authentication, you'll get 403 errors.
 
 ## Pixiv
 
@@ -244,7 +199,7 @@ for item in mgl.extract(url, session_id="abc123def456"):
 
 ```python
 import os
-session_id = os.getenv("FANBOX_SESSION_ID")
+session_id = os.getenv("PIXIV_PHPSESSID")
 for item in mgl.extract(url, session_id=session_id):
     pass
 ```
@@ -253,7 +208,6 @@ Store credentials in environment variables or `.env` files:
 
 ```bash
 # .env file
-FANBOX_SESSION_ID=your_session_value
 PIXIV_PHPSESSID=your_session_value
 RULE34_API_KEY=your_api_key
 RULE34_USER_ID=your_user_id

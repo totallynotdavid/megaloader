@@ -8,29 +8,35 @@ Megaloader uses a registry pattern to map domains to plugin classes. To add
 support for a new platform, you create a class that inherits from `BasePlugin`
 and implements the extraction logic.
 
+A plugin performs no network I/O of its own. The engine resolves the URL to a
+plugin, builds a `Fetcher`, and passes it to `extract()`. The plugin describes
+each request as a `Request` and reads back a `Response`, so parsing and
+traversal stay testable offline.
+
 In other words, every plugin:
 
 1. Inherits from `BasePlugin`
-2. Implements `extract()` to yield `DownloadItem` objects
-3. Optionally overrides `_configure_session()` for platform-specific setup
-4. Gets registered in `PLUGIN_REGISTRY` to map domains to the plugin
+2. Implements `extract(fetch)` to yield `DownloadItem` objects
+3. Optionally overrides `session_config()` to declare site headers and auth
+   cookies
+4. Gets registered in `PLUGIN_REGISTRY` (in `registry.py`) to map domains to the
+   plugin
 
 ## Minimal example
 
 Your plugin must implement the `extract` method and yield `DownloadItem`
-objects.
+objects. Route every network call through the `fetch` argument.
 
 ```python
 from collections.abc import Generator
+
+from megaloader.fetcher import Fetcher, Request
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
 class SimpleHost(BasePlugin):
-    def extract(self) -> Generator[DownloadItem, None, None]:
-        response = self.session.get(self.url, timeout=30)
-        response.raise_for_status()
-
-        data = response.json()
+    def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+        data = fetch(Request(self.url)).json()
 
         for file_data in data["files"]:
             yield DownloadItem(
@@ -40,20 +46,26 @@ class SimpleHost(BasePlugin):
             )
 ```
 
-That's it. `BasePlugin` handles session creation, retry logic, and default
-headers. Your plugin just needs to fetch data and yield `DownloadItem` objects.
+That's it. The `Fetcher` handles session creation, retries, default headers, and
+mapping request failures to `ExtractionError`. Your plugin just describes
+requests and yields `DownloadItem` objects.
 
-What BasePlugin provides:
+What the engine provides:
 
-- `self.url` - The URL passed to `extract()`
-- `self.options` - Dictionary of keyword arguments
-- `self.session` - Lazy-loaded `requests.Session` with retry logic. Always use
-  it! Don't reimplement a retry logic.
+- `self.url`: the URL passed to the plugin
+- `self.options`: dictionary of keyword arguments
+- `fetch`: a `Fetcher` that resolves a `Request` to a `Response`, with retries
+  and error handling built in. Always route network calls through it. Don't
+  reimplement retry logic.
 
 What you implement:
 
-- `extract()` - Must yield `DownloadItem` objects
-- `_configure_session(session)` - Optional, for custom headers/cookies
+- `extract(fetch)`: must yield `DownloadItem` objects
+- `session_config()`: optional, declares site headers and auth cookies
+
+A `Request` carries `url`, `method` (default `"GET"`), `params`, `json`,
+`headers`, and `allow_redirects`. A `Response` exposes `url`, `status_code`,
+`text`, `content`, and `json()`.
 
 ## Building a plugin
 
@@ -63,12 +75,13 @@ URLs like `https://filebox.com/album/abc123` and file URLs like
 
 Start by creating the plugin class and parsing the URL:
 
-```python{16}
+```python{14}
 import logging
 import re
 from collections.abc import Generator
 from typing import Any
 
+from megaloader.fetcher import Fetcher, Request
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -87,24 +100,18 @@ class FileBox(BasePlugin):
 
         raise ValueError(f"Invalid FileBox URL: {url}")
 
-    def extract(self) -> Generator[DownloadItem, None, None]:
+    def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         if self.content_type == "album":
-            yield from self._extract_album()
+            yield from self._extract_album(fetch)
         else:
-            yield from self._extract_file()
+            yield from self._extract_file(fetch)
 ```
 
 Implement album extraction:
 
 ```python
-def _extract_album(self) -> Generator[DownloadItem, None, None]:
-    response = self.session.get(
-        f"{self.API_BASE}/albums/{self.content_id}",
-        timeout=30
-    )
-    response.raise_for_status()
-
-    data = response.json()
+def _extract_album(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    data = fetch(Request(f"{self.API_BASE}/albums/{self.content_id}")).json()
     album_name = data.get("name", self.content_id)
 
     for file_data in data.get("files", []):
@@ -120,14 +127,8 @@ def _extract_album(self) -> Generator[DownloadItem, None, None]:
 For single files:
 
 ```python
-def _extract_file(self) -> Generator[DownloadItem, None, None]:
-    response = self.session.get(
-        f"{self.API_BASE}/files/{self.content_id}",
-        timeout=30
-    )
-    response.raise_for_status()
-
-    data = response.json()
+def _extract_file(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    data = fetch(Request(f"{self.API_BASE}/files/{self.content_id}")).json()
 
     yield DownloadItem(
         download_url=data["download_url"],
@@ -137,17 +138,21 @@ def _extract_file(self) -> Generator[DownloadItem, None, None]:
     )
 ```
 
-If the platform requires specific headers, override `_configure_session()`:
+If the platform requires specific headers, override `session_config()`:
 
 ```python
-def _configure_session(self, session: requests.Session) -> None:
-    session.headers.update({
+from megaloader.fetcher import SessionConfig
+
+def session_config(self) -> SessionConfig:
+    return SessionConfig(headers={
         "Referer": "https://filebox.com/",
         "Origin": "https://filebox.com",
     })
 ```
 
-Finally, register your plugin in `packages/core/megaloader/plugins/__init__.py`:
+Finally, register your plugin in
+`packages/core/megaloader/plugins/registry.py`. Add the import, then map the
+domains in `PLUGIN_REGISTRY` and the plugin name in `PLUGIN_NAME_REGISTRY`:
 
 ```python
 from megaloader.plugins.filebox import FileBox
@@ -155,7 +160,12 @@ from megaloader.plugins.filebox import FileBox
 PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
     # ... existing plugins ...
     "filebox.com": FileBox,
-    "filebox.cc": FileBox, # if it has other domains but same structure
+    "filebox.cc": FileBox,  # other domains with the same structure
+}
+
+PLUGIN_NAME_REGISTRY: dict[str, type[BasePlugin]] = {
+    # ... existing plugins ...
+    "filebox": FileBox,
 }
 ```
 
@@ -171,10 +181,12 @@ for item in mgl.extract("https://filebox.com/album/test123"):
 ## Adding authentication
 
 For platforms requiring authentication, accept credentials through options or
-environment variables:
+environment variables, then apply them in `session_config()`:
 
-```python{8}
+```python{12}
 import os
+
+from megaloader.fetcher import SessionConfig
 
 class FileBox(BasePlugin):
     def __init__(self, url: str, **options: Any) -> None:
@@ -184,11 +196,24 @@ class FileBox(BasePlugin):
         self.api_key = self.options.get("api_key") or os.getenv("FILEBOX_API_KEY")
         self.content_type, self.content_id = self._parse_url(url)
 
-    def _configure_session(self, session: requests.Session) -> None:
-        session.headers["Referer"] = "https://filebox.com/"
-
+    def session_config(self) -> SessionConfig:
+        headers = {"Referer": "https://filebox.com/"}
         if self.api_key:
-            session.headers["Authorization"] = f"Bearer {self.api_key}"
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        return SessionConfig(headers=headers)
+```
+
+When the credential is a cookie rather than a header (as with Pixiv), declare it
+with `Cookie` instead:
+
+```python
+from megaloader.fetcher import Cookie, SessionConfig
+
+def session_config(self) -> SessionConfig:
+    cookies = ()
+    if self.api_key:
+        cookies = (Cookie("session", self.api_key, ".filebox.com"),)
+    return SessionConfig(cookies=cookies)
 ```
 
 Users can then pass credentials:
@@ -207,15 +232,15 @@ export FILEBOX_API_KEY="your-key"
 
 When creating items, you must provide:
 
-- `download_url` (str) - Direct download URL
-- `filename` (str) - Original filename
+- `download_url` (str): direct download URL
+- `filename` (str): original leaf filename, no path separators
 
 Optional fields:
 
-- `collection_name` (str | None) - Album/gallery/user grouping
-- `source_id` (str | None) - Platform-specific identifier
-- `headers` (dict[str, str]) - Additional HTTP headers needed for download
-- `size_bytes` (int | None) - File size in bytes
+- `collection_name` (str | None): album/gallery/user grouping
+- `source_id` (str | None): platform-specific identifier
+- `headers` (dict[str, str]): additional HTTP headers needed for download
+- `size_bytes` (int | None): file size in bytes
 
 Example with all fields:
 
@@ -232,23 +257,20 @@ yield DownloadItem(
 
 ## Common patterns
 
-Handle pagination withing `extract` so the consumer sees a single continuos
+Handle pagination within `extract` so the consumer sees a single continuous
 stream of items. This is useful when an API returns results in multiple pages,
 as is the case with the Rule34 plugin.
 
 ```python
-def extract(self) -> Generator[DownloadItem, None, None]:
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
     page = 1
 
     while True:
-        response = self.session.get(
+        request = Request(
             f"{self.API_BASE}/albums/{self.content_id}",
             params={"page": page},
-            timeout=30
         )
-        response.raise_for_status()
-
-        files = response.json().get("files", [])
+        files = fetch(request).json().get("files", [])
         if not files:
             break
 
@@ -261,8 +283,8 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 Nested collections (when albums contain sub-galleries):
 
 ```python
-def extract(self) -> Generator[DownloadItem, None, None]:
-    album_data = self._fetch_album(self.content_id)
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    album_data = self._fetch_album(fetch, self.content_id)
 
     for gallery in album_data.get("galleries", []):
         for file_data in gallery["files"]:
@@ -276,10 +298,10 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 Deduplication (when a host supports uploading files with the same name):
 
 ```python
-def extract(self) -> Generator[DownloadItem, None, None]:
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
     seen_urls: set[str] = set()
 
-    for file_data in self._fetch_files():
+    for file_data in self._fetch_files(fetch):
         url = file_data["download_url"]
 
         if url in seen_urls:
@@ -294,31 +316,47 @@ HTML parsing (when there's no API):
 ```python
 from bs4 import BeautifulSoup
 
-def extract(self) -> Generator[DownloadItem, None, None]:
-    response = self.session.get(self.url, timeout=30)
-    response.raise_for_status()
-
-    soup = BeautifulSoup(response.text, "html.parser")
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    soup = BeautifulSoup(fetch(Request(self.url)).text, "html.parser")
 
     for img in soup.select("div.gallery img"):
         if src := img.get("src"):
             yield DownloadItem(
-                download_url=src,
-                filename=src.split("/")[-1],
+                download_url=str(src),
+                filename=str(src).split("/")[-1],
             )
 ```
 
 ## Error handling
 
-Let errors propagate naturally. The `extract()` function wraps plugin errors in
-`ExtractionError`:
+Let errors propagate naturally. `RequestsFetcher` raises `ExtractionError` on
+HTTP and network failures, and the top-level `extract()` wraps any other
+unexpected error in `ExtractionError` too.
 
 ```python
-def extract(self) -> Generator[DownloadItem, None, None]:
-    response = self.session.get(self.url, timeout=30)
-    response.raise_for_status()
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    data = fetch(Request(self.url)).json()
 
-    data = response.json()
+    for item in data["files"]:
+        yield self._create_item(item)
+```
+
+When the response parses but its shape is wrong, raise with context using
+`raise_extraction_error` so the failure carries a source and URL:
+
+```python
+from megaloader.error_policy import raise_extraction_error
+
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    data = fetch(Request(self.url)).json()
+
+    if "files" not in data:
+        raise_extraction_error(
+            "Unexpected API response: missing 'files'",
+            source=self.source,
+            url=self.url,
+            category="protocol",
+        )
 
     for item in data["files"]:
         yield self._create_item(item)
@@ -341,16 +379,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def extract(self) -> Generator[DownloadItem, None, None]:
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
     logger.debug("Starting extraction for album: %s", self.content_id)
-    response = self.session.get(url, timeout=30)
-    logger.debug("Received %d files", len(response.json()["files"]))
+    data = fetch(Request(f"{self.API_BASE}/albums/{self.content_id}")).json()
+    logger.debug("Received %d files", len(data["files"]))
 ```
 
 ## Testing your plugin
 
 See [Testing plugins](testing-plugins) for manual testing, writing unit tests,
-and adding live tests.
+and recording cassettes.
 
 ## Best practices
 
@@ -360,14 +398,14 @@ Use type hints for better IDE support and type checking:
 from collections.abc import Generator
 from typing import Any
 
-def extract(self) -> Generator[DownloadItem, None, None]:
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
     ...
 ```
 
 Add docstrings to document behaviour:
 
 ```python
-def extract(self) -> Generator[DownloadItem, None, None]:
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
     """
     Extract files from FileBox albums and files.
 
@@ -376,7 +414,7 @@ def extract(self) -> Generator[DownloadItem, None, None]:
 
     Raises:
         ValueError: Invalid URL format
-        requests.HTTPError: Network request failed
+        ExtractionError: Network request or parsing failed
     """
 ```
 
@@ -385,14 +423,13 @@ Use constants for magic values:
 ```python
 class FileBox(BasePlugin):
     API_BASE = "https://api.filebox.com/v1"
-    TIMEOUT = 30
 ```
 
 Extract helper methods to keep code readable:
 
 ```python
-def extract(self) -> Generator[DownloadItem, None, None]:
-    data = self._fetch_album_data()
+def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
+    data = self._fetch_album_data(fetch)
 
     for file_data in data["files"]:
         yield self._create_item(file_data)

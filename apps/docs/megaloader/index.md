@@ -34,8 +34,8 @@ features:
     title: Simple CLI
     details: Preview files or download full galleries with one command.
   - icon: 🌐
-    title: 11+ platforms supported
-    details: Bunkr, PixelDrain, Cyberdrop, GoFile, Fanbox, Pixiv, and more.
+    title: 10+ platforms supported
+    details: Bunkr, PixelDrain, Cyberdrop, GoFile, Pixiv, Rule34, and more.
   - icon: 📦
     title: Minimal dependencies
     details: Core library only depends on requests and BeautifulSoup4.

@@ -110,22 +110,27 @@ Each platform has a plugin that handles parsing. When you call `extract()`:
 3. The plugin is instantiated with your URL and options
 4. The plugin's generator is returned
 
-You rarely need to interact with plugins directly, but you can:
+You rarely need to interact with plugins directly, but you can. Plugins do no
+network I/O themselves, so build a `RequestsFetcher` from the plugin and pass it
+to `extract()`:
 
 ```python
+from megaloader.fetcher import RequestsFetcher
 from megaloader.plugins import PixelDrain
 
 plugin = PixelDrain("https://pixeldrain.com/l/abc123")
+fetch = RequestsFetcher(plugin.source, config=plugin.session_config())
 
-for item in plugin.extract():
+for item in plugin.extract(fetch):
     print(item.filename)
 ```
 
 This is useful when you want to reuse a plugin instance or when a new domain
 pattern isn't yet recognized by `extract()`.
 
-Plugins inherit from `BasePlugin`, which provides session management, retry
-logic, and default headers automatically.
+The `RequestsFetcher` provides session management, retries, default headers, and
+maps request failures to `ExtractionError`. See
+[Advanced patterns](advanced-patterns) for customizing the underlying session.
 
 Check if a domain is supported:
 
@@ -136,8 +141,8 @@ if get_plugin_class("pixeldrain.com"):
     print("pixeldrain.com is supported!")
 ```
 
-Megaloader supports 11 platforms split into core (Bunkr, PixelDrain, Cyberdrop,
-GoFile) and extended (Fanbox, Pixiv, Rule34, etc) tiers. See the
+Megaloader supports 10 platforms split into core (Bunkr, PixelDrain, Cyberdrop,
+GoFile) and extended (Pixiv, Rule34, etc) tiers. See the
 [platforms reference](../reference/platforms) for the complete list.
 
 ## Platform-specific options
@@ -148,10 +153,10 @@ Some platforms accept parameters. GoFile supports password-protected folders:
 mgl.extract("https://gofile.io/d/abc123", password="secret")
 ```
 
-Fanbox and Pixiv often require session cookies:
+Pixiv often requires a session cookie:
 
 ```python
-mgl.extract("https://creator.fanbox.cc", session_id="your_cookie")
+mgl.extract("https://www.pixiv.net/en/artworks/12345", session_id="your_cookie")
 ```
 
 Rule34 supports API credentials:
@@ -165,8 +170,8 @@ Most plugins support environment variables as fallback:
 ```python
 import os
 
-os.environ["FANBOX_SESSION_ID"] = "your_cookie"
-mgl.extract("https://creator.fanbox.cc")
+os.environ["PIXIV_PHPSESSID"] = "your_cookie"
+mgl.extract("https://www.pixiv.net/en/artworks/12345")
 ```
 
 Explicit kwargs take precedence over environment variables. Check

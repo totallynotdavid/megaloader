@@ -112,60 +112,76 @@ Headers: {}
 
 ### BasePlugin
 
-Abstract base class for platform extractors.
+Abstract base class for platform extractors. A plugin performs no network I/O of
+its own. It describes each request as a `Request` and reads back a `Response`
+through an injected `Fetcher`, so parsing and traversal stay testable offline.
 
 ```python
 class BasePlugin(ABC):
-    DEFAULT_HEADERS: ClassVar[dict[str, str]]
-
     def __init__(self, url: str, **options: Any) -> None
 
     @property
-    def session(self) -> requests.Session
+    def source(self) -> str
 
-    def _configure_session(self, session: requests.Session) -> None
+    def session_config(self) -> SessionConfig
 
     @abstractmethod
-    def extract(self) -> Generator[DownloadItem, None, None]
+    def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]
 ```
 
 **Attributes:**
 
-- `DEFAULT_HEADERS` - Default User-Agent header
-- `url` (str) - URL being extracted from
-- `options` (dict) - Plugin-specific options
+- `url` (str): URL being extracted from
+- `options` (dict): plugin-specific options
 
-#### session (property)
+#### source (property)
 
-Lazily-created requests session with retry logic.
+Lowercase plugin name used to tag extraction errors.
 
-**Returns:** `requests.Session`
+**Returns:** `str`
 
-Includes default User-Agent, retry strategy (3 retries, exponential backoff),
-and automatic retry on 429, 500, 502, 503, 504.
+#### session_config()
 
-#### \_configure_session(session)
+Override to declare site headers and auth cookies the fetcher should apply.
+Default returns an empty `SessionConfig`.
 
-Override to add platform-specific headers or authentication.
-
-**Parameters:** `session` (requests.Session)
+**Returns:** `SessionConfig`
 
 **Example:**
 
 ```python
-def _configure_session(self, session: requests.Session) -> None:
-    session.headers["Referer"] = f"https://{self.domain}/"
+def session_config(self) -> SessionConfig:
+    cookies = ()
     if api_key := os.getenv("PLUGIN_API_KEY"):
-        session.headers["Authorization"] = f"Bearer {api_key}"
+        cookies = (Cookie("token", api_key, ".example.com"),)
+    return SessionConfig(headers={"Referer": "https://example.com/"}, cookies=cookies)
 ```
 
-#### extract() (abstract)
+#### extract(fetch) (abstract)
 
-Extract downloadable items from URL. Must be implemented by subclasses.
+Yield downloadable items, fetching pages lazily through `fetch`. Must be
+implemented by subclasses.
+
+**Parameters:** `fetch` (Fetcher): resolves a `Request` to a `Response`
 
 **Returns:** Generator yielding `DownloadItem` objects
 
 **Raises:** `ExtractionError` on network or parsing failures
+
+### Fetcher
+
+The single seam that performs network I/O. Production code uses
+`RequestsFetcher`; tests pass a function that returns canned `Response` objects
+to exercise a plugin's full traversal offline.
+
+```python
+class Fetcher(Protocol):
+    def __call__(self, request: Request) -> Response: ...
+```
+
+`RequestsFetcher` wraps a `requests.Session` and owns the default User-Agent,
+retries (2 attempts, exponential backoff on 429, 500, 502, 503, 504), and the
+mapping from request failures to `ExtractionError` tagged with the plugin name.
 
 ## Exceptions
 
@@ -295,13 +311,12 @@ items = list(mgl.extract(url))
 
 ## Environment variables
 
-| Variable            | Plugin | Description      |
-| ------------------- | ------ | ---------------- |
-| `GOFILE_PASSWORD`   | Gofile | Default password |
-| `FANBOX_SESSION_ID` | Fanbox | Session cookie   |
-| `PIXIV_SESSION_ID`  | Pixiv  | Session cookie   |
-| `RULE34_API_KEY`    | Rule34 | API key          |
-| `RULE34_USER_ID`    | Rule34 | User ID          |
+| Variable           | Plugin | Description    |
+| ------------------ | ------ | -------------- |
+| `GOFILE_TOKEN`     | Gofile | Account token  |
+| `PIXIV_PHPSESSID`  | Pixiv  | Session cookie |
+| `RULE34_API_KEY`   | Rule34 | API key        |
+| `RULE34_USER_ID`   | Rule34 | User ID        |
 
 Explicit kwargs take precedence.
 

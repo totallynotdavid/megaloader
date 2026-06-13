@@ -266,10 +266,10 @@ links:
 mgl.extract("https://gofile.io/d/abc123", password="secret")
 ```
 
-Fanbox and Pixiv often require authentication:
+Pixiv often requires authentication:
 
 ```python
-mgl.extract("https://creator.fanbox.cc", session_id="your_cookie")
+mgl.extract("https://www.pixiv.net/en/artworks/12345", session_id="your_cookie")
 ```
 
 Check the [plugin options](/reference/options) reference to see what each
