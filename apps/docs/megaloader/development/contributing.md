@@ -113,9 +113,12 @@ uv run pytest --block-network packages/core/tests -v
 
 **Organization:**
 
-- `tests/unit/` - Pure logic: routing, parsing, crypto, fault injection (no network)
-- `tests/plugins/` - Full traversal replayed from recorded cassettes, snapshotted
-- Refresh cassettes / detect drift with `mise run test-record` (needs proxy creds)
+- `tests/unit/` - Pure logic: routing, parsing, crypto, fault injection (no
+  network)
+- `tests/plugins/` - Full traversal replayed from recorded cassettes,
+  snapshotted
+- Refresh cassettes / detect drift with `mise run test-record` (needs proxy
+  creds)
 
 ### Commit messages
 

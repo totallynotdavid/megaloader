@@ -150,9 +150,9 @@ def session_config(self) -> SessionConfig:
     })
 ```
 
-Finally, register your plugin in
-`packages/core/megaloader/plugins/registry.py`. Add the import, then map the
-domains in `PLUGIN_REGISTRY` and the plugin name in `PLUGIN_NAME_REGISTRY`:
+Finally, register your plugin in `packages/core/megaloader/plugins/registry.py`.
+Add the import, then map the domains in `PLUGIN_REGISTRY` and the plugin name in
+`PLUGIN_NAME_REGISTRY`:
 
 ```python
 from megaloader.plugins.filebox import FileBox

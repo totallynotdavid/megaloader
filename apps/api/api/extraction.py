@@ -3,7 +3,7 @@ import logging
 import megaloader
 
 from megaloader.item import DownloadItem
-from megaloader.plugins import get_plugin_class
+from megaloader.plugins import get_plugin_for_domain
 
 from api.config import ALLOWED_DOMAINS, MAX_FILE_COUNT
 from api.models import FileInfo
@@ -20,7 +20,7 @@ def validate_url(domain: str) -> tuple[bool, str | None]:
     Returns (supported, plugin_name).
     """
     try:
-        plugin_class = get_plugin_class(domain)
+        plugin_class = get_plugin_for_domain(domain)
 
         if plugin_class is None:
             return False, None

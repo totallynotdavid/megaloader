@@ -246,9 +246,9 @@ for domain in sorted(PLUGIN_REGISTRY.keys()):
 Check if domain is supported:
 
 ```python
-from megaloader.plugins import get_plugin_class
+from megaloader.plugins import get_plugin_for_domain
 
-if get_plugin_class("pixeldrain.com"):
+if get_plugin_for_domain("pixeldrain.com"):
     print("Supported")
 ```
 

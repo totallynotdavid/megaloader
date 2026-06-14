@@ -241,26 +241,26 @@ except mgl.UnsupportedDomainError as e:
 
 ## Plugin registry
 
-### get_plugin_class()
+### get_plugin_for_domain()
 
 Resolve domain to plugin class.
 
 ```python
-def get_plugin_class(domain: str) -> type[BasePlugin] | None
+def get_plugin_for_domain(domain: str) -> type[BasePlugin] | None
 ```
 
 **Parameters:** `domain` (str) - Normalized domain
 
 **Returns:** Plugin class or None
 
-**Resolution order:** Exact match, subdomain match, partial match fallback.
+**Resolution order:** Exact match, then subdomain match.
 
 **Example:**
 
 ```python
-from megaloader.plugins import get_plugin_class
+from megaloader.plugins import get_plugin_for_domain
 
-plugin_class = get_plugin_class("pixeldrain.com")
+plugin_class = get_plugin_for_domain("pixeldrain.com")
 if plugin_class:
     print(f"Supported: {plugin_class.__name__}")
 ```
@@ -311,12 +311,12 @@ items = list(mgl.extract(url))
 
 ## Environment variables
 
-| Variable           | Plugin | Description    |
-| ------------------ | ------ | -------------- |
-| `GOFILE_TOKEN`     | Gofile | Account token  |
-| `PIXIV_PHPSESSID`  | Pixiv  | Session cookie |
-| `RULE34_API_KEY`   | Rule34 | API key        |
-| `RULE34_USER_ID`   | Rule34 | User ID        |
+| Variable          | Plugin | Description    |
+| ----------------- | ------ | -------------- |
+| `GOFILE_TOKEN`    | Gofile | Account token  |
+| `PIXIV_PHPSESSID` | Pixiv  | Session cookie |
+| `RULE34_API_KEY`  | Rule34 | API key        |
+| `RULE34_USER_ID`  | Rule34 | User ID        |
 
 Explicit kwargs take precedence.
 

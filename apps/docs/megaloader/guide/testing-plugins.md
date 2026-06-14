@@ -22,8 +22,8 @@ Two surfaces, each with one job:
 
 The same plugin test doubles as the live check: `--record-mode=rewrite`
 re-fetches from the live site through the proxy, so refreshing a cassette and
-detecting "the platform changed" are the same action. A cassette is real
-network truth with an expiry date; the scheduled drift run renews it.
+detecting "the platform changed" are the same action. A cassette is real network
+truth with an expiry date; the scheduled drift run renews it.
 
 ## Manual testing
 
@@ -93,12 +93,12 @@ uv run pytest tests/plugins/test_filebox.py --block-network
 ```
 
 Recording needs proxy credentials (`GEONODE_*` in the project-root `.env`); the
-suite fails fast without them rather than reaching bare egress. Auth plugins also
-need their session secret exported. Cookies and tokens are scrubbed before a
-cassette is written, so recordings are safe to commit. Prefer small fixtures: a
-model that walks hundreds of detail pages makes a huge, brittle cassette. Cover
-that pagination with a `fake_fetcher` unit test and point the cassette at a
-single item instead. See `packages/core/tests/plugins/readme.md` for the full
+suite fails fast without them rather than reaching bare egress. Auth plugins
+also need their session secret exported. Cookies and tokens are scrubbed before
+a cassette is written, so recordings are safe to commit. Prefer small fixtures:
+a model that walks hundreds of detail pages makes a huge, brittle cassette.
+Cover that pagination with a `fake_fetcher` unit test and point the cassette at
+a single item instead. See `packages/core/tests/plugins/readme.md` for the full
 recording workflow.
 
 `assert_valid_item` checks the basics: an `http(s)` URL, a non-empty filename,
@@ -195,7 +195,8 @@ Two workflows:
   [Codecov](https://app.codecov.io/gh/totallynotdavid/megaloader).
 - `live.yml` runs weekly (Monday 05:00 UTC). It re-fetches every fixture through
   the proxy and compares against the committed snapshots without updating them,
-  so a mismatch surfaces as drift. It is allowed to fail without blocking anyone.
+  so a mismatch surfaces as drift. It is allowed to fail without blocking
+  anyone.
 
-When the drift check fails, the platform usually changed something: re-record the
-affected cassettes locally and review the snapshot diff to see what moved.
+When the drift check fails, the platform usually changed something: re-record
+the affected cassettes locally and review the snapshot diff to see what moved.

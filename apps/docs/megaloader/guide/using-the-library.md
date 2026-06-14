@@ -135,9 +135,9 @@ maps request failures to `ExtractionError`. See
 Check if a domain is supported:
 
 ```python
-from megaloader.plugins import get_plugin_class
+from megaloader.plugins import get_plugin_for_domain
 
-if get_plugin_class("pixeldrain.com"):
+if get_plugin_for_domain("pixeldrain.com"):
     print("pixeldrain.com is supported!")
 ```
 
