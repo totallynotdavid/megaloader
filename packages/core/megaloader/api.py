@@ -79,9 +79,7 @@ def extract(
     if plugin_class is None:
         raise UnsupportedDomainError(parsed.netloc)
 
-    logger.debug(
-        "Initializing %s for domain '%s'", plugin_class.__name__, parsed.netloc
-    )
+    logger.debug("Initializing %s for domain %r", plugin_class.__name__, parsed.netloc)
 
     try:
         extractor = plugin_class(url, **options)
