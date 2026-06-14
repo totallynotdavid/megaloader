@@ -457,7 +457,7 @@ wheels = [
 
 [[package]]
 name = "megaloader"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/core" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -495,7 +495,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "megaloader-cli"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/cli" }
 dependencies = [
     { name = "click" },

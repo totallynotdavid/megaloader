@@ -1,6 +1,6 @@
 [project]
 name = "megaloader"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python library for extracting downloadable content metadata from file hosting platforms"
 readme = "readme.md"
 requires-python = ">=3.10"
