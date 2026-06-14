@@ -87,8 +87,8 @@ PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
 }
 ```
 
-For subdomain support like `creator.fanbox.cc`, add the base domain to
-`SUBDOMAIN_SUPPORTED_DOMAINS`.
+For subdomain support like `www.pixiv.net`, add the base domain to
+`SUBDOMAIN_SUPPORTED`.
 
 Handle network errors broadly. Individual failures should be logged without
 stopping the entire extraction:

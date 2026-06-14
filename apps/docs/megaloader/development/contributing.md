@@ -101,21 +101,21 @@ Run tests:
 
 ```bash [mise]
 mise run test-unit  # Fast unit tests
-mise run test       # All tests including live
+mise run test       # Full offline suite (unit + cassette replay)
 ```
 
 ```bash [uv]
 uv run pytest packages/core/tests/unit/test_item.py -v
-uv run pytest packages/core/tests -v
+uv run pytest --block-network packages/core/tests -v
 ```
 
 :::
 
 **Organization:**
 
-- `tests/unit/` - Fast unit tests (no network)
-- `tests/live/` - Live tests with `@pytest.mark.live`
-- Use `uv run pytest packages/core/tests --run-live` for live tests
+- `tests/unit/` - Pure logic: routing, parsing, crypto, fault injection (no network)
+- `tests/plugins/` - Full traversal replayed from recorded cassettes, snapshotted
+- Refresh cassettes / detect drift with `mise run test-record` (needs proxy creds)
 
 ### Commit messages
 
@@ -179,9 +179,8 @@ See [creating plugins guide](../guide/creating-plugins).
 1. Create plugin in `packages/core/megaloader/plugins/`
 2. Inherit `BasePlugin`, implement `extract()`
 3. Register in `PLUGIN_REGISTRY`
-4. Add unit tests in `tests/unit/`
-5. Add live tests with `@pytest.mark.live`
-6. Update `docs/reference/platforms.md`
+4. Add unit tests in `tests/unit/` and a recorded `tests/plugins/test_<name>.py`
+5. Update `docs/reference/platforms.md`
 
 ### New CLI command
 

@@ -1,0 +1,725 @@
+# serializer version: 1
+# name: test_fapello_model
+  list([
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0083.jpg',
+      'filename': 'narabask_0083.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0082.jpg',
+      'filename': 'narabask_0082.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0081.jpg',
+      'filename': 'narabask_0081.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0080.jpg',
+      'filename': 'narabask_0080.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0079.jpg',
+      'filename': 'narabask_0079.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0078.jpg',
+      'filename': 'narabask_0078.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0077.jpg',
+      'filename': 'narabask_0077.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0076.jpg',
+      'filename': 'narabask_0076.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0075.jpg',
+      'filename': 'narabask_0075.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0074.jpg',
+      'filename': 'narabask_0074.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0073.jpg',
+      'filename': 'narabask_0073.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0072.jpg',
+      'filename': 'narabask_0072.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0071.jpg',
+      'filename': 'narabask_0071.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0070.jpg',
+      'filename': 'narabask_0070.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0069.jpg',
+      'filename': 'narabask_0069.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0068.jpg',
+      'filename': 'narabask_0068.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0067.jpg',
+      'filename': 'narabask_0067.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0066.jpg',
+      'filename': 'narabask_0066.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0065.jpg',
+      'filename': 'narabask_0065.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0062.jpg',
+      'filename': 'narabask_0062.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0061.jpg',
+      'filename': 'narabask_0061.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0060.jpg',
+      'filename': 'narabask_0060.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0059.jpg',
+      'filename': 'narabask_0059.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0058.jpg',
+      'filename': 'narabask_0058.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0057.jpg',
+      'filename': 'narabask_0057.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0056.jpg',
+      'filename': 'narabask_0056.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0055.jpg',
+      'filename': 'narabask_0055.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0054.jpg',
+      'filename': 'narabask_0054.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0053.jpg',
+      'filename': 'narabask_0053.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0052.jpg',
+      'filename': 'narabask_0052.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0051.jpg',
+      'filename': 'narabask_0051.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0050.jpg',
+      'filename': 'narabask_0050.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0049.jpg',
+      'filename': 'narabask_0049.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0048.jpg',
+      'filename': 'narabask_0048.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0047.jpg',
+      'filename': 'narabask_0047.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0046.jpg',
+      'filename': 'narabask_0046.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0045.jpg',
+      'filename': 'narabask_0045.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0044.jpg',
+      'filename': 'narabask_0044.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0043.jpg',
+      'filename': 'narabask_0043.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0042.jpg',
+      'filename': 'narabask_0042.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0041.jpg',
+      'filename': 'narabask_0041.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0040.jpg',
+      'filename': 'narabask_0040.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0039.jpg',
+      'filename': 'narabask_0039.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0038.jpg',
+      'filename': 'narabask_0038.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0037.jpg',
+      'filename': 'narabask_0037.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0036.jpg',
+      'filename': 'narabask_0036.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0035.jpg',
+      'filename': 'narabask_0035.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0034.jpg',
+      'filename': 'narabask_0034.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0033.jpg',
+      'filename': 'narabask_0033.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0032.jpg',
+      'filename': 'narabask_0032.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0031.jpg',
+      'filename': 'narabask_0031.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0030.jpg',
+      'filename': 'narabask_0030.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0029.jpg',
+      'filename': 'narabask_0029.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0028.jpg',
+      'filename': 'narabask_0028.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0027.jpg',
+      'filename': 'narabask_0027.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0026.jpg',
+      'filename': 'narabask_0026.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0025.jpg',
+      'filename': 'narabask_0025.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0024.jpg',
+      'filename': 'narabask_0024.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0023.jpg',
+      'filename': 'narabask_0023.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0022.jpg',
+      'filename': 'narabask_0022.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0021.jpg',
+      'filename': 'narabask_0021.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0020.jpg',
+      'filename': 'narabask_0020.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0019.jpg',
+      'filename': 'narabask_0019.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0018.jpg',
+      'filename': 'narabask_0018.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0017.jpg',
+      'filename': 'narabask_0017.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0016.jpg',
+      'filename': 'narabask_0016.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0015.jpg',
+      'filename': 'narabask_0015.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0014.jpg',
+      'filename': 'narabask_0014.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0013.jpg',
+      'filename': 'narabask_0013.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0012.jpg',
+      'filename': 'narabask_0012.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0011.jpg',
+      'filename': 'narabask_0011.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0010.jpg',
+      'filename': 'narabask_0010.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0009.jpg',
+      'filename': 'narabask_0009.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0008.jpg',
+      'filename': 'narabask_0008.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0007.jpg',
+      'filename': 'narabask_0007.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0005.jpg',
+      'filename': 'narabask_0005.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0004.jpg',
+      'filename': 'narabask_0004.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0003.jpg',
+      'filename': 'narabask_0003.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0002.jpg',
+      'filename': 'narabask_0002.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': 'narabask',
+      'download_url': 'https://fapello.com/content/n/a/narabask/1000/narabask_0001.jpg',
+      'filename': 'narabask_0001.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---

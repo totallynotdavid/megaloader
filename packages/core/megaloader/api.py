@@ -8,6 +8,7 @@ import requests
 
 from megaloader.error_policy import build_extraction_error
 from megaloader.exceptions import ExtractionError, UnsupportedDomainError
+from megaloader.fetcher import RequestsFetcher
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 from megaloader.plugins.registry import get_plugin_by_name, get_plugin_for_domain
@@ -83,8 +84,14 @@ def extract(
     )
 
     try:
-        extractor = plugin_class(url, session=session, timeout=timeout, **options)
-        yield from extractor.extract()
+        extractor = plugin_class(url, **options)
+        fetch = RequestsFetcher(
+            extractor.source,
+            config=extractor.session_config(),
+            session=session,
+            timeout=timeout,
+        )
+        yield from extractor.extract(fetch)
     except (ExtractionError, UnsupportedDomainError, ValueError):
         raise
     except Exception as e:

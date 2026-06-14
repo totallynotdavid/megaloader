@@ -1,0 +1,445 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://rule34.xxx/index.php?page=post&s=view&id=15121890
+  response:
+    body:
+      string: "\t\n\t<!DOCTYPE html>\n<html>\n\t<head>\n\t\t\n\t\t<meta http-equiv=\"X-UA-Compatible\"
+        content=\"IE=edge\" />\n\t\t<meta http-equiv=\"content-type\" content=\"text/html;
+        charset=utf-8\" />\n\t\t<meta charset=\"utf-8\" />\n\t\t    \n                    <link
+        rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"https://rule34.xxx//css/desktop.css?46\"
+        title=\"default\" />\n            \t\t<script nomodule src=\"/script/core-js.js\"
+        type=\"text/javascript\"></script>\n<script src=\"https://rule34.xxx/script/application.js?33\"
+        type=\"text/javascript\"></script>\n<script src=\"/script/awesomplete.min.js?v33\"
+        type=\"text/javascript\"></script>\n\n\n<script>\n\t\t\t\twindow.captchaSiteKey
+        = \"0x4AAAAAAAES4wLGEtgDhNX6\";\n                window.captchaCSSClass =
+        \"cf-turnstile\";\n                window.captchaProvider = \"turnstile\";\n\t\t\t\twindow.captchaInstance
+        = \"tst2\";\n\t\t\t\twindow.captchaInstanceFormKey = \"captchaKey\";\n\t\t\t\twindow.captchaResponseFormKey
+        = \"cf-turnstile-response\";\n\t\t\t\twindow.captchaRenderIdFn = (id) => '#'
+        + id;\n\t\t\t\twindow.getCaptcha = function() {\n\t\t\t\t\tif (window[\"turnstile\"])
+        {\n\t\t\t\t\t\treturn turnstile; \n\t\t\t\t\t} else {\n\t\t\t\t\t\treturn
+        undefined;\n\t\t\t\t\t}\n                }\n\n\t\t\t\twindow.captchaScriptLoaded
+        = false;\n\t\t\t\twindow.loadCaptchaScript = function() {\n\t\t\t\t\tif (window.captchaScriptLoaded)
+        return; \n\t\t\t\t\twindow.captchaScriptLoaded = true;\n\t\t\t\t\tconst script
+        = document.createElement('script');\n\t\t\t\t\tscript.src = \"https://challenges.cloudflare.com/turnstile/v0/api.js?onload=loadedCaptchaScript\";\n\t\t\t\t\tdocument.body.appendChild(script);\n\t\t\t\t\t\n\t\t\t\t\treturn
+        new Promise((res, rej) => {\n\t\t\t\t\t\twindow.loadedCaptchaScript = () =>
+        {\n\t\t\t\t\t\t\tconsole.log(\"loaded\");\n\t\t\t\t\t\t\tres();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscript.onerror
+        = function () {\n\t\t\t\t\t\t\trej();\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}\n</script>\n\n\t\t<link
+        rel=\"shortcut icon\" href=\"/favicon.ico\" />\n\t\t<meta name=\"theme-color\"
+        content=\"#ffffff\">\n\t\t<title>Rule 34 - ai assisted ai generated black
+        and white breasts clone disembodied hands female junji ito kokenaart monochrome
+        multiple females multiple girls pubic hair pussy small breasts tomie | 15121890</title>\n\t\t<meta
+        name=\"keywords\" content=\"Rule 34, imageboard, ai assisted, ai generated,
+        black and white, breasts, clone, disembodied hands, female, junji ito, kokenaart,
+        monochrome, multiple females, multiple girls, pubic hair, pussy, small breasts,
+        tomie\" />\n\t\t<meta name=\"description\" content=\"Rule 34 - If it exists,
+        there is porn of it. We have pokemon, my little pony, Other hentai, whatever
+        you want.\">\n\n\n\t\t<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon.png\">\n\t\t<link
+        rel=\"mask-icon\" href=\"/safari-pinned-tab.svg\" color=\"#5bbad5\">\n\t\t
+        \n\t\t\t<script type=\"text/javascript\" src=\"/ads/adhelper.js\"></script>
+        \n\t\t \n\t\t\t<meta name=\"rating\" content=\"mature\" /> \n\t\t\n\t\t<link
+        rel=\"search\" type=\"application/opensearchdescription+xml\" title=\"Rule
+        34: Coded by Geltas\" href=\"openSearchDesc.xml\" />\n\n\t\t<link href=\"https://rule34.xxx/index.php?page=atom&tags=ai
+        assisted ai generated black and white breasts clone disembodied hands female
+        junji ito kokenaart monochrome multiple females multiple girls pubic hair
+        pussy small breasts tomie\" rel=\"alternate\" title=\"ATOM\" type=\"application/atom+xml\"/>\n</head>\n<body
+        id=\"body\">\n\n\t\t\n\t<script>if(typeof testvar !=='undefined') fetch (\"/?page=notify1&a=0\");
+        </script>\n<script src=\"/script/fluidplayer/fluidplayer.min.js?33\"></script>\n\n
+        \       <div id=\"header\">\n\n\t\t\t<input type=\"radio\" class=\"tradio\"
+        id=\"rmainmenu\" name=\"navtrigs\" />\n\t\t\t<input type=\"radio\" class=\"tradio\"
+        id=\"rnomenu1\" name=\"navtrigs\" checked />\n\t\t\t<input type=\"radio\"
+        class=\"tradio\" id=\"rsubmenu\" name=\"navtrigs\" /> \n\t\t\t<input type=\"radio\"
+        class=\"tradio\" id=\"rnomenu2\" name=\"navtrigs\" />\n\t\t\t<label for=\"rmainmenu\"
+        class=\"tlabel tfirst\" id=\"rlmainmenu\"></label>\n\t\t\t<label for=\"rnomenu1\"
+        class=\"tlabel tnomenu tfirst\" id=\"rlnomenu1\"></label>\n\t\t\t<label for=\"rsubmenu\"
+        class=\"tlabel tsecond\" id=\"rlsubmenu\"></label>\n\t\t\t<label for=\"rnomenu2\"
+        class=\"tlabel tnomenu tsecond\" id=\"rlnomenu2\"></label>\n\n\t\t\t<h2 id=\"site-title\">\n\t\t\t\t\t\t\t\t\t<a
+        href=\"https://rule34.xxx/\">Rule 34</a>\n\t\t\t\t\n\t\t\t\t\t\t\t</h2>\n\t\t\t<ul
+        class=\"flat-list\" id=\"navbar\">\n\t\t\t<li><a href=\"https://rule34.xxx/index.php?page=account&s=home\">My
+        Account</a></li>\n\t\t\t<li class=\"current-page\"><a href=\"https://rule34.xxx/index.php?page=post&s=list&tags=all\">Posts</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=comment&s=list\">Comments</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=wiki&s=list\">Wiki</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=alias&s=list\">Aliases</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=artist&s=list\">Artists</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=tags&s=list\">Tags</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=pool&s=list\">Pools</a></li>\n\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=forum&s=list\">Forum</a></li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=icame\">iCame Top 100</a></li>\n\t\t\t\t\t\t\t\t\t<li><a
+        href=\"https://rule34.xxx/index.php?page=help\">Help</a></li>\n\t\t\t<li><a
+        href=\"https://discord.gg/rule34xxx\" target=\"_blank\" rel=\"noopener noreferrer\">Discord</a></li>\n\t\t\t<li><a
+        href=\"https://x.com/slayerduckie\" target=\"_blank\" rel=\"noopener noreferrer\">X</a></li>\n\t\t\t
+        \   <li><a style=\"font-weight: bolder; color: #e26c5e;\" rel=\"sponsored\"
+        href=\"https://s.happyleafmotion.com/v1/d.php?z=2694\" target=\"_blank\">\U0001F4A6
+        AI CUMSLUTS</a></li>\t\t\t\t\t\t<li><a style=\"font-weight: bolder\" href=\"/link.php\">Other
+        Sites</a></li>\n\n\t\t\t<script>\n\t\t\t\tfunction desktop_layout() {\n\t\t\t\t\tdocument.cookie
+        = \"experiment-mobile-layout=false; expires=Fri, 31 Dec 9999 23:59:59 GMT\";\n\t\t\t\t\tlocation.reload();\n\t\t\t\t}\n\n\t\t\t\tfunction
+        mobile_layout() {\n\t\t\t\t\tdocument.cookie = \"experiment-mobile-layout=;
+        expires=Thu, 01 Jan 1970 00:00:00 GMT\";\n\t\t\t\t\tlocation.reload();\n\t\t\t\t}\n\t\t\t</script>\n\n\t\t\t\t\t\t\t\t\t\t\t\t</ul>\n<ul
+        class=\"flat-list\" id=\"subnavbar\" style=\"margin-bottom: 1px;\">\n    <li><a
+        href=\"index.php?page=post&amp;s=list&tags=video\">Video</a></li>\n    <li><a
+        href=\"index.php?page=post&amp;s=add\">Upload</a></li>\n    <li><a href=\"index.php?page=post&amp;s=addVideo\">Upload
+        Video</a></li>\n\n                                                                                                                                                                                                                <li><a
+        href=\"index.php?page=post&amp;s=random\">Random</a></li>\n    <li><a href=\"/cdn-cgi/l/email-protection#186b6c797e7e587a77776a6d36776a7f\">Contact
+        Us</a></li>\n    <li><a href=\"/cdn-cgi/l/email-protection#6d09000e0c2d0f02021f1843021f0a\">DMCA</a></li>\n
+        \   <li><a href=\"index.php?page=about\">About</a></li>\n    <li><a href=\"index.php?page=help&amp;topic=post\">Help</a></li>\n
+        \   <li><a href=\"/index.php?page=tos\">TOS</a></li>\n        </ul> \n\t\t</div>\n\t\t<div
+        id=\"long-notice\"></div>\n\t\t<div id=\"notice\" class=\"notice\" style=\"display:
+        none;\"></div>\n\t\t<div class=\"has-mail\" id=\"has-mail-notice\"  style=\"display:
+        none;\">\n\t\t<a href=\"/index.php?page=gmail\">You have mail</a></div>\n\t\t
+        \n\n    <script data-cfasync=\"false\" src=\"/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js\"></script><script
+        async type=\"application/javascript\" src=\"https://a.magsrv.com/ad-provider.js\"></script>\n
+        \   \n<meta property=\"og:title\" content=\"Rule 34\" />\n<meta property=\"og:site_name\"
+        content=\"Rule 34\" />\n<meta property=\"og:image\" itemprop=\"image\" content=\"https://wimg.rule34.xxx//images/3485/854ef84384124ac5756f712470d25d1a.jpeg?15121890\"
+        />\t\n\n<div id=\"content\">\n\t<div id=\"post-view\">\n\t\t<div class=\"sidebar\">\n\t\t\t<div
+        class=\"tag-search\">\n    <h5>Search</h5>\n    <form action=\"index.php?page=search\"
+        method=\"post\" >\n            <input name=\"tags\" type=\"text\" value=\"\"/>
+        \n            <br />\n            <input name=\"commit\" type=\"submit\" value=\"Search\"
+        />\n    </form>\n    <small>(Supports wildcard *)</small>\n</div>\t\t\t\n\t\t\t<span
+        data-nosnippet>\n\t\t\t\t<ins class=\"eas6a97888e38\" data-zoneid=\"5232472\"></ins>\n\t\t\t</span>\n\n\t\t\t<ul
+        id=\"tag-sidebar\">\n                    <li><h6>Copyright</h6></li>\n                            <li
+        class=\"tag-type-copyright tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=junji_ito\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=junji_ito\">junji
+        ito</a>\n                    <span class=\"tag-count\">164</span>\n                </li>\n
+        \                               <li><h6>Character</h6></li>\n                            <li
+        class=\"tag-type-character tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=tomie\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=tomie\">tomie</a>\n
+        \                   <span class=\"tag-count\">84</span>\n                </li>\n
+        \                               <li><h6>Artist</h6></li>\n                            <li
+        class=\"tag-type-artist tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=kokenaart\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=kokenaart\">kokenaart</a>\n
+        \                   <span class=\"tag-count\">556</span>\n                </li>\n
+        \                               <li><h6>General</h6></li>\n                            <li
+        class=\"tag-type-general tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=breasts\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=breasts\">breasts</a>\n
+        \                   <span class=\"tag-count\">8054479</span>\n                </li>\n
+        \                               <li class=\"tag-type-general tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=clone\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=clone\">clone</a>\n                    <span
+        class=\"tag-count\">10315</span>\n                </li>\n                                <li
+        class=\"tag-type-general tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=disembodied_hands\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=disembodied_hands\">disembodied
+        hands</a>\n                    <span class=\"tag-count\">10002</span>\n                </li>\n
+        \                               <li class=\"tag-type-general tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=female\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=female\">female</a>\n                    <span
+        class=\"tag-count\">10109775</span>\n                </li>\n                                <li
+        class=\"tag-type-general tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=multiple_females\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=multiple_females\">multiple
+        females</a>\n                    <span class=\"tag-count\">219155</span>\n
+        \               </li>\n                                <li class=\"tag-type-general
+        tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=multiple_girls\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=multiple_girls\">multiple
+        girls</a>\n                    <span class=\"tag-count\">544696</span>\n                </li>\n
+        \                               <li class=\"tag-type-general tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=pubic_hair\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=pubic_hair\">pubic hair</a>\n
+        \                   <span class=\"tag-count\">677380</span>\n                </li>\n
+        \                               <li class=\"tag-type-general tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=pussy\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=pussy\">pussy</a>\n                    <span
+        class=\"tag-count\">3928192</span>\n                </li>\n                                <li
+        class=\"tag-type-general tag\">\n\t\t\t\t\t<a href=\"index.php?page=wiki&s=list&search=small_breasts\">?</a>\n
+        \                   <a href=\"index.php?page=post&amp;s=list&amp;tags=small_breasts\">small
+        breasts</a>\n                    <span class=\"tag-count\">529509</span>\n
+        \               </li>\n                                <li><h6>Meta</h6></li>\n
+        \                           <li class=\"tag-type-metadata tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=ai_assisted\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=ai_assisted\">ai assisted</a>\n
+        \                   <span class=\"tag-count\">189108</span>\n                </li>\n
+        \                               <li class=\"tag-type-metadata tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=ai_generated\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=ai_generated\">ai generated</a>\n
+        \                   <span class=\"tag-count\">3032884</span>\n                </li>\n
+        \                               <li class=\"tag-type-metadata tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=black_and_white\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=black_and_white\">black and
+        white</a>\n                    <span class=\"tag-count\">96007</span>\n                </li>\n
+        \                               <li class=\"tag-type-metadata tag\">\n\t\t\t\t\t<a
+        href=\"index.php?page=wiki&s=list&search=monochrome\">?</a>\n                    <a
+        href=\"index.php?page=post&amp;s=list&amp;tags=monochrome\">monochrome</a>\n
+        \                   <span class=\"tag-count\">415963</span>\n                </li>\n
+        \               </ul>\n\t\t\t<div>\n    <script type=\"text/javascript\">\n
+        \       function iCame(c){\tvar a; try{a=new XMLHttpRequest()}catch(b){try{a=new
+        ActiveXObject(\"Msxml2.XMLHTTP\")}catch(b){try{a=new ActiveXObject(\"Microsoft.XMLHTTP\")}catch(b){alert(\"Your
+        browser is to old or does not support Ajax.\")}}}a.onreadystatechange=function(){if(a.readyState==4)
+        {notice(a.responseText);}};a.open(\"GET\",\"/public/icame.php?postid=\" +
+        c,true);a.send(null)}\n    </script>\n\n    <h5>Cum on this</h5>\n        <ul>\n
+        \           You can cum every 24 hours.<br \\>\n            Explanation <a
+        href=\"/index.php?page=forum&amp;s=view&amp;id=192#1153\">here</a> and <a
+        href=\"/index.php?page=icame\">top list here.</a>\n            <li>\n                <a
+        href=\"#\" onclick=\"iCame('15121890'); return false;\"><img src=\"https://rule34.xxx/static/icame.png\"
+        alt=\"I came!\" /></a>\n            </li>\n        </ul>\n</div>\n\t\t\t\n\t\t\t<div
+        id=\"stats\">\n    <h5>Statistics</h5>\n    <ul>\n        <li>Id: 15121890</li>\n
+        \       <li>\n            Posted: 2025-10-13 14:55:28<br /> \n            by
+        \n            <a href=\"index.php?page=account&amp;s=profile&amp;uname=KokenaArt\">\n
+        \               KokenaArt            </a>\n        </li>\n        <li>Size:
+        1024x1024</li>\n        <li>Source: <a href=\"https://x.com/KokenaArt/status/1977749441474887806\"
+        rel=\"nofollow\">x.com/KokenaArt/status/1977749441474887806</a></li>        <li>Rating:
+        Explicit</li>\n        <li>\n            Score: <span id=\"psc15121890\">49</span>
+        \n\n                                    (vote <a href=\"#\" onclick=\"Javascript:post_vote('15121890',
+        'up'); return false;\">up</a>)\n                                </li>\n    </ul>\n</div>\t\t\t\n\t\t\t<div
+        class=\"link-list\">\n    <h5>Options</h5>\n    <ul>\n        <li>\n            <a
+        href=\"#\" onclick=\"toggleEditForm(); return false;\" >Edit</a>\n        </li>\n
+        \                   <li>\n            <a href=\"https://wimg.rule34.xxx//images/3485/854ef84384124ac5756f712470d25d1a.jpeg?15121890\"
+        \n                style=\"font-weight: bold;\">\n                    Original
+        image\n                </a>\n            </li>\n        \n        \n        \n
+        \                   <li>\n                <div id=\"pfd\">\n                                            <a
+        href=\"#\" onclick=\"pflag('15121890'); return false;\">Report to moderation</a>\n
+        \                                   </div>\n            </li>\n        \n
+        \       <li>\n            <a href=\"#\" onclick=\"Note.create(284392); return
+        false;\">Add Note</a>\n        </li>\n        \n        <li>\n            <a
+        href=\"#\" onclick=\"post_vote('15121890', 'up'); addFav('15121890'); return
+        false;\">Add to favorites</a>\n        </li>\n\n            </ul>\n</div>\n\t\t\t<div
+        class=\"link-list\">\n    <h5>History</h5>\n    <ul>\n        <li><a href=\"index.php?page=history&amp;type=tag_history&amp;id=15121890\">Tags</a></li>\n
+        \       <li><a href=\"index.php?page=history&amp;type=page_notes&amp;id=15121890\">Notes</a></li>\n
+        \   </ul>\n</div>\n\t\t\t<div class=\"link-list\">\n    <h5>Related Posts</h5>\n
+        \   <ul>\n        \n        <li><a href=\"http://saucenao.com/search.php?db=999&url=https://wimg.rule34.xxx/thumbnails//3485/thumbnail_854ef84384124ac5756f712470d25d1a.jpg\"
+        rel=\"nofollow\">Saucenao</a></li>\n        <li><a href=\"http://iqdb.org/?url=https://wimg.rule34.xxx/thumbnails//3485/thumbnail_854ef84384124ac5756f712470d25d1a.jpg\"
+        rel=\"nofollow\">Similar</a></li>\n        <li><a href=\"http://waifu2x.booru.pics/Home/fromlink?denoise=1&scale=2&url=https://wimg.rule34.xxx//images/3485/854ef84384124ac5756f712470d25d1a.jpeg?15121890\"
+        rel=\"nofollow\">Waifu2x</a></li>\n        \n        <br />\n    </ul>\n</div>\n\t\t\t\t\t\t\t\t\t\t\t\t<img
+        src=\"/images/r34chibi.png\" />\n\t\t\t\t\t\t\t\t\t</div>\n\n\t\t<div class=\"content\"
+        id=\"right-col\">\n\n\t\t\t<div id=\"fit-to-screen\">\n\n\t\t\t\t<div id=\"status-notices\">\n\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t</div>\n\t\t\t\t<div
+        class=\"flexi\">\n\t\t\t\t\t<div id=\"\">\n\t\t\t\t\t\t<div id=\"pv_leaderboard\"
+        data-nosnippet>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\n<script>\n
+        \   // megacache time\n\n    var id = \"15121890\";\n    var searchTags =
+        \"all\";\n    var aiFiltered = \"0\";\n    var storageKey = searchTags + \"_\"
+        + \"aif\" + aiFiltered;\n\n    const baseUrl = \"https:\\/\\/rule34.xxx\\/public\\/post_helpers2.php\"
+        + \"?action=fetch_id_cache\";\n\n    function hasPrevNext() {\n        let
+        time = parseInt(sessionStorage.getItem(\"lastRefresh\"));\n        if ((Number.isInteger(time)
+        && Date.now() - time > 1000 * 60 * 10) || isNaN(time)) {\n            sessionStorage.clear();\n
+        \       };\n\n        let storageItem = sessionStorage.getItem(storageKey);\n
+        \       let storage = [];\n        if (storageItem !== null) {\n            storage
+        = JSON.parse(storageItem);\n            var idx = storage.findIndex((v) =>
+        v == id);\n            if (idx == -1) { // index not found, rebuild storage#\n
+        \               return false;\n            } else if (idx == 0) { // need
+        more to the left\n                return false;\n            } else if (idx
+        == storage.length - 1) { // need more to the right\n                return
+        false;\n            } \n            return true;\n        }\n    }\n\n    async
+        function getPrevNext() {\n\n        let time = parseInt(sessionStorage.getItem(\"lastRefresh\"));\n
+        \       if ((Number.isInteger(time) && Date.now() - time > 1000 * 60 * 10)
+        || isNaN(time)) {\n            sessionStorage.clear();\n        };\n\n        let
+        storageItem = sessionStorage.getItem(storageKey);\n        let storage = [];\n
+        \       if (storageItem == null) {\n            const data = await fetch(baseUrl
+        + \"&tags=\" + searchTags + \"&id=\" + id)\n                .then((response)
+        => response.json())\n                .catch((error) => {\n                    notice(\"Error...\");\n
+        \               });\n            storageItem = JSON.stringify(data);\n            storage
+        = data;\n            sessionStorage.setItem(storageKey, storageItem);\n            sessionStorage.setItem(\"lastRefresh\",
+        Date.now());\n        } else {\n            storage = JSON.parse(storageItem);\n
+        \           var idx = storage.findIndex((v) => v == id);\n\n\n            if
+        (idx == -1) { // index not found, rebuild storage#\n                const
+        data = await fetch(baseUrl + \"&tags=\" + searchTags + \"&id=\" + id)\n                    .then((response)
+        => response.json())\n                    .catch((error) => {\n                        notice(\"Error...\");\n
+        \                   });\n                storage = data;\n                storageItem
+        = JSON.stringify(storage);\n                sessionStorage.setItem(storageKey,
+        storageItem);\n                sessionStorage.setItem(\"lastRefresh\", Date.now());\n
+        \           } else if (idx == 0) { // need more shit to the left (higher)\n
+        \               const data = await fetch(baseUrl + \"&direction=next&tags=\"
+        + searchTags + \"&id=\" + id)\n                    .then((response) => response.json())\n
+        \                   .catch((error) => {\n                        notice(\"Error...\");\n
+        \                   });\n                storage = data.concat(storage);\n
+        \               storageItem = JSON.stringify(storage);\n                sessionStorage.setItem(storageKey,
+        storageItem);\n                sessionStorage.setItem(\"lastRefresh\", Date.now());\n
+        \           } else if (idx == storage.length - 1) { // need more shit to the
+        right (lower)\n                const data = await fetch(baseUrl + \"&direction=prev&tags=\"
+        + searchTags + \"&id=\" + id)\n                    .then((response) => response.json())\n
+        \                   .catch((error) => {\n                        notice(\"Error...\");\n
+        \                   });\n                storage = storage.concat(data);\n
+        \               storageItem = JSON.stringify(storage);\n                sessionStorage.setItem(storageKey,
+        storageItem);\n                sessionStorage.setItem(\"lastRefresh\", Date.now());\n
+        \           }\n        }\n\n        var idx = storage.findIndex((v) => v ==
+        id);\n        var idxLeft = -1;\n        var idxRight = -1;\n        if (idx
+        < -1) {\n            //wtf\n        }\n        if (idx > 0) {\n            idxLeft
+        = idx - 1;\n        }\n        if (idx < storage.length - 1) {\n            idxRight
+        = idx + 1\n        }\n\n        return [storage[idxLeft], storage[idxRight]];\n
+        \   }\n</script>\n\n\n    <template id=\"prevLinkTmpl\">\n        <div style=\"font-size:
+        15px;\">\n            <a href=\"#\" id=\"prev_search_link\">\n                &lt;
+        previous\n            </a>\n        </div>\n    </template>\n\n    <template
+        id=\"nextLinkTmpl\">\n        <div style=\"font-size: 15px;\">\n            <a
+        href=\"#\" id=\"next_search_link\">\n                next &gt;\n            </a>\n
+        \       </div>\n    </template>\n\n\n    <div id=\"navlinksContainer\" class=\"status-notice
+        flexi\" style=\"justify-content: space-evenly;\">\n        <div style=\"text-align:
+        center\">\n                    </div>\n    </div>\n\n    <script>\n        document.onkeydown
+        = function(ev) {\n            var dontdo = [\n                \"INPUT\",\n
+        \               \"TEXTAREA\", \n                \"VIDEO\",\n                \"BUTTON\",\n
+        \           ];\n            if (dontdo.includes(ev.target.nodeName)) { return
+        true; }            \n            if (!ev.altKey && !ev.ctrlKey && !ev.metaKey
+        && !ev.metaKey) {\n                switch (ev.key) {\n                    case
+        \"ArrowLeft\":\n                    //case \"a\":\n                        if
+        ($(\"prev_search_link\"))\n                            $(\"prev_search_link\").click()\n
+        \                           return false;\n                        break;\n
+        \                   case \"ArrowRight\":\n                    //case \"d\":\n
+        \                       if ($(\"next_search_link\"))\n                            $(\"next_search_link\").click()\n
+        \                           return false;\n                        break;\n
+        \               }\n            }\n            \n        };\n    </script>\n\n\n<script>\n
+        \   document.idsFetched = false;\n    document.ids = null;\n    (async function()
+        {\n        var container = document.querySelector(\"#navlinksContainer\");\n
+        \       var baseLink = \"\\/index.php?page=post&s=view&id=IDPLACEHOLDER\"\n
+        \       // if (idPrev != undefined) {\n        //     const prevTmpl = document.querySelector(\"#prevLinkTmpl\");\n
+        \       //     const prevNode = prevTmpl.content.cloneNode(true);\n        //
+        \    prevNode.querySelector(\"a\").href = prevNode.querySelector(\"a\").href.replace(\"IDPLACEHOLDER\",
+        idPrev);\n        //     container.prepend(prevNode);\n        // }\n\n        //
+        if (idNext != undefined) {\n        //     const nextTmpl = document.querySelector(\"#nextLinkTmpl\");\n
+        \       //     const nextNode = nextTmpl.content.cloneNode(true);\n        //
+        \    nextNode.querySelector(\"a\").href = nextNode.querySelector(\"a\").href.replace(\"IDPLACEHOLDER\",
+        idNext);\n        //     container.append(nextNode);\n        // }\n\n        const
+        prevTmpl = document.querySelector(\"#prevLinkTmpl\");\n        const nextTmpl
+        = document.querySelector(\"#nextLinkTmpl\");\n        const prevNode = prevTmpl.content.cloneNode(true);\n
+        \       const nextNode = nextTmpl.content.cloneNode(true);\n        const
+        fetcherFunc = async function() {\n            if (document.idsFetched == false)
+        {\n                document.idsFetched = true;\n                document.ids
+        = await getPrevNext();\n                var idPrev = document.ids[0];\n                var
+        idNext = document.ids[1];\n                if (idPrev != undefined) {\n                    document.querySelector(\"#prev_search_link\").href
+        = baseLink.replace(\"IDPLACEHOLDER\", idPrev);\n                } else {\n
+        \                   document.querySelector(\"#prev_search_link\").style.display
+        = \"none\";\n                }\n                if (idNext != undefined) {\n
+        \                   document.querySelector(\"#next_search_link\").href = baseLink.replace(\"IDPLACEHOLDER\",
+        idNext);\n                } else {\n                    document.querySelector(\"#next_search_link\").style.display
+        = \"none\";\n                }\n            }\n            return true;\n
+        \       };\n\n        prevNode.querySelector(\"a\").onclick = async function(e)
+        {\n            if (document.querySelector(\"#prev_search_link\").getAttribute(\"href\")
+        != \"#\") {\n                return true;\n            }\n            e.preventDefault();\n
+        \           await fetcherFunc();\n            if (document.ids[0] != undefined)
+        {\n                window.location.href = document.querySelector(\"#prev_search_link\").href;\n
+        \           }\n            return false;\n        };\n        nextNode.querySelector(\"a\").onclick
+        = async function(e) {\n            if (document.querySelector(\"#next_search_link\").getAttribute(\"href\")
+        != \"#\") {\n                return true;\n            }\n            e.preventDefault();\n
+        \           await fetcherFunc();\n            if (document.ids[1] != undefined)
+        {\n                window.location.href = document.querySelector(\"#next_search_link\").href;\n
+        \           }\n            return false;\n        };\n\n        if (hasPrevNext())
+        {\n            fetcherFunc();\n        }\n\n        container.prepend(prevNode);\n
+        \       container.append(nextNode);\n        \n\n        \n\n        \n\n\n
+        \   })()\n</script>\n\t\t\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\tdocument.showNotesCaptcha
+        = true;\n                document.noteCaptcha = true;\n</script>\n\n<div id=\"note-container\">\n
+        \    \n</div>\n<script type=\"text/javascript\">\n    image = {'domain':'https://wimg.rule34.xxx/',
+        'width':1024, 'height':1024,'dir':3485, 'img':'854ef84384124ac5756f712470d25d1a.jpeg',
+        'base_dir':'images', 'sample_dir':'samples', 'sample_width':'0', 'sample_height':'0'};\t\n</script>\n\n
+        \           <img alt=\"ai_assisted ai_generated black_and_white breasts clone
+        disembodied_hands female junji_ito kokenaart monochrome multiple_females multiple_girls
+        pubic_hair pussy small_breasts tomie\" \n            src=\"https://wimg.rule34.xxx//images/3485/854ef84384124ac5756f712470d25d1a.jpeg?15121890\"\n
+        \           id=\"image\" \n            onclick=\"Note.toggle();\" \n            width=\"1024\"\n
+        \           height=\"1024\" \n        />\n        <div style=\"margin-bottom:
+        1em;\">\n        <p id=\"note-count\"></p>\n    </div>\n    \n    <script
+        type=\"text/javascript\">\n        \n\n        Note.post_id = 15121890;\n
+        \               Note.updateNoteCount();\n        Note.show();\n    </script>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<span
+        data-nosnippet>\n\t\t\t\t\t\t\t\t\t\t\t\t</span> \n\n\t\t\t\t\t\t<h4 class=\"image-sublinks\">\n\t<a
+        href=\"#\" onclick=\"Javascript:toggleEditForm(); return false;\">Edit</a>
+        \n\t\t\t\t\t | Create an account to comment\t\n\t\t\t</h4>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\n\t\t\t\t\t<div
+        data-nosnippet class=\"postViewSidebarRight verticalFlexWithMargins\">\n\t\t\t\t\t\t<ins
+        class=\"eas6a97888e38\" data-zoneid=\"5232458\"></ins> \n    \t\t\t\t\t\t<ins
+        class=\"eas6a97888e38\" data-zoneid=\"5232470\"></ins>\n    \t\t\t\t\t\t \n<ins
+        class=\"eas6a97888e38\" data-zoneid=\"4463770\"></ins> \n    \t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t</div>\n\n\n\n\t\t\t<div
+        id=\"edit-form\">\n\t<form method=\"post\" action=\"/public/edit_post.php\"
+        id=\"edit_form\" name=\"edit_form\" style=\"display:none\">\n\t\t<table>\n\t\t\t<tr><td>\n\n\t\t\t\tRating:<br
+        />\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"rating\" value=\"e\"
+        id=\"rating_e\" checked />\n\t\t\t\t\t\t\t<label for=\"rating_e\">Explicit</label>\n\t\t\t\t\t\t\t\t\t\t\t\t<input
+        type=\"radio\" name=\"rating\" value=\"q\" id=\"rating_q\"  />\n\t\t\t\t\t\t\t<label
+        for=\"rating_q\">Questionable</label>\n\t\t\t\t\t\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t\tTitle<br
+        />\n\t\t\t\t\t<input type=\"text\" name=\"title\" id=\"title\" value=\"\"
+        />\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t\tParent<br />\n\t\t\t\t\t<input
+        type=\"text\" name=\"parent\" value=\"\" />\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\tSource<br
+        />\n\t\t\t\t<input type=\"text\" name=\"source\" size=\"40\" id=\"source\"
+        value=\"https://x.com/KokenaArt/status/1977749441474887806\" />\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\tTags<br
+        />\n\t\t\t\t<textarea cols=\"100\" id=\"tags\" name=\"tags\" rows=\"8\" tabindex=\"10\">ai_assisted
+        ai_generated black_and_white breasts clone disembodied_hands female junji_ito
+        kokenaart monochrome multiple_females multiple_girls pubic_hair pussy small_breasts
+        tomie</textarea>\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\tMy Tags<br />\n\t\t\t\t<div
+        id=\"my-tags\">\n\t\t\t\t<a href=\"index.php?page=account&s=options\">Edit</a>\n\t\t\t\t</div>\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\tRecent
+        Tags<br />\n\t\t\t\tmultiple_females\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t<input
+        type=\"hidden\" name=\"id\" value=\"15121890\" />\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t<input
+        type=\"hidden\" name=\"pconf\" id=\"pconf\" value=\"0\"/>\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t<input
+        type=\"hidden\" name=\"lupdated\" id=\"lupdated\" value=\"1760367328\"/>\n\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t<div
+        class=\"cf-turnstile\" data-sitekey=\"0x4AAAAAAAES4wLGEtgDhNX6\"></div><input
+        type=\"hidden\" name=\"captchaKey\" value=\"tst2\" />\t\t\t\t<input type=\"hidden\"
+        name=\"csrf_post_edit\" value=\"b966c294b9caceec9652d75cc7851c7e\" />\t\t\t</td></tr>\n\t\t\t<tr><td>\n\t\t\t\t<input
+        type=\"submit\" name=\"submit\" value=\"Save changes\" />\n\t\t\t</td></tr>\n\t\t</table>\n\t</form>\n</div>\n<script
+        type=\"text/javascript\">\n\tdocument.querySelector('#pconf').value=1;\n</script>\n<script
+        type=\"text/javascript\">\n\tvar my_tags = Cookie.get(\"tags\");\n\tvar tags
+        = document.querySelector('#tags').value.split(' ');\n\tvar my_tags_length
+        = my_tags.length;\n\tvar temp_my_tags = Array();\n\tvar g = 0;\n\tfor(i in
+        my_tags)\n\t{\n\t\tif(my_tags[i] != \"\" && my_tags[i] != \" \" && i <= my_tags_length)\n\t\t{\n\t\t\ttemp_my_tags[g]
+        = my_tags[i];\n\t\t\tg++;\n\t\t}\n\t}\n\t\tmy_tags = temp_my_tags;\n\tvar
+        links = '';\n\tj = 0;\n\tmy_tags_length = my_tags.length;\n\tfor(i in my_tags)\n\t{\n\t\tif(j
+        < my_tags_length)\n\t\t{\n\t\t\tif(!tags.includes(my_tags[i]))\n\t\t\t{\n\t\t\t\tlinks
+        = links+'<a href=\"index.php?page=post&amp;s=list&amp;tags='+my_tags[i]+'\"
+        id=\"t_'+my_tags[i]+'\"' + \"onclick=\\\"javascript:toggleTags('\"+my_tags[i]+\"','tags','t_\"+my_tags[i]+\"');\"
+        + 'return false;\">'+my_tags[i]+'</a> ';\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\tlinks
+        = links+'<a href=\"index.php?page=post&amp;s=list&amp;tags='+my_tags[i]+'\"
+        id=\"t_'+my_tags[i]+'\"' + \"onclick=\\\"javascript:toggleTags('\"+my_tags[i]+\"','tags','t_\"+my_tags[i]+\"');\"
+        + 'return false;\"><b>'+my_tags[i]+'</b></a> ';\n\t\t\t}\n\t\t}\n\t\tj++;\n\t}\n\tif(j
+        > 0)\n\t\t$('my-tags').innerHTML=links;\n\telse\n\t\t$('my-tags').innerHTML='<a
+        href=\"index.php?page=account&amp;s=options\">Edit</a>';\n</script>\n<script>\nfunction
+        toggleEditForm() {\n\tvar form = \"edit_form\";\n\tif ($(form).style.display=='none')
+        {\n\t\t$(form).show().scrollTo();\n\t\t$('tags').focus();\n\t\t\n      if
+        (!(\"captchaIncluded\" in document)) {\n        document.captchaIncluded =
+        true;\n        var script = document.createElement(\"script\");\n        script.src
+        = \"https://challenges.cloudflare.com/turnstile/v0/api.js\";\n        document.head.appendChild(script);
+        \n      }\n    \t} else {\n\t\t$(form).hide();\n\t}\n}\n</script>\n\n\t\t\t\n\t\t\t<div
+        id=\"post-comments\">\n    <div id=\"comment-list\">\n\n        <script type=\"text/javascript\">\n
+        \           var posts = {}; posts[15121890] = {}; posts[15121890].comments
+        = {}; posts[15121890].ignored = {}; var cthreshold = parseInt(Cookie.get('comment_threshold'))
+        || -5;\n        </script>\n\n        \n        \n        \n    </div>\n\n
+        \   <div id='paginator'> \n         <b>1</b> \n        <script type=\"text/javascript\">\n
+        \           filterComments(15121890, 0);\n        </script>\n    </div>\n</div>\t\t\t\n\t\t\t<div
+        class=\"horizontalFlexWithMargins\">\n\t\t\t\t<ins class=\"eas6a97888e38\"
+        data-zoneid=\"4975732\"></ins> \n\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t<div
+        class=\"horizontalFlexWithMargins\">\n\t\t\t\t\t\t\t</div>\n\t\t\t<br /><br
+        />\n\t\t\n\t\t</div>\n\t</div>\n</div>\n\n\n<script>(AdProvider = window.AdProvider
+        || []).push({\"serve\": {}});</script>\n    \n\r\n<!--  -->\r\n<!--  -->\r\n\r\n<div
+        style=\"text-align: center; font-size: smaller;\">\r\n    <p>\r\n        <a
+        href=\"#\" onclick=\"reset_cookie_consent()\">Reset cookie / GDPR consent</a>\r\n
+        \   </p>\r\n</div>\r\n\r\n<script>\r\n    function reset_cookie_consent()
+        {\r\n        if (confirm(\"This will reset your cookie preferences and GDPR
+        settings, continue?\")) {\r\n            Cookie.remove('gdpr'); Cookie.remove('gdpr-consent');
+        Cookie.remove('gdpr-disable-ga');\r\n            document.location.reload();\r\n
+        \       }\r\n    }\r\n</script>\r\n\r\n<br />\r\n<br />\r\n<br />\r\n\r\n<center
+        style=\"font-size: x-small\">\r\n    </center>\r\n\r\n<script>(function(){function
+        c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML=\"window.__CF$cv$params={r:'a0b2cff5ad7e90a9',t:'MTc4MTM3MTcxMg=='};var
+        a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);\";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var
+        a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else
+        if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var
+        e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>"
+    headers:
+      CF-RAY:
+      - a0b2cff5ad7e90a9-GIG
+      Cache-Control:
+      - store, cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Sat, 13 Jun 2026 17:28:35 GMT
+      Server:
+      - cloudflare
+      Speculation-Rules:
+      - '"/cdn-cgi/speculation"'
+      Transfer-Encoding:
+      - chunked
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '33501'
+      pragma:
+      - cache
+      retry-after:
+      - '10'
+      vary:
+      - Accept-Encoding
+      x-ratelimit-limit:
+      - '2'
+    status:
+      code: 200
+      message: OK
+version: 1

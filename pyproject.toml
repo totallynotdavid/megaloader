@@ -15,9 +15,8 @@ authors = [
 
 [tool.pytest.ini_options]
 testpaths = ["packages/core/tests"]
-python_files = ["test_*.py"]
 markers = [
-    "live: mark test as requiring live network access"
+    "unit: pure logic tests with no network access",
 ]
 addopts = "-q"
 

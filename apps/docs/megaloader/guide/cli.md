@@ -169,7 +169,6 @@ Supported Platforms:
   • cyberdrop.cr         (Cyberdrop)
   • cyberdrop.me         (Cyberdrop)
   • cyberdrop.to         (Cyberdrop)
-  • fanbox.cc            (Fanbox)
   • fapello.com          (Fapello)
   • gofile.io            (Gofile)
   • pixeldrain.com       (PixelDrain)
@@ -264,50 +263,40 @@ Multiple filters aren't yet supported in a single command.
 
 ## Authentication
 
-Password-protected GoFile:
-
-```bash
-megaloader download --password "secret123" "https://gofile.io/d/abc123" ./downloads
-```
-
-Using environment variables:
+Password-protected GoFile (passed on the command line, no environment variable):
 
 ::: code-group
 
 ```bash [bash]
-export GOFILE_PASSWORD="secret123"
-megaloader download "https://gofile.io/d/abc123" ./downloads
+megaloader download --password "secret123" "https://gofile.io/d/abc123" ./downloads
 ```
 
 ```powershell [powershell]
-$Env:GOFILE_PASSWORD = "secret123"
-megaloader download "https://gofile.io/d/abc123" ./downloads
+megaloader download --password "secret123" "https://gofile.io/d/abc123" ./downloads
 ```
 
 :::
 
-Command-line takes precedence over environment variables.
-
-For platforms requiring authentication:
+For platforms requiring authentication, use environment variables:
 
 ::: code-group
 
 ```bash [bash]
-export FANBOX_SESSION_ID="your_cookie"
-export PIXIV_SESSION_ID="your_cookie"
+export GOFILE_TOKEN="your_token"
+export PIXIV_PHPSESSID="your_cookie"
 export RULE34_API_KEY="your_key"
 export RULE34_USER_ID="your_id"
 
-megaloader download "https://creator.fanbox.cc" ./output
+megaloader download "https://www.pixiv.net/en/artworks/12345" ./output
 ```
 
 ```powershell [powershell]
-$Env:FANBOX_SESSION_ID = "your_cookie"
-$Env:PIXIV_SESSION_ID  = "your_cookie"
-$Env:RULE34_API_KEY    = "your_key"
-$Env:RULE34_USER_ID    = "your_id"
+$Env:GOFILE_TOKEN     = "your_token"
+$Env:PIXIV_PHPSESSID  = "your_cookie"
+$Env:RULE34_API_KEY   = "your_key"
+$Env:RULE34_USER_ID   = "your_id"
 
-megaloader download "https://creator.fanbox.cc" ./output
+megaloader download "https://www.pixiv.net/en/artworks/12345" ./output
 ```
 
 :::

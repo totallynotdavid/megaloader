@@ -1,0 +1,86 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://api.cyberdrop.cr/api/file/info/ntY9Vvkh73rUB
+  response:
+    body:
+      string: '{"name":"sample-image-01-LWQGC9I3.jpg","type":"image/jpeg","size":207558,"slug":"ntY9Vvkh73rUB","thumbnail_url":"https://api.cyberdrop.cr/api/proxy/thumb/ntY9Vvkh73rUB","auth_url":"https://api.cyberdrop.cr/api/file/auth/ntY9Vvkh73rUB"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Security-Policy:
+      - upgrade-insecure-requests;
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 13 Jun 2026 17:26:46 GMT
+      Keep-Alive:
+      - timeout=60
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - ddos-guard
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '235'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+    method: GET
+    uri: https://api.cyberdrop.cr/api/file/auth/ntY9Vvkh73rUB
+  response:
+    body:
+      string: '{"url":"https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/ntY9Vvkh73rUB?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODE0NTgwMDksImZpbGVTbHVnIjoibnRZOVZ2a2g3M3JVQiJ9.50EbwMkr_HrUtcYnW2pK4YF51G_yvFwKugK-b2sPnfE"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Security-Policy:
+      - upgrade-insecure-requests;
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 13 Jun 2026 17:26:49 GMT
+      Keep-Alive:
+      - timeout=60
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - ddos-guard
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '216'
+    status:
+      code: 200
+      message: OK
+version: 1

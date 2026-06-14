@@ -1,6 +1,6 @@
 [project]
 name = "megaloader"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python library for extracting downloadable content metadata from file hosting platforms"
 readme = "readme.md"
 requires-python = ">=3.10"
@@ -23,9 +23,12 @@ dependencies = [
 dev = [
     "mypy>=2.1.0",
     "pytest>=9.0.3",
+    "pytest-recording>=0.13.4",
     "requests-mock>=1.12.1",
+    "syrupy>=5.3.2",
     "types-beautifulsoup4>=4.12.0.20250516",
     "types-requests>=2.33.0.20260518",
+    "vcrpy>=8.1.1",
 ]
 
 [build-system]

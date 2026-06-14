@@ -1,0 +1,47 @@
+name: live drift check
+
+# Hits real production sites to detect when a platform changes its API or page
+# structure. This is the "the platform changed" signal, kept separate from the
+# offline PR gate (test.yml): it is slow and flaky by nature. It runs only on a
+# schedule, so a failure notifies maintainers without ever blocking a PR. The
+# failure is the signal, so the step is allowed to fail loudly, not suppressed.
+#
+# It re-fetches every plugin's fixtures through the proxy (--record-mode=rewrite)
+# and compares against the committed snapshots without updating them, so a
+# mismatch surfaces as a failure. When it fails, re-record the affected cassettes
+# locally (`mise run test-record`) and review the diff.
+
+on:
+  schedule:
+    - cron: "0 5 * * 1" # 05:00 UTC every Monday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    environment: Testing
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@ca5ddd015e07666cb1f1340ad6171f5e7afffb3e # v8.2.0
+        with:
+          version: "0.11.21"
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync --extra dev --package megaloader
+
+      - name: Re-fetch fixtures and check for drift
+        working-directory: packages/core
+        run: uv run pytest tests/plugins --record-mode=rewrite -v --tb=short
+        env:
+          GEONODE_USERNAME: ${{ secrets.GEONODE_USERNAME }}
+          GEONODE_PASSWORD: ${{ secrets.GEONODE_PASSWORD }}
+          GEONODE_HOST: ${{ secrets.GEONODE_HOST }}
+          GEONODE_PORT_RANGE: ${{ secrets.GEONODE_PORT_RANGE }}
+          PIXIV_PHPSESSID: ${{ secrets.PIXIV_PHPSESSID }}

@@ -1,0 +1,112 @@
+# serializer version: 1
+# name: test_cyberdrop_album_images
+  list([
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/5voPzmFpQXi1M',
+      'filename': 'sample-image-06-jJRXY3za.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': '5voPzmFpQXi1M',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/EZHuFNJhwT8mj',
+      'filename': 'sample-image-05-zeCmV5Qf.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'EZHuFNJhwT8mj',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/JxXOdycgj6aFd',
+      'filename': 'sample-image-03-R2ZWW6Lz.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'JxXOdycgj6aFd',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/0B0WKV9hNm4g1',
+      'filename': 'sample-image-04-9kv5KwVJ.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': '0B0WKV9hNm4g1',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/ntY9Vvkh73rUB',
+      'filename': 'sample-image-01-LWQGC9I3.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'ntY9Vvkh73rUB',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/HL6U5IgWnUv19',
+      'filename': 'sample-image-02-2UgoH1AC.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'HL6U5IgWnUv19',
+    }),
+  ])
+# ---
+# name: test_cyberdrop_album_videos
+  list([
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/2GzizN8Gh2Esc',
+      'filename': 'sample-video-planet-4HKKed1F.mov',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': '2GzizN8Gh2Esc',
+    }),
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/qArESJy3UyONN',
+      'filename': 'sample-video-rick-TKfZJpG7.mp4',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'qArESJy3UyONN',
+    }),
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/OIZmMDe028QOh',
+      'filename': 'sample-video-jellyfish-O5Rnh9HL.mkv',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'OIZmMDe028QOh',
+    }),
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/jNpDMVi1EW0Nu',
+      'filename': 'sample-video-bunny-1ZDAdq6H.webm',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'jNpDMVi1EW0Nu',
+    }),
+  ])
+# ---
+# name: test_cyberdrop_single_file
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://k1-cd.cdn.gigachad-cdn.ru/api/file/d/ntY9Vvkh73rUB',
+      'filename': 'sample-image-01-LWQGC9I3.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': None,
+      'source_id': 'ntY9Vvkh73rUB',
+    }),
+  ])
+# ---

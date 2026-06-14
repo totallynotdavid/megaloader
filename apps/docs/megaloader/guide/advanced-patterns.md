@@ -264,15 +264,39 @@ def extract_with_retry(url, max_retries=3, **options):
 
 ## Direct plugin usage
 
+Build a `RequestsFetcher` from the plugin's `source` and `session_config()`,
+then pass it to `extract()`:
+
 ```python
+from megaloader.fetcher import RequestsFetcher
 from megaloader.plugins import PixelDrain
 
 plugin = PixelDrain("https://pixeldrain.com/l/abc123")
+fetch = RequestsFetcher(plugin.source, config=plugin.session_config())
 
-plugin.session.headers["Custom-Header"] = "value"
-plugin.session.proxies = {"https": "http://proxy.example.com:8080"}
+for item in plugin.extract(fetch):
+    print(item.filename)
+```
 
-for item in plugin.extract():
+To customize headers or proxies, pass your own `requests.Session` to the
+fetcher:
+
+```python
+import requests
+
+from megaloader.fetcher import RequestsFetcher
+from megaloader.plugins import PixelDrain
+
+session = requests.Session()
+session.headers["Custom-Header"] = "value"
+session.proxies = {"https": "http://proxy.example.com:8080"}
+
+plugin = PixelDrain("https://pixeldrain.com/l/abc123")
+fetch = RequestsFetcher(
+    plugin.source, config=plugin.session_config(), session=session
+)
+
+for item in plugin.extract(fetch):
     print(item.filename)
 ```
 

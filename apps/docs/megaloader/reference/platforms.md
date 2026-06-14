@@ -1,6 +1,6 @@
 # Supported platforms
 
-Megaloader supports 11 file hosting platforms through dedicated plugins, split
+Megaloader supports 10 file hosting platforms through dedicated plugins, split
 into core (actively maintained) and extended (best-effort) tiers. Some require
 specific options for full functionality.
 
@@ -12,7 +12,6 @@ In summary:
 | PixelDrain  | pixeldrain.com           | Lists, files, proxy support | None                                       |
 | Cyberdrop   | cyberdrop.\{cr,me,to\}   | Albums, single files        | None                                       |
 | GoFile      | gofile.io                | Folders, files              | password, token (kwargs)                   |
-| Fanbox      | {creator}.fanbox.cc      | Creator content             | session_id or FANBOX_SESSION_ID            |
 | Pixiv       | pixiv.net                | Artworks, galleries         | session_id or PIXIV_PHPSESSID              |
 | Rule34      | rule34.xxx               | Tags, posts, API            | api_key + user_id or environment variables |
 | ThotsLife   | thotslife.com            | Albums, posts               | None                                       |
@@ -97,27 +96,6 @@ for item in mgl.extract("https://pixeldrain.com/u/file456"):
 
 ## Extended platforms
 
-### Fanbox
-
-Creator content platform requiring authentication.
-
-**Domains:** fanbox.cc (including creator subdomains)
-
-**Features:** Creator profiles, post content, images, file attachments, profile
-assets
-
-**Requires:** `session_id` parameter or `FANBOX_SESSION_ID` environment variable
-
-**Example:**
-
-```python
-for item in mgl.extract(
-    "https://creator.fanbox.cc",
-    session_id="your_session_cookie"
-):
-    print(item.filename, item.collection_name)
-```
-
 ### Fapello
 
 Media galleries.
@@ -141,7 +119,7 @@ Art and illustration platform requiring authentication.
 
 **Features:** Artwork extraction, user galleries, multiple image posts
 
-**Requires:** `session_id` parameter or `PIXIV_SESSION_ID` environment variable
+**Requires:** `session_id` parameter or `PIXIV_PHPSESSID` environment variable
 
 **Example:**
 
@@ -243,7 +221,6 @@ Supported Platforms:
   • cyberdrop.cr         (Cyberdrop)
   • cyberdrop.me         (Cyberdrop)
   • cyberdrop.to         (Cyberdrop)
-  • fanbox.cc            (Fanbox)
   • fapello.com          (Fapello)
   • gofile.io            (Gofile)
   • pixeldrain.com       (PixelDrain)

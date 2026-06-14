@@ -11,8 +11,8 @@ CYBERDROP_URLS = {
 }
 
 GOFILE_URLS = {
-    "images": "https://gofile.io/d/fhGIJu",
-    "videos": "https://gofile.io/d/sFMknK",
+    "images": "https://gofile.io/d/RQxQ4Q",
+    "videos": "https://gofile.io/d/5yk4TR",
 }
 
 PIXELDRAIN_URLS = {
@@ -25,10 +25,6 @@ FAPELLO_URLS = {
     "model": "https://fapello.com/narabask/",
 }
 
-FANBOX_URLS = {
-    "creator": "https://hasya.fanbox.cc/",
-}
-
 PIXIV_URLS = {
     "artwork": "https://www.pixiv.net/en/artworks/51400046",
 }
@@ -39,13 +35,11 @@ RULE34_URLS = {
 }
 
 THOTHUB_TO_URLS = {
-    "model": "https://thothub.to/models/dakota-tyler/",
     "album": "https://thothub.to/albums/42718/yurasweb/",
     "single_video": "https://thothub.to/videos/726266/roses-are-rosie/",
 }
 
 THOTHUB_VIP_URLS = {
-    "model": "https://thothub.vip/models/inkyung/",
     "album": "https://thothub.vip/album/14055/the-sexy-asian-office-manager/",
     "single_video": "https://thothub.vip/video/101851/sky-bri-couch-sextape-naked-and-humping-interview-video-fc516a2/",
 }

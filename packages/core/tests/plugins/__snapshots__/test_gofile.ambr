@@ -1,0 +1,99 @@
+# serializer version: 1
+# name: test_gofile_folder_images
+  list([
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://cold-na-phx-6.gofile.io/download/web/6bfdbe5e-e2cc-46a6-9893-9d7c9e38403f/sample-image-01.jpg',
+      'filename': 'sample-image-01.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 207558,
+      'source_id': '6bfdbe5e-e2cc-46a6-9893-9d7c9e38403f',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://cold-na-phx-6.gofile.io/download/web/3a17e45f-793f-49ae-a66b-aede06bd560e/sample-image-02.jpg',
+      'filename': 'sample-image-02.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 405661,
+      'source_id': '3a17e45f-793f-49ae-a66b-aede06bd560e',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://cold-na-phx-10.gofile.io/download/web/625ab522-5881-4c1c-afcb-de1b7858dc26/sample-image-03.jpg',
+      'filename': 'sample-image-03.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 286359,
+      'source_id': '625ab522-5881-4c1c-afcb-de1b7858dc26',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://cold-na-phx-9.gofile.io/download/web/1948fa2b-b55a-4eb9-9ed2-e51ab018b44d/sample-image-04.jpg',
+      'filename': 'sample-image-04.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 412156,
+      'source_id': '1948fa2b-b55a-4eb9-9ed2-e51ab018b44d',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://cold-na-phx-3.gofile.io/download/web/11e2000f-f439-4ae2-929c-9cae60fbee24/sample-image-05.jpg',
+      'filename': 'sample-image-05.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 202748,
+      'source_id': '11e2000f-f439-4ae2-929c-9cae60fbee24',
+    }),
+    dict({
+      'collection_name': 'images',
+      'download_url': 'https://cold-eu-par-2.gofile.io/download/web/45365702-c4f5-464c-b887-e1df28bbcd9f/sample-image-06.jpg',
+      'filename': 'sample-image-06.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 89101,
+      'source_id': '45365702-c4f5-464c-b887-e1df28bbcd9f',
+    }),
+  ])
+# ---
+# name: test_gofile_folder_videos
+  list([
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://cold-na-phx-10.gofile.io/download/web/61e60fb5-7434-44ac-a881-690eec38e3fd/sample-video-bunny.webm',
+      'filename': 'sample-video-bunny.webm',
+      'headers': dict({
+      }),
+      'size_bytes': 5243523,
+      'source_id': '61e60fb5-7434-44ac-a881-690eec38e3fd',
+    }),
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://cold-na-phx-4.gofile.io/download/web/211db1dd-cfb3-437c-bced-d10aad91c6d6/sample-video-jellyfish.mkv',
+      'filename': 'sample-video-jellyfish.mkv',
+      'headers': dict({
+      }),
+      'size_bytes': 5207169,
+      'source_id': '211db1dd-cfb3-437c-bced-d10aad91c6d6',
+    }),
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://cold-na-phx-3.gofile.io/download/web/30e3fbe4-5c5d-4e0a-96c8-bdab43b61d8c/sample-video-planet.mov',
+      'filename': 'sample-video-planet.mov',
+      'headers': dict({
+      }),
+      'size_bytes': 2247200,
+      'source_id': '30e3fbe4-5c5d-4e0a-96c8-bdab43b61d8c',
+    }),
+    dict({
+      'collection_name': 'videos',
+      'download_url': 'https://cold-na-phx-4.gofile.io/download/web/1e61362f-aaa5-4efa-b7cc-6cb0d04e0b82/sample-video-rick.mp4',
+      'filename': 'sample-video-rick.mp4',
+      'headers': dict({
+      }),
+      'size_bytes': 1575527,
+      'source_id': '1e61362f-aaa5-4efa-b7cc-6cb0d04e0b82',
+    }),
+  ])
+# ---

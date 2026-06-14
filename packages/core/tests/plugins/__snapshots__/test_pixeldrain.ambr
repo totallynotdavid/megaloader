@@ -1,0 +1,112 @@
+# serializer version: 1
+# name: test_pixeldrain_list_images
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/UaP7Hp7b',
+      'filename': 'sample-image-06.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 89101,
+      'source_id': 'UaP7Hp7b',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/yr5kHjzX',
+      'filename': 'sample-image-04.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 412156,
+      'source_id': 'yr5kHjzX',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/m6WnPNLS',
+      'filename': 'sample-image-05.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 202748,
+      'source_id': 'm6WnPNLS',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/ywYWpW4N',
+      'filename': 'sample-image-03.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 286359,
+      'source_id': 'ywYWpW4N',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/Hu11GYvH',
+      'filename': 'sample-image-01.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 207558,
+      'source_id': 'Hu11GYvH',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/4U6NdYPt',
+      'filename': 'sample-image-02.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 405661,
+      'source_id': '4U6NdYPt',
+    }),
+  ])
+# ---
+# name: test_pixeldrain_list_videos
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/gZ74hCoS',
+      'filename': 'sample-video-rick.mp4',
+      'headers': dict({
+      }),
+      'size_bytes': 1575527,
+      'source_id': 'gZ74hCoS',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/REKE9eYk',
+      'filename': 'sample-video-bunny.webm',
+      'headers': dict({
+      }),
+      'size_bytes': 5243523,
+      'source_id': 'REKE9eYk',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/HNcGyxX9',
+      'filename': 'sample-video-jellyfish.mkv',
+      'headers': dict({
+      }),
+      'size_bytes': 5207169,
+      'source_id': 'HNcGyxX9',
+    }),
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/gEiQ2Hiy',
+      'filename': 'sample-video-planet.mov',
+      'headers': dict({
+      }),
+      'size_bytes': 2247200,
+      'source_id': 'gEiQ2Hiy',
+    }),
+  ])
+# ---
+# name: test_pixeldrain_single_file
+  list([
+    dict({
+      'collection_name': None,
+      'download_url': 'https://pixeldrain.com/api/file/Hu11GYvH',
+      'filename': 'sample-image-01.jpg',
+      'headers': dict({
+      }),
+      'size_bytes': 207558,
+      'source_id': 'Hu11GYvH',
+    }),
+  ])
+# ---

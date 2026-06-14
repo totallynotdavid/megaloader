@@ -1,0 +1,25 @@
+# serializer version: 1
+# name: test_pixiv_artwork
+  list([
+    dict({
+      'collection_name': '錢憶_51400046',
+      'download_url': 'https://i.pximg.net/img-original/img/2015/07/13/20/39/35/51400046_p0.jpg',
+      'filename': '51400046_p0.jpg',
+      'headers': dict({
+        'Referer': 'https://www.pixiv.net/artworks/51400046',
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+    dict({
+      'collection_name': '錢憶_51400046',
+      'download_url': 'https://i.pximg.net/img-original/img/2015/07/13/20/39/35/51400046_p1.jpg',
+      'filename': '51400046_p1.jpg',
+      'headers': dict({
+        'Referer': 'https://www.pixiv.net/artworks/51400046',
+      }),
+      'size_bytes': None,
+      'source_id': None,
+    }),
+  ])
+# ---

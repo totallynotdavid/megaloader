@@ -195,7 +195,6 @@ Supported Platforms:
   • cyberdrop.cr         (Cyberdrop)
   • cyberdrop.me         (Cyberdrop)
   • cyberdrop.to         (Cyberdrop)
-  • fanbox.cc            (Fanbox)
   • fapello.com          (Fapello)
   • gofile.io            (Gofile)
   • pixeldrain.com       (PixelDrain)
@@ -213,19 +212,18 @@ Supported Platforms:
 
 **Authentication:**
 
-- `FANBOX_SESSION_ID` - Session cookie for Fanbox
-- `PIXIV_SESSION_ID` - Session cookie for Pixiv
+- `PIXIV_PHPSESSID` - Session cookie for Pixiv
 - `RULE34_API_KEY` - API key for Rule34
 - `RULE34_USER_ID` - User ID for Rule34
-- `GOFILE_PASSWORD` - Default password for GoFile
+- `GOFILE_TOKEN` - Account token for GoFile authenticated access
 
 Command-line options take precedence over environment variables.
 
 **Example:**
 
 ```bash
-export FANBOX_SESSION_ID="your_cookie"
-megaloader download "https://creator.fanbox.cc" ./output
+export PIXIV_PHPSESSID="your_cookie"
+megaloader download "https://www.pixiv.net/en/artworks/12345" ./output
 ```
 
 ## Exit codes

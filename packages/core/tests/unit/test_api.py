@@ -9,7 +9,7 @@ from megaloader.plugin import BasePlugin
 
 
 class DummyPlugin(BasePlugin):
-    def extract(self):
+    def extract(self, fetch):
         yield DownloadItem(
             download_url="https://example.com/file.txt",
             filename="file.txt",

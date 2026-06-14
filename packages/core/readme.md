@@ -102,9 +102,8 @@ Bunkr (bunkr.si, bunkr.la, bunkr.is, bunkr.ru, bunkr.su), PixelDrain
 
 **Extended platforms**:
 
-Fanbox ({creator}.fanbox.cc), Pixiv (pixiv.net), Rule34 (rule34.xxx), ThotsLife
-(thotslife.com), ThotHub.VIP (thothub.vip), ThotHub.TO (thothub.to), Fapello
-(fapello.com).
+Pixiv (pixiv.net), Rule34 (rule34.xxx), ThotsLife (thotslife.com), ThotHub.VIP
+(thothub.vip), ThotHub.TO (thothub.to), Fapello (fapello.com).
 
 All platforms support albums, galleries, or lists. Single-file URLs work where
 applicable.
@@ -117,11 +116,10 @@ GoFile supports password-protected folders:
 items = extract("https://gofile.io/d/folder", password="secret123")
 ```
 
-Fanbox and Pixiv require session cookies for full results. Without
-authentication, only public content is returned (which is very limited):
+Pixiv requires a session cookie for full results. Without authentication, only
+public content is returned (which is very limited):
 
 ```python
-items = extract("https://creator.fanbox.cc", session_id="your_session_cookie")
 items = extract("https://pixiv.net/artworks/12345", session_id="your_session_cookie")
 ```
 
@@ -138,7 +136,7 @@ items = extract(
 
 <!-- prettier-ignore -->
 > [!WARNING]  
-> Free-tier accounts on Pixiv and Fanbox may still return incomplete file sets.
+> Free-tier accounts on Pixiv may still return incomplete file sets.
 
 ## Working with items
 

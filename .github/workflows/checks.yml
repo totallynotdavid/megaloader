@@ -22,11 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: astral-sh/setup-uv@12d13f90bc3a5a1971bebad4beb09a4dfa962e91 # v8.1.0
+      - uses: astral-sh/setup-uv@ca5ddd015e07666cb1f1340ad6171f5e7afffb3e # v8.2.0
         with:
-          version: "0.11.16"
+          version: "0.11.21"
 
-      - run: uv python install 3.14.5
+      - run: uv python install 3.14.6
 
       - name: Install workspace dependencies
         run: uv sync --all-packages --extra dev
@@ -34,11 +34,11 @@ jobs:
       - name: Install API dependencies
         run: cd apps/api && uv sync --extra dev
 
-      - uses: astral-sh/ruff-action@b4bf7655a00a34646c7ee0b458191f64d05e9ba2 # v4.0.0
+      - uses: astral-sh/ruff-action@2f886796233dd932a419c469cee06063a017922e # v4.0.0
         with:
           args: "format --check --diff"
 
-      - uses: astral-sh/ruff-action@b4bf7655a00a34646c7ee0b458191f64d05e9ba2 # v4.0.0
+      - uses: astral-sh/ruff-action@2f886796233dd932a419c469cee06063a017922e # v4.0.0
         with:
           args: "check"
 

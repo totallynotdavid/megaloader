@@ -2,11 +2,11 @@
 python.uv_venv_auto = true
 
 [tools]
-python = "3.14.5"
-uv = "0.11.16"
-ruff = "0.15.14"
+python = "3.14.6"
+uv = "0.11.21"
+ruff = "0.15.17"
 bun = "1.3.14"
-biome = "2.4.15"
+biome = "2.5.0"
 
 # Dependencies
 [tasks.sync]
@@ -32,7 +32,10 @@ run = ["ruff format", "ruff check --fix"]
 
 [tasks.lint]
 description = "Run type checking on all packages"
-run = ["uv run mypy --exclude apps/api .", "cd apps/api && uv run mypy ."]
+run = [
+  "uv run --all-packages --extra dev mypy --exclude apps/api .",
+  "cd apps/api && uv run mypy .",
+]
 
 [tasks.check]
 description = "Quick pre-push checks: format, lint, test-unit, validate-snippets"
@@ -40,22 +43,26 @@ depends = ["format", "lint", "test-unit", "validate-snippets"]
 
 # Testing
 [tasks.test]
-description = "Run all tests including live network tests (~100 secs)"
-run = "uv run --env-file .env pytest -vv -s -rA --log-cli-level=INFO packages/core/tests --run-live"
+description = "Run the full offline suite: unit + cassette replay (no network, <1 sec)"
+run = "uv run --all-packages --extra dev pytest --block-network packages/core/tests"
 
 [tasks.test-unit]
 description = "Run unit tests only (fast: <1 sec)"
-run = "uv run --env-file .env pytest -vv -s -rA packages/core/tests/unit"
+run = "uv run --all-packages --extra dev pytest packages/core/tests/unit"
 
-[tasks.test-live-serial]
-description = "Run one live test by nodeid with full output (no parallel)"
-# usage example: mise run test-live-serial -- packages/core/tests/live/test_gofile_live.py::test_gofile_folder_images
-run = "uv run --env-file .env pytest -vv -s -rA --log-cli-level=INFO --run-live"
+[tasks.test-record]
+description = "Re-fetch every plugin fixture through the proxy, refresh cassettes + snapshots"
+run = "uv run --all-packages --extra dev --env-file .env pytest -vv -rA --log-cli-level=INFO packages/core/tests/plugins --record-mode=rewrite --snapshot-update"
+
+[tasks.proxy-probe]
+description = "Make an ad-hoc request through the rotating proxy (e.g. mise run proxy-probe -- <url> -X POST)"
+run = "uv run --all-packages --extra dev --env-file .env python -m tests.plugins.probe"
+dir = "packages/core"
 
 # Development: CLI
 [tasks.dev-cli]
 description = "Run CLI during development (e.g., mise run dev-cli -- extract <url>)"
-run = "uv run megaloader"
+run = "uv run --all-packages --extra dev megaloader"
 
 # Development: API
 [tasks.api-serve]
@@ -87,12 +94,12 @@ dir = "apps/docs"
 
 [tasks.validate-snippets]
 description = "Validate Python code snippets in documentation"
-run = "uv run python scripts/validate-code-snippets.py"
+run = "uv run --all-packages --extra dev python scripts/validate-code-snippets.py"
 
 # Logo
 [tasks.generate-logo]
 description = "Generate project logo as SVG"
-run = "uv run python scripts/generate-logo.py"
+run = "uv run --all-packages --extra dev python scripts/generate-logo.py"
 
 # Build
 [tasks.build-bin]
