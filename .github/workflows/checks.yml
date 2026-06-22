@@ -34,11 +34,11 @@ jobs:
       - name: Install API dependencies
         run: cd apps/api && uv sync --extra dev
 
-      - uses: astral-sh/ruff-action@2f886796233dd932a419c469cee06063a017922e # v4.0.0
+      - uses: astral-sh/ruff-action@f78e087041f3e90b68678ad4e39bf14eceb68084 # v4.0.0
         with:
           args: "format --check --diff"
 
-      - uses: astral-sh/ruff-action@2f886796233dd932a419c469cee06063a017922e # v4.0.0
+      - uses: astral-sh/ruff-action@f78e087041f3e90b68678ad4e39bf14eceb68084 # v4.0.0
         with:
           args: "check"
 
