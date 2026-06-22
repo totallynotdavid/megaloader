@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: astral-sh/setup-uv@ca5ddd015e07666cb1f1340ad6171f5e7afffb3e # v8.2.0
+      - uses: astral-sh/setup-uv@a9b33f02405f50e505f17ab8530e42a23200a5d1 # v8.2.0
         with:
           version: "0.11.21"
           python-version: "3.14.6"
