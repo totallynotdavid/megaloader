@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@ca5ddd015e07666cb1f1340ad6171f5e7afffb3e # v8.2.0
+      - uses: astral-sh/setup-uv@11245c7e122cd1c2297e8115d1e43fe1570f6270 # v8.2.0
         with:
           version: "0.11.21"
 
