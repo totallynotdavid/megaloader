@@ -36,7 +36,7 @@ def _recording(config: pytest.Config) -> bool:
 
 # autouse is intentional: every plugin test must route through the proxy when
 # recording, with no per-test opt-in. It is a no-op during offline replay.
-@pytest.fixture(autouse=True)  # noqa: RUF076
+@pytest.fixture(autouse=True)
 def _rotating_proxy(request: pytest.FixtureRequest) -> Iterator[None]:
     """Route this test's requests through a fresh Geonode IP when recording."""
     if not _recording(request.config):
