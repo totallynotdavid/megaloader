@@ -1,3 +1,4 @@
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 
 
@@ -36,3 +37,15 @@ class DownloadItem:
         if ".." in self.filename:
             msg = "filename cannot contain path traversal"
             raise ValueError(msg)
+
+
+def items_from_pairs(
+    pairs: Iterable[tuple[str, str]], collection_name: str | None = None
+) -> Iterator[DownloadItem]:
+    """Build items from (download_url, filename) pairs sharing one collection."""
+    for download_url, filename in pairs:
+        yield DownloadItem(
+            download_url=download_url,
+            filename=filename,
+            collection_name=collection_name,
+        )

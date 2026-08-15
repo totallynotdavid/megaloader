@@ -1,19 +1,21 @@
 import logging
 import re
 
-from collections.abc import Generator
+from collections.abc import Generator, Iterator
 from typing import Any
 from urllib.parse import urljoin
-
-from bs4 import BeautifulSoup
 
 from megaloader.fetcher import Fetcher, Request, SessionConfig
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
+from megaloader.pagination import crawl_pages
+from megaloader.parsing import parse_html, unique
 from megaloader.plugin import BasePlugin
 
 
 logger = logging.getLogger(__name__)
+
+SITE_BASE = "https://fapello.com"
 
 
 def parse_model_name(url: str) -> str:
@@ -42,38 +44,28 @@ class Fapello(BasePlugin):
         self.model_name = parse_model_name(self.url)
 
     def session_config(self) -> SessionConfig:
-        return SessionConfig(headers={"Referer": "https://fapello.com/"})
+        return SessionConfig(headers={"Referer": f"{SITE_BASE}/"})
 
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         logger.debug("Extracting Fapello model: %s", self.model_name)
 
-        page = 1
-        seen_urls: set[str] = set()
+        for full_url in unique(self._media_urls(fetch)):
+            yield DownloadItem(
+                download_url=full_url,
+                filename=filename_from_url(full_url),
+                collection_name=self.model_name,
+            )
 
-        while True:
-            ajax_url = f"https://fapello.com/ajax/model/{self.model_name}/page-{page}/"
-            response = fetch(Request(ajax_url))
-
-            if not response.text.strip():
-                break
-
-            soup = BeautifulSoup(response.text, "html.parser")
+    def _media_urls(self, fetch: Fetcher) -> Iterator[str]:
+        """Walk the model's ajax pages, yielding full-resolution asset URLs."""
+        for response in crawl_pages(fetch, self._page_request):
+            soup = parse_html(response.text)
             thumbnails = soup.select('a > div > img[src*="/content/"]')
-
             if not thumbnails:
-                break
+                return
 
             for img in thumbnails:
-                thumb_url = urljoin("https://fapello.com/", str(img["src"]))
-                full_url = full_resolution_url(thumb_url)
+                yield full_resolution_url(urljoin(SITE_BASE, str(img["src"])))
 
-                if full_url not in seen_urls:
-                    seen_urls.add(full_url)
-
-                    yield DownloadItem(
-                        download_url=full_url,
-                        filename=filename_from_url(full_url),
-                        collection_name=self.model_name,
-                    )
-
-            page += 1
+    def _page_request(self, page: int) -> Request:
+        return Request(f"{SITE_BASE}/ajax/model/{self.model_name}/page-{page}/")

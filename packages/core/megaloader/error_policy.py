@@ -78,6 +78,11 @@ def raise_extraction_error(
     )
 
 
+def raise_protocol_error(detail: str, *, source: str, url: str) -> Never:
+    """Raise for a page or payload that does not match what the plugin expects."""
+    raise_extraction_error(detail, source=source, url=url, category="protocol")
+
+
 def raise_for_api_status(
     source: str,
     url: str,

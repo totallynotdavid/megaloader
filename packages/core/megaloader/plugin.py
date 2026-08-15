@@ -1,4 +1,5 @@
 import logging
+import os
 
 from abc import ABC, abstractmethod
 from collections.abc import Generator
@@ -19,7 +20,7 @@ class BasePlugin(ABC):
     each request as a Request and read back a Response, so parsing and traversal
     stay testable offline by substituting a fake Fetcher.
 
-    Credential handling convention:
+    Credential handling convention, implemented by option():
     1. Explicit kwargs take precedence (e.g. password="secret").
     2. Environment variables as fallback (PLUGIN_*).
 
@@ -34,6 +35,15 @@ class BasePlugin(ABC):
 
         self.url = url.strip()
         self.options = options
+
+    def option(self, name: str, *, env: str | None = None) -> str | None:
+        """Read a credential-style option, falling back to its environment variable."""
+        value = self.options.get(name)
+        if value:
+            return str(value)
+        if env and (from_env := os.getenv(env)):
+            return from_env
+        return None
 
     @property
     def source(self) -> str:

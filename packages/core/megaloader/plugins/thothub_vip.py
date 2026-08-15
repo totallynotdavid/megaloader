@@ -5,12 +5,11 @@ from collections.abc import Generator
 from dataclasses import dataclass
 from urllib.parse import urljoin, urlparse
 
-from bs4 import BeautifulSoup
-
-from megaloader.error_policy import raise_extraction_error
+from megaloader.error_policy import raise_protocol_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
-from megaloader.item import DownloadItem
+from megaloader.item import DownloadItem, items_from_pairs
+from megaloader.parsing import absolute_links, element_text, parse_html
 from megaloader.plugin import BasePlugin
 
 
@@ -51,54 +50,35 @@ def parse_model_links(
     page: str, base_url: str
 ) -> tuple[str | None, list[str], list[str]]:
     """Return (model_name, video_urls, album_urls) from a model page, deduped in order."""
-    soup = BeautifulSoup(page, "html.parser")
+    soup = parse_html(page)
+    model_name = element_text(soup.find("div", class_="title"))
 
-    title_div = soup.find("div", class_="title")
-    model_name = title_div.text.strip() if title_div else None
-
-    seen: set[str] = set()
-
-    video_urls: list[str] = []
-    for link in soup.select('a[href*="/video/"]'):
-        if (href := link.get("href")) and (
-            video_url := urljoin(base_url, str(href))
-        ) not in seen:
-            seen.add(video_url)
-            video_urls.append(video_url)
-
-    album_urls: list[str] = []
-    for link in soup.select('a[href*="/album/"]'):
-        if (href := link.get("href")) and (
-            album_url := urljoin(base_url, str(href))
-        ) not in seen:
-            seen.add(album_url)
-            album_urls.append(album_url)
+    video_urls = absolute_links(soup, 'a[href*="/video/"]', base_url)
+    album_urls = absolute_links(soup, 'a[href*="/album/"]', base_url)
 
     return model_name, video_urls, album_urls
 
 
 def parse_video_metadata(page: str, video_url: str) -> tuple[str, str]:
     """Return (content_url, title) from a video page's ld+json metadata."""
-    soup = BeautifulSoup(page, "html.parser")
+    soup = parse_html(page)
     script = soup.find("script", type="application/ld+json")
 
     if not script:
-        raise_extraction_error(
+        raise_protocol_error(
             f"No video metadata found: {video_url}",
             source="thothubvip",
             url=video_url,
-            category="protocol",
         )
 
     metadata = json.loads(script.get_text().strip())
     url = metadata.get("contentUrl")
 
     if not url:
-        raise_extraction_error(
+        raise_protocol_error(
             f"No contentUrl in video metadata: {video_url}",
             source="thothubvip",
             url=video_url,
-            category="protocol",
         )
 
     return str(url), str(metadata.get("name", "video"))
@@ -106,18 +86,16 @@ def parse_video_metadata(page: str, video_url: str) -> tuple[str, str]:
 
 def parse_album(page: str, album_url: str) -> tuple[str, list[tuple[str, str]]]:
     """Return (collection_name, [(url, filename)]) from an album page."""
-    soup = BeautifulSoup(page, "html.parser")
+    soup = parse_html(page)
+    collection_name = element_text(soup.find("h1", class_="title"), "album")
 
-    h1 = soup.find("h1", class_="title")
-    collection_name = h1.text.strip() if h1 else "album"
-
-    files: list[tuple[str, str]] = []
-    for link in soup.select("div.album-inner a.item.album-img[href]"):
-        if href := link.get("href"):
-            full_url = urljoin(album_url, str(href))
-            filename = filename_from_url(full_url)
-            if filename:
-                files.append((full_url, filename))
+    files = [
+        (full_url, filename)
+        for full_url in absolute_links(
+            soup, "div.album-inner a.item.album-img[href]", album_url
+        )
+        if (filename := filename_from_url(full_url))
+    ]
 
     return collection_name, files
 
@@ -165,9 +143,4 @@ class ThothubVIP(BasePlugin):
         response = fetch(Request(album_url))
         collection_name, files = parse_album(response.text, album_url)
 
-        for full_url, filename in files:
-            yield DownloadItem(
-                download_url=full_url,
-                filename=filename,
-                collection_name=collection_name,
-            )
+        yield from items_from_pairs(files, collection_name)

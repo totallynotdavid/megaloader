@@ -1,5 +1,4 @@
 import logging
-import os
 import xml.etree.ElementTree as ET
 
 from collections.abc import Generator
@@ -11,10 +10,16 @@ from bs4 import BeautifulSoup
 from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
+from megaloader.pagination import crawl_pages
+from megaloader.parsing import parse_html, unique
 from megaloader.plugin import BasePlugin
 
 
 logger = logging.getLogger(__name__)
+
+SITE_BASE = "https://rule34.xxx"
+API_BASE = "https://api.rule34.xxx"
+POSTS_PER_PAGE = 42
 
 
 def parse_query(url: str) -> tuple[str | None, list[str]]:
@@ -82,8 +87,8 @@ class Rule34(BasePlugin):
             msg = "URL must contain 'id' or 'tags' parameter"
             raise ValueError(msg)
 
-        self.api_key = self.options.get("api_key") or os.getenv("RULE34_API_KEY")
-        self.user_id = self.options.get("user_id") or os.getenv("RULE34_USER_ID")
+        self.api_key = self.option("api_key", env="RULE34_API_KEY")
+        self.user_id = self.option("user_id", env="RULE34_USER_ID")
 
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         if self.post_id:
@@ -100,31 +105,17 @@ class Rule34(BasePlugin):
     def _extract_single_post(
         self, fetch: Fetcher
     ) -> Generator[DownloadItem, None, None]:
-        url = f"https://rule34.xxx/index.php?page=post&s=view&id={self.post_id}"
+        url = f"{SITE_BASE}/index.php?page=post&s=view&id={self.post_id}"
         response = fetch(Request(url))
-        soup = BeautifulSoup(response.text, "html.parser")
 
-        if media_url := parse_media_url(soup):
+        if media_url := parse_media_url(parse_html(response.text)):
             yield build_item(media_url, f"post_{self.post_id}", self.post_id)
 
     def _extract_via_api(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         """Extract using official API (faster, more reliable)."""
-        collection_name = "_".join(sorted(self.tags))
-        page = 0
+        collection_name = self._collection_name()
 
-        while True:
-            params = {
-                "page": "dapi",
-                "s": "post",
-                "q": "index",
-                "tags": " ".join(self.tags),
-                "pid": page,
-                "limit": 1000,
-                "api_key": self.api_key,
-                "user_id": self.user_id,
-            }
-
-            response = fetch(Request("https://api.rule34.xxx/index.php", params=params))
+        for response in crawl_pages(fetch, self._api_request, start=0):
             posts = parse_api_posts(response.content)
 
             if not posts:
@@ -134,41 +125,56 @@ class Rule34(BasePlugin):
                 if url := post.get("file_url"):
                     yield build_item(url, collection_name, post.get("id"))
 
-            page += 1
-
     def _extract_via_scraper(
         self, fetch: Fetcher
     ) -> Generator[DownloadItem, None, None]:
         """Extract by scraping web pages (fallback method)."""
-        collection_name = "_".join(sorted(self.tags))
-        pid = 0
-        seen_urls: set[str] = set()
+        collection_name = self._collection_name()
 
-        while True:
-            params = {
+        for post_url in unique(self._listing_post_urls(fetch)):
+            post_response = fetch(Request(post_url))
+
+            if media_url := parse_media_url(parse_html(post_response.text)):
+                yield build_item(media_url, collection_name)
+
+    def _listing_post_urls(self, fetch: Fetcher) -> Generator[str, None, None]:
+        for response in crawl_pages(
+            fetch, self._listing_request, start=0, step=POSTS_PER_PAGE
+        ):
+            hrefs = parse_listing_hrefs(parse_html(response.text))
+
+            if not hrefs:
+                return
+
+            for href in hrefs:
+                yield urljoin(f"{SITE_BASE}/", href)
+
+    def _collection_name(self) -> str:
+        return "_".join(sorted(self.tags))
+
+    def _api_request(self, page: int) -> Request:
+        return Request(
+            f"{API_BASE}/index.php",
+            params={
+                "page": "dapi",
+                "s": "post",
+                "q": "index",
+                "tags": " ".join(self.tags),
+                "pid": page,
+                "limit": 1000,
+                "api_key": self.api_key,
+                "user_id": self.user_id,
+            },
+        )
+
+    def _listing_request(self, pid: int) -> Request:
+        """Build a listing request; Rule34 pages by post offset, 42 per page."""
+        return Request(
+            f"{SITE_BASE}/index.php",
+            params={
                 "page": "post",
                 "s": "list",
                 "tags": " ".join(self.tags),
                 "pid": pid,
-            }
-
-            response = fetch(Request("https://rule34.xxx/index.php", params=params))
-            soup = BeautifulSoup(response.text, "html.parser")
-            hrefs = parse_listing_hrefs(soup)
-
-            if not hrefs:
-                break
-
-            for href in hrefs:
-                if href in seen_urls:
-                    continue
-
-                seen_urls.add(href)
-                full_url = urljoin("https://rule34.xxx/", href)
-                post_response = fetch(Request(full_url))
-                post_soup = BeautifulSoup(post_response.text, "html.parser")
-
-                if media_url := parse_media_url(post_soup):
-                    yield build_item(media_url, collection_name)
-
-            pid += 42  # Rule34 lists 42 posts per page
+            },
+        )

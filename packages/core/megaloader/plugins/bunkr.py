@@ -9,9 +9,10 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import quote, urljoin, urlparse
 
-from megaloader.error_policy import raise_extraction_error
+from megaloader.error_policy import raise_protocol_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.item import DownloadItem
+from megaloader.parsing import unique
 from megaloader.plugin import BasePlugin
 
 
@@ -47,16 +48,13 @@ def parse_album_links(page: str, base_url: str) -> list[str]:
     Skips templating placeholders (file.slug, "+") left in the server-rendered
     markup.
     """
-    links: list[str] = []
-    seen: set[str] = set()
-    for href in re.findall(r'href="(/f/[^"]+)"', page):
-        if "file.slug" in href or "+" in href:
-            continue
-        file_url = urljoin(base_url, href)
-        if file_url not in seen:
-            seen.add(file_url)
-            links.append(file_url)
-    return links
+    return list(
+        unique(
+            urljoin(base_url, href)
+            for href in re.findall(r'href="(/f/[^"]+)"', page)
+            if "file.slug" not in href and "+" not in href
+        )
+    )
 
 
 def parse_download_page_url(page: str, file_url: str) -> str:
@@ -66,11 +64,10 @@ def parse_download_page_url(page: str, file_url: str) -> str:
         page,
     )
     if not match:
-        raise_extraction_error(
+        raise_protocol_error(
             f"No download button found: {file_url}",
             source="bunkr",
             url=file_url,
-            category="protocol",
         )
     return urljoin(file_url, str(match.group(1)))
 
@@ -79,11 +76,10 @@ def parse_file_id(download_page_url: str, source_url: str) -> str:
     """Pull the opaque file id out of a Bunkr download-page URL."""
     match = re.search(r"/file/(\w+)", download_page_url)
     if not match:
-        raise_extraction_error(
+        raise_protocol_error(
             f"Could not extract file ID from: {download_page_url}",
             source="bunkr",
             url=source_url,
-            category="protocol",
         )
     return str(match.group(1))
 

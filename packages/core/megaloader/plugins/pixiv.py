@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 
 from collections.abc import Generator
@@ -52,7 +51,7 @@ class Pixiv(BasePlugin):
 
     def session_config(self) -> SessionConfig:
         cookies: tuple[Cookie, ...] = ()
-        session_id = self.options.get("session_id") or os.getenv("PIXIV_PHPSESSID")
+        session_id = self.option("session_id", env="PIXIV_PHPSESSID")
         if session_id:
             cookies = (Cookie("PHPSESSID", session_id, ".pixiv.net"),)
             logger.debug("Using Pixiv session authentication")

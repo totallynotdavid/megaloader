@@ -124,9 +124,8 @@ class Gofile(BasePlugin):
 
     def _get_api_token(self, fetch: Fetcher) -> str:
         """Return caller-provided token, cached guest token, or create a new guest account."""
-        token = self.options.get("token") or os.getenv("GOFILE_TOKEN")
-        if token:
-            return str(token)
+        if token := self.option("token", env="GOFILE_TOKEN"):
+            return token
 
         if cached := _token_cache.get("gofile"):
             return cached

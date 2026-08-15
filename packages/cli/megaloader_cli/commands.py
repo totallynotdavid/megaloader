@@ -1,9 +1,12 @@
 import dataclasses
 import sys
 
+from collections.abc import Iterator
+from contextlib import contextmanager
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import megaloader as mgl
 
@@ -22,45 +25,62 @@ from megaloader_cli.io import download_file
 from megaloader_cli.utils import console, sanitize_for_filesystem
 
 
+@contextmanager
+def _exit_on_error() -> Iterator[None]:
+    """Turn a library failure into a one-line message and a non-zero exit."""
+    try:
+        yield
+    except MegaloaderError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        sys.exit(1)
+
+
+def _announce_plugin(url: str) -> None:
+    if plugin_name := _get_plugin_name(url):
+        console.print(f"[green]✓[/green] Using plugin: [bold]{plugin_name}[/bold]")
+
+
+def _collect_items(
+    url: str, options: dict[str, Any], description: str | None
+) -> list[mgl.DownloadItem]:
+    """Drain the extraction generator, optionally showing an indeterminate spinner."""
+    if description is None:
+        return list(mgl.extract(url, **options))
+
+    items = []
+    with Progress(
+        TextColumn(f"[bold blue]{description}"),
+        BarColumn(),
+        console=console,
+    ) as progress:
+        task = progress.add_task("", total=None)
+
+        for item in mgl.extract(url, **options):
+            items.append(item)
+            progress.update(task, advance=1)
+
+    return items
+
+
 def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> None:
     """
     Handle extract command logic.
 
     Fetches metadata and displays items without downloading.
     """
-    try:
-        # Show which plugin is being used (only in human-readable mode)
-        if not output_json and (plugin_name := _get_plugin_name(url)):
-            console.print(f"[green]✓[/green] Using plugin: [bold]{plugin_name}[/bold]")
+    with _exit_on_error():
+        # JSON mode stays silent so its output is machine-readable
+        if not output_json:
+            _announce_plugin(url)
 
-        # Stream items as they're discovered
-        items = []
-        if output_json:
-            # Silent extraction for JSON mode
-            for item in mgl.extract(url, **options):
-                items.append(item)
-        else:
-            # Show progress for human-readable mode
-            with Progress(
-                TextColumn("[bold blue]Extracting metadata..."),
-                BarColumn(),
-                console=console,
-            ) as progress:
-                task = progress.add_task("", total=None)
+        items = _collect_items(
+            url, options, None if output_json else "Extracting metadata..."
+        )
 
-                for item in mgl.extract(url, **options):
-                    items.append(item)
-                    progress.update(task, advance=1)
-
-        # Display results
         if output_json:
             _print_json(url, items)
         else:
             _print_human_readable(items)
-
-    except MegaloaderError as e:
-        console.print(f"[red]Error:[/red] {e}")
-        sys.exit(1)
 
 
 def download_command(
@@ -75,23 +95,9 @@ def download_command(
 
     Extracts metadata, filters items, and downloads files with progress tracking.
     """
-    try:
-        # Show which plugin is being used
-        if plugin_name := _get_plugin_name(url):
-            console.print(f"[green]✓[/green] Using plugin: [bold]{plugin_name}[/bold]")
-
-        # Stream and collect items
-        items = []
-        with Progress(
-            TextColumn("[bold blue]Discovering files..."),
-            BarColumn(),
-            console=console,
-        ) as progress:
-            task = progress.add_task("", total=None)
-
-            for item in mgl.extract(url, **options):
-                items.append(item)
-                progress.update(task, advance=1)
+    with _exit_on_error():
+        _announce_plugin(url)
+        items = _collect_items(url, options, "Discovering files...")
 
         # Apply filter if specified
         if pattern:
@@ -107,10 +113,6 @@ def download_command(
 
         # Download files with progress tracking
         _download_with_progress(items, Path(output_dir), flat)
-
-    except MegaloaderError as e:
-        console.print(f"[red]Error:[/red] {e}")
-        sys.exit(1)
 
 
 def _download_with_progress(
@@ -190,8 +192,6 @@ def _download_with_progress(
 
 def _get_plugin_name(url: str) -> str | None:
     """Get plugin name for UI feedback."""
-    from urllib.parse import urlparse
-
     domain = urlparse(url).netloc
     plugin_class = get_plugin_for_domain(domain)
     return plugin_class.__name__ if plugin_class else None

@@ -5,7 +5,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from megaloader.error_policy import raise_extraction_error
+from megaloader.error_policy import raise_protocol_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
@@ -18,11 +18,10 @@ def parse_viewer_data(page: str, url: str) -> dict[str, Any]:
     """Extract the embedded window.viewer_data JSON blob from a Pixeldrain page."""
     match = re.search(r"window\.viewer_data\s*=\s*({.*?});", page, re.DOTALL)
     if not match:
-        raise_extraction_error(
+        raise_protocol_error(
             "Could not find viewer data on page",
             source="pixeldrain",
             url=url,
-            category="protocol",
         )
 
     data: dict[str, Any] = json.loads(match.group(1))

@@ -1,4 +1,5 @@
-from typing import Any
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 import click
 
@@ -6,6 +7,29 @@ from megaloader.plugins import PLUGIN_REGISTRY
 
 from megaloader_cli.commands import download_command, extract_command
 from megaloader_cli.utils import console, setup_logging
+
+
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def credential_options(command: F) -> F:
+    """Add the plugin credential flags shared by extract and download."""
+    command = click.option(
+        "--token", help="API token for authenticated access (Gofile)"
+    )(command)
+    return click.option("--password", help="Password for protected content (Gofile)")(
+        command
+    )
+
+
+def build_options(password: str | None, token: str | None) -> dict[str, Any]:
+    """Collect the credential flags that were actually provided."""
+    options: dict[str, Any] = {}
+    if password:
+        options["password"] = password
+    if token:
+        options["token"] = token
+    return options
 
 
 @click.group()
@@ -30,8 +54,7 @@ def cli() -> None:
     help="Output JSON instead of human-readable text",
 )
 @click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
-@click.option("--password", help="Password for protected content (Gofile)")
-@click.option("--token", help="API token for authenticated access (Gofile)")
+@credential_options
 def extract_cmd(
     url: str, output_json: bool, verbose: bool, password: str | None, token: str | None
 ) -> None:
@@ -41,12 +64,7 @@ def extract_cmd(
     Shows what would be downloaded including filenames, sizes, and URLs.
     """
     setup_logging(verbose)
-    options: dict[str, Any] = {}
-    if password:
-        options["password"] = password
-    if token:
-        options["token"] = token
-    extract_command(url, output_json, options)
+    extract_command(url, output_json, build_options(password, token))
 
 
 @cli.command(name="download")
@@ -63,14 +81,7 @@ def extract_cmd(
     "pattern",
     help="Filter files by glob pattern (e.g., *.jpg, *.mp4)",
 )
-@click.option(
-    "--password",
-    help="Password for protected content (Gofile)",
-)
-@click.option(
-    "--token",
-    help="API token for authenticated access (Gofile)",
-)
+@credential_options
 def download_cmd(
     url: str,
     output_dir: str,
@@ -87,12 +98,7 @@ def download_cmd(
     Use --flat to disable this behavior.
     """
     setup_logging(verbose)
-    options: dict[str, Any] = {}
-    if password:
-        options["password"] = password
-    if token:
-        options["token"] = token
-    download_command(url, output_dir, flat, pattern, options)
+    download_command(url, output_dir, flat, pattern, build_options(password, token))
 
 
 @cli.command(name="plugins")

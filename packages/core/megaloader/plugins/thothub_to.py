@@ -2,17 +2,16 @@ import logging
 import re
 import time
 
-from collections.abc import Generator
+from collections.abc import Generator, Iterator
 from dataclasses import dataclass
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
-from bs4 import BeautifulSoup
-
-from megaloader.error_policy import raise_extraction_error
-from megaloader.exceptions import ExtractionError
+from megaloader.error_policy import raise_protocol_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
-from megaloader.item import DownloadItem
+from megaloader.item import DownloadItem, items_from_pairs
+from megaloader.pagination import crawl_pages
+from megaloader.parsing import absolute_links, element_text, parse_html, unique
 from megaloader.plugin import BasePlugin
 
 
@@ -101,44 +100,36 @@ def parse_video_metadata(page: str, url: str) -> tuple[str, str, str]:
     license_code = re.search(r"license_code:\s*'(\$.+?)'", page)
 
     if not (video_id and video_url and license_code):
-        raise_extraction_error(
+        raise_protocol_error(
             f"Could not extract video metadata: {url}",
             source="thothubto",
             url=url,
-            category="protocol",
         )
 
-    soup = BeautifulSoup(page, "html.parser")
-    h1 = soup.find("h1")
-    title = h1.text.strip() if h1 else f"video_{video_id.group(1)}"
+    soup = parse_html(page)
+    title = element_text(soup.find("h1"), f"video_{video_id.group(1)}")
 
     return video_url.group(1), license_code.group(1), title
 
 
 def parse_album(page: str, base_url: str) -> tuple[str, list[tuple[str, str]]]:
     """Return (collection_name, [(url, filename)]) from an album page."""
-    soup = BeautifulSoup(page, "html.parser")
+    soup = parse_html(page)
+    collection_name = element_text(soup.find("h1"), "album")
 
-    h1 = soup.find("h1")
-    collection_name = h1.text.strip() if h1 else "album"
-
-    files: list[tuple[str, str]] = []
-    for link in soup.select('div.block-album a.item[href*="/get_image/"]'):
-        if href := link.get("href"):
-            full_url = urljoin(base_url, str(href))
-            files.append((full_url, filename_from_url(full_url)))
+    files = [
+        (full_url, filename_from_url(full_url))
+        for full_url in absolute_links(
+            soup, 'div.block-album a.item[href*="/get_image/"]', base_url
+        )
+    ]
 
     return collection_name, files
 
 
 def parse_model_video_links(page: str, base_url: str) -> list[str]:
     """Return absolute video URLs from one paginated model listing page."""
-    soup = BeautifulSoup(page, "html.parser")
-    return [
-        urljoin(base_url, str(link["href"]))
-        for link in soup.select('div.item > a[href*="/videos/"]')
-        if link.get("href")
-    ]
+    return absolute_links(parse_html(page), 'div.item > a[href*="/videos/"]', base_url)
 
 
 class ThothubTO(BasePlugin):
@@ -178,12 +169,7 @@ class ThothubTO(BasePlugin):
         response = fetch(Request(url))
         collection_name, files = parse_album(response.text, url)
 
-        for full_url, filename in files:
-            yield DownloadItem(
-                download_url=full_url,
-                filename=filename,
-                collection_name=collection_name,
-            )
+        yield from items_from_pairs(files, collection_name)
 
     def _extract_model(
         self, fetch: Fetcher, url: str
@@ -191,35 +177,26 @@ class ThothubTO(BasePlugin):
         parsed = urlparse(url)
         base_url = f"{parsed.scheme}://{parsed.netloc}"
         model_name = parsed.path.split("/")[2]
-        page = 1
-        seen: set[str] = set()
 
-        while True:
-            pagination_url = (
+        for video_url in unique(self._model_video_urls(fetch, base_url, model_name)):
+            yield self._fetch_video(fetch, video_url, model_name)
+
+    def _model_video_urls(
+        self, fetch: Fetcher, base_url: str, model_name: str
+    ) -> Iterator[str]:
+        """Walk a model's paginated video listing, yielding video page URLs."""
+
+        def request_for_page(page: int) -> Request:
+            return Request(
                 f"{base_url}/models/{model_name}/"
                 f"?mode=async&function=get_block&block_id=list_videos_common_videos_list"
                 f"&sort_by=post_date&from={page}"
             )
 
-            try:
-                response = fetch(Request(pagination_url))
-            except ExtractionError as e:
-                if e.http_status == 404:
-                    break
-                raise
-
-            if not response.text.strip():
-                break
-
+        # Past-the-end pages answer 404 rather than an empty listing.
+        for response in crawl_pages(fetch, request_for_page, stop_statuses=(404,)):
             video_urls = parse_model_video_links(response.text, base_url)
             if not video_urls:
-                break
+                return
 
-            for video_url in video_urls:
-                if video_url in seen:
-                    continue
-
-                seen.add(video_url)
-                yield self._fetch_video(fetch, video_url, model_name)
-
-            page += 1
+            yield from video_urls

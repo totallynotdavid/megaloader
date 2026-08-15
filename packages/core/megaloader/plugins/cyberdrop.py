@@ -4,13 +4,12 @@ import re
 from collections.abc import Generator
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
-from bs4 import BeautifulSoup
-
-from megaloader.error_policy import raise_extraction_error
+from megaloader.error_policy import raise_protocol_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.item import DownloadItem
+from megaloader.parsing import absolute_links, element_text, parse_html
 from megaloader.plugin import BasePlugin
 
 
@@ -44,16 +43,14 @@ def parse_target(url: str) -> Target:
 
 def parse_album_page(page: str, site_base: str) -> tuple[str | None, list[str]]:
     """Return (collection_name, file_ids) from a Cyberdrop album page."""
-    soup = BeautifulSoup(page, "html.parser")
+    soup = parse_html(page)
+    collection_name = element_text(soup.find("h1", id="title"))
 
-    title_elem = soup.find("h1", id="title")
-    collection_name = title_elem.text.strip() if title_elem else None
-
-    file_ids: list[str] = []
-    for link in soup.select("a.file[href], a#file[href]"):
-        file_url = urljoin(site_base, str(link["href"]))
-        if match := _FILE_ID_RE.search(file_url):
-            file_ids.append(match.group(1))
+    file_ids = [
+        match.group(1)
+        for file_url in absolute_links(soup, "a.file[href], a#file[href]", site_base)
+        if (match := _FILE_ID_RE.search(file_url))
+    ]
 
     return collection_name, file_ids
 
@@ -65,11 +62,10 @@ def file_info_from_payload(payload: Any, file_id: str, api_url: str) -> tuple[st
         or not payload.get("name")
         or not payload.get("auth_url")
     ):
-        raise_extraction_error(
+        raise_protocol_error(
             f"Unexpected API response for file {file_id}",
             source="cyberdrop",
             url=api_url,
-            category="protocol",
         )
 
     return str(payload["name"]), str(payload["auth_url"])
@@ -78,11 +74,10 @@ def file_info_from_payload(payload: Any, file_id: str, api_url: str) -> tuple[st
 def direct_url_from_payload(payload: Any, auth_url: str) -> str:
     """Validate the auth response and return the direct CDN URL."""
     if not isinstance(payload, dict) or not isinstance(payload.get("url"), str):
-        raise_extraction_error(
+        raise_protocol_error(
             f"No direct URL in auth response: {auth_url}",
             source="cyberdrop",
             url=auth_url,
-            category="protocol",
         )
 
     return str(payload["url"])
