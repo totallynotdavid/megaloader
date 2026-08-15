@@ -8,7 +8,8 @@ import requests
 
 from megaloader.item import DownloadItem
 
-from api.config import DOWNLOAD_TIMEOUT
+from api.config import DOWNLOAD_TIMEOUT, MAX_SIZE_BYTES
+from api.security import validate_download_url
 
 
 logger = logging.getLogger(__name__)
@@ -33,15 +34,32 @@ def cleanup_temp(temp_dir: Path) -> None:
         logger.exception("Cleanup failed")
 
 
-def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
+def safe_filename(filename: str) -> str:
     """
-    Download single file with timeout and cleanup on failure.
+    Reduce an upstream filename to a safe leaf name.
+
+    DownloadItem already rejects separators and traversal, so this only strips
+    control characters and names that resolve to a directory entry.
+    """
+    cleaned = "".join(c for c in filename if c.isprintable()).strip()
+    if not cleaned or set(cleaned) <= {"."}:
+        return "download"
+    return cleaned
+
+
+def download_file(
+    item: DownloadItem, output_dir: Path, max_bytes: int = MAX_SIZE_BYTES
+) -> Path | None:
+    """
+    Download single file with timeout, size cap, and cleanup on failure.
 
     Returns file path on success, None on failure.
     """
-    output_path = output_dir / item.filename
+    output_path = output_dir / safe_filename(item.filename)
 
     try:
+        validate_download_url(item.download_url)
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         logger.debug("Starting download", extra={"file_name": item.filename})
@@ -63,9 +81,21 @@ def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
         bytes_downloaded = 0
         with output_path.open("wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-                    bytes_downloaded += len(chunk)
+                if not chunk:
+                    continue
+
+                bytes_downloaded += len(chunk)
+
+                # Content-Length is advisory: hosts omit it or understate it, so
+                # the cap has to hold while the body streams in.
+                if bytes_downloaded > max_bytes:
+                    msg = (
+                        f"{item.filename} exceeds the remaining {max_bytes} byte "
+                        f"budget while streaming"
+                    )
+                    raise ValueError(msg)  # noqa: TRY301
+
+                f.write(chunk)
 
         logger.debug(
             "Download complete",
@@ -87,20 +117,31 @@ def download_items(items: list[DownloadItem], temp_dir: Path) -> list[Path]:
     """
     Download all items to temp directory.
 
-    Raises RuntimeError if no files downloaded successfully.
+    Raises ValueError if the combined size exceeds the configured limit and
+    RuntimeError if no files downloaded successfully.
     """
     downloaded = []
     failed = []
+    remaining = MAX_SIZE_BYTES
 
     logger.info("Downloading items", extra={"count": len(items)})
 
     for item in items:
-        file_path = download_file(item, temp_dir)
+        file_path = download_file(item, temp_dir, max_bytes=remaining)
 
         if file_path:
             downloaded.append(file_path)
+            remaining -= file_path.stat().st_size
         else:
             failed.append(item.filename)
+
+        if remaining <= 0:
+            logger.warning(
+                "Size limit reached while downloading",
+                extra={"downloaded": len(downloaded), "total": len(items)},
+            )
+            msg = f"Content exceeds the {MAX_SIZE_BYTES} byte limit"
+            raise ValueError(msg)
 
     if not downloaded:
         logger.error(

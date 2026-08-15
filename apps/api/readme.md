@@ -39,9 +39,15 @@ number of files per request (default is 50). Logging can be tuned with
 `API_LOG_LEVEL` (defaulting to `INFO`) and `API_LOG_FORMAT` (`json` by default).
 
 CORS is configured through `API_CORS_ORIGINS`, which accepts a comma-separated
-list of allowed origins and defaults to allowing all (`*`). Rate limiting is
+list of allowed origins and defaults to allowing all (`*`). Credentialed
+cross-origin requests are enabled only when an explicit origin list is set;
+with the wildcard default they stay disabled, because a wildcard combined with
+credentials makes the server echo back any requesting origin. Rate limiting is
 handled by `API_RATE_LIMIT_REQUESTS` and `API_RATE_LIMIT_WINDOW`; by default,
-the API allows 10 requests every 60 seconds.
+the API allows 10 requests every 60 seconds. Rate limits key on the client IP,
+which is read from `X-Forwarded-For` only when `API_TRUST_PROXY` is set (it is
+implied on Vercel); otherwise the socket address is used, since an untrusted
+header can be forged to get a fresh bucket per request.
 
 Finally, when checking file sizes, HEAD requests use a timeout controlled by
 `API_HEAD_REQUEST_TIMEOUT`, which is set to 10 seconds by default.
@@ -94,8 +100,9 @@ Example oversized response:
 }
 ```
 
-Possible error codes include 400 for unsupported domains, 422 for invalid
-requests, 429 for rate limits, and 500 for extraction failures.
+Possible error codes include 400 for unsupported domains, 413 when the content
+turns out to exceed the size limit while downloading, 422 for invalid requests,
+429 for rate limits, and 500 for extraction failures.
 
 ---
 

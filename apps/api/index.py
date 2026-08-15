@@ -1,6 +1,7 @@
 import logging
 
 from api.config import (
+    CORS_ALLOW_CREDENTIALS,
     CORS_ORIGINS,
     IS_PRODUCTION,
     MAX_FILE_COUNT,
@@ -18,7 +19,7 @@ from api.models import (
     ValidationResult,
 )
 from api.responses import create_file_response, create_zip
-from api.security import check_rate_limit, validate_domain_whitelist
+from api.security import check_rate_limit, client_ip_from, validate_domain_whitelist
 from api.utils import format_size
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,7 +41,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
+    allow_credentials=CORS_ALLOW_CREDENTIALS,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
     expose_headers=["Content-Disposition"],
@@ -85,7 +86,7 @@ async def validate_endpoint(request: URLValidation, req: Request) -> ValidationR
     2. Domain whitelist validation
     3. Plugin availability check
     """
-    client_ip = req.client.host if req.client is not None else UNKNOWN_CLIENT
+    client_ip = client_ip_from(req)
 
     await check_rate_limit(client_ip)
 
@@ -126,7 +127,7 @@ async def download_endpoint(
 
     Returns preview if size >4MB, otherwise downloads files.
     """
-    client_ip = req.client.host if req.client is not None else UNKNOWN_CLIENT
+    client_ip = client_ip_from(req)
 
     url = request.url.strip()
     if not url:
@@ -185,7 +186,14 @@ async def download_endpoint(
     # Download files
     temp_dir = create_temp_dir()
     try:
-        downloaded = download_items(items, temp_dir)
+        try:
+            downloaded = download_items(items, temp_dir)
+        except ValueError as e:
+            logger.warning(
+                "Size limit exceeded during download",
+                extra={"client_ip": client_ip, "domain": domain, "status_code": 413},
+            )
+            raise HTTPException(413, f"Size limit exceeded: {MAX_SIZE_MB}MB") from e
 
         logger.info(
             "Files downloaded",
@@ -196,6 +204,9 @@ async def download_endpoint(
             return create_file_response(downloaded[0])
 
         return create_zip(downloaded, f"{domain}_download.zip")
+
+    except HTTPException:
+        raise
 
     except Exception as e:
         logger.exception("Download failed")

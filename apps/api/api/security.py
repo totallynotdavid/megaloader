@@ -1,15 +1,19 @@
+import ipaddress
 import logging
+import socket
 
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import httpx
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 
 from api.config import (
     ALLOWED_DOMAINS,
     RATE_LIMIT_REQUESTS,
     RATE_LIMIT_WINDOW,
+    TRUST_PROXY_HEADERS,
+    UNKNOWN_CLIENT,
     UPSTASH_REDIS_TOKEN,
     UPSTASH_REDIS_URL,
 )
@@ -18,6 +22,69 @@ from api.config import (
 # ruff: noqa: TRY301 (FastAPI idiom: raise HTTPException directly)
 
 logger = logging.getLogger(__name__)
+
+
+def client_ip_from(request: Request) -> str:
+    """
+    Identify the caller for rate limiting.
+
+    Uses the left-most X-Forwarded-For entry behind a trusted proxy, otherwise
+    the socket address. Returns UNKNOWN_CLIENT when neither yields a valid IP,
+    so a forged header can never widen the key space.
+    """
+    if TRUST_PROXY_HEADERS:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        candidate = forwarded.split(",")[0].strip()
+        if _is_ip_address(candidate):
+            return candidate
+
+    peer = request.client.host if request.client is not None else ""
+    if _is_ip_address(peer):
+        return peer
+
+    return UNKNOWN_CLIENT
+
+
+def _is_ip_address(value: str) -> bool:
+    try:
+        ipaddress.ip_address(value)
+    except ValueError:
+        return False
+    return True
+
+
+def validate_download_url(url: str) -> None:
+    """
+    Reject download URLs that point at non-public addresses.
+
+    Download URLs come from upstream page content, so a compromised or hostile
+    host could aim them at loopback or link-local addresses (cloud metadata
+    endpoints, internal services) and turn the API into an SSRF proxy.
+
+    Raises ValueError when the URL is not a fetchable public HTTP(S) address.
+    """
+    parsed = urlparse(url)
+
+    if parsed.scheme not in ("http", "https"):
+        msg = f"Refusing non-HTTP(S) download URL: {parsed.scheme or 'none'}"
+        raise ValueError(msg)
+
+    host = parsed.hostname
+    if not host:
+        msg = "Download URL has no host"
+        raise ValueError(msg)
+
+    try:
+        infos = socket.getaddrinfo(host, parsed.port or 0, proto=socket.IPPROTO_TCP)
+    except socket.gaierror as e:
+        msg = f"Could not resolve download host: {host}"
+        raise ValueError(msg) from e
+
+    for info in infos:
+        address = ipaddress.ip_address(info[4][0])
+        if not address.is_global or address.is_multicast:
+            msg = f"Refusing download from non-public address: {host}"
+            raise ValueError(msg)
 
 
 def validate_domain_whitelist(url: str) -> str:
@@ -33,10 +100,15 @@ def validate_domain_whitelist(url: str) -> str:
         if parsed.scheme not in ("http", "https"):
             raise HTTPException(400, "Only HTTP(S) URLs allowed")
 
-        if not parsed.netloc:
+        if not parsed.hostname:
             raise HTTPException(400, "Invalid URL format")
 
-        domain = parsed.netloc.lower()
+        # Credentials in the authority section make the host ambiguous to read
+        # and serve no purpose for the supported platforms.
+        if "@" in parsed.netloc:
+            raise HTTPException(400, "Invalid URL format")
+
+        domain = parsed.hostname.lower()
 
         if domain not in ALLOWED_DOMAINS:
             logger.warning(
@@ -68,7 +140,7 @@ async def check_rate_limit(client_ip: str) -> None:
         return
 
     try:
-        key = f"ratelimit:{client_ip}"
+        key = quote(f"ratelimit:{client_ip}", safe="")
 
         async with httpx.AsyncClient() as client:
             # Increment counter with expiry

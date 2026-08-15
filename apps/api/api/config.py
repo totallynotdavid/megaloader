@@ -24,7 +24,14 @@ RATE_LIMIT_WINDOW = int(os.getenv("API_RATE_LIMIT_WINDOW", "60"))
 
 # CORS
 CORS_ORIGINS_STR = os.getenv("API_CORS_ORIGINS", "*")
-CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_STR.split(",")]
+CORS_ORIGINS = [
+    origin.strip() for origin in CORS_ORIGINS_STR.split(",") if origin.strip()
+] or ["*"]
+
+# Credentials must never be allowed alongside a wildcard origin: Starlette then
+# echoes back whatever Origin the request carries, which lets any site issue
+# credentialed cross-origin requests. Set an explicit origin list to enable it.
+CORS_ALLOW_CREDENTIALS = "*" not in CORS_ORIGINS
 
 # Logging
 LOG_LEVEL = os.getenv("API_LOG_LEVEL", "INFO")
@@ -32,6 +39,16 @@ LOG_FORMAT: Literal["json", "text"] = os.getenv("API_LOG_FORMAT", "json")  # typ
 
 # Environment detection
 IS_PRODUCTION = "VERCEL" in os.environ or os.getenv("ENV") == "production"
+
+# Trust the X-Forwarded-For header only behind a proxy that sets it (Vercel).
+# Without this the per-IP rate limit keys on the proxy address, which makes it a
+# single global bucket; with it enabled on an unproxied deployment, clients could
+# spoof the header to get a fresh bucket per request.
+TRUST_PROXY_HEADERS = os.getenv("API_TRUST_PROXY", "").lower() in (
+    "1",
+    "true",
+    "yes",
+) or ("VERCEL" in os.environ)
 
 # Constants
 UNKNOWN_CLIENT = "unknown"

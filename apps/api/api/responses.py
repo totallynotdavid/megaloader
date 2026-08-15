@@ -3,6 +3,7 @@ import zipfile
 
 from io import BytesIO
 from pathlib import Path
+from urllib.parse import quote
 
 from fastapi.responses import Response
 
@@ -20,6 +21,23 @@ MIME_TYPES = {
     ".wav": "audio/wav",
     ".pdf": "application/pdf",
 }
+
+
+def content_disposition(filename: str) -> str:
+    """
+    Build an attachment Content-Disposition value for an untrusted filename.
+
+    Filenames come from upstream hosts, so quotes, control characters, and
+    non-ASCII bytes must not reach the header verbatim. The quoted form is
+    reduced to safe ASCII and the exact name is carried in filename* (RFC 6266).
+    """
+    ascii_name = "".join(
+        c if c.isalnum() or c in "._- " else "_"
+        for c in filename.encode("ascii", "ignore").decode()
+    ).strip()
+    fallback = ascii_name or "download"
+
+    return f"attachment; filename=\"{fallback}\"; filename*=UTF-8''{quote(filename)}"
 
 
 def create_file_response(file_path: Path) -> Response:
@@ -51,7 +69,7 @@ def create_file_response(file_path: Path) -> Response:
         return Response(
             content=content,
             media_type=content_type,
-            headers={"Content-Disposition": f'attachment; filename="{file_path.name}"'},
+            headers={"Content-Disposition": content_disposition(file_path.name)},
         )
 
     except Exception:
@@ -102,7 +120,7 @@ def create_zip(files: list[Path], filename: str) -> Response:
         return Response(
             content=zip_content,
             media_type="application/zip",
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+            headers={"Content-Disposition": content_disposition(filename)},
         )
 
     except Exception:

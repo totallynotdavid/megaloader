@@ -3,6 +3,7 @@ import logging
 import requests
 
 from api.config import SIZE_CHECK_TIMEOUT
+from api.security import validate_download_url
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,8 @@ def get_file_size(url: str, headers: dict[str, str] | None = None) -> int:
     Returns 0 if size cannot be determined (timeout, error, missing header).
     """
     try:
+        validate_download_url(url)
+
         response = requests.head(
             url, headers=headers, timeout=SIZE_CHECK_TIMEOUT, allow_redirects=True
         )
