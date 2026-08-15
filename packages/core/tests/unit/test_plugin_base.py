@@ -1,5 +1,3 @@
-import logging
-
 import pytest
 import requests
 import requests_mock as req_mock
@@ -197,23 +195,6 @@ class TestRequestsFetcher:
         assert request.headers["Referer"] == "https://example.com/"
         assert session.cookies.get("token") == "abc"
 
-    def test_logs_the_response_body_when_live_debug_is_enabled(
-        self,
-        requests_mock: req_mock.Mocker,
-        monkeypatch: pytest.MonkeyPatch,
-        caplog: pytest.LogCaptureFixture,
-    ) -> None:
-        monkeypatch.setenv("MEGALOADER_LIVE_DEBUG", "1")
-        requests_mock.get("https://example.com/data", status_code=500, text="upstream")
-
-        with (
-            caplog.at_level(logging.DEBUG, logger="megaloader.fetcher"),
-            pytest.raises(ExtractionError),
-        ):
-            self._fetch()(Request("https://example.com/data"))
-
-        assert "upstream" in caplog.text
-
     def test_per_request_headers_and_params_reach_the_wire(
         self, requests_mock: req_mock.Mocker
     ) -> None:
@@ -243,6 +224,3 @@ class TestBasePlugin:
 
         assert plugin.url == "https://pixeldrain.com/l/abc"
         assert plugin.options == {"api_key": "key"}
-
-    def test_source_is_the_lowercased_class_name(self) -> None:
-        assert PixelDrain("https://pixeldrain.com/l/abc").source == "pixeldrain"

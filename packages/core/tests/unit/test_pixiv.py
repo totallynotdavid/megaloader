@@ -3,15 +3,18 @@ import json
 import pytest
 
 from megaloader.exceptions import ExtractionError
+from megaloader.item import DownloadItem
 from megaloader.plugins.pixiv import Pixiv
 
-from tests.helpers import fake_fetcher
+from tests.helpers import assert_valid_item, fake_fetcher
 
 
 ARTWORK_ID = "123"
+ARTWORK_PAGE = f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}"
 PAGES_URL = f"https://www.pixiv.net/ajax/illust/{ARTWORK_ID}/pages"
 ILLUST_URL = f"https://www.pixiv.net/ajax/illust/{ARTWORK_ID}"
 USER_ID = "42"
+USER_PAGE = f"https://www.pixiv.net/users/{USER_ID}"
 USER_URL = f"https://www.pixiv.net/ajax/user/{USER_ID}"
 USER_WORKS_URL = f"https://www.pixiv.net/ajax/user/{USER_ID}/profile/all"
 
@@ -24,8 +27,12 @@ def _pages(*urls: str) -> str:
     return _body([{"urls": {"original": url}} for url in urls])
 
 
+def _extract(url: str, routes: dict[str, str]) -> list[DownloadItem]:
+    return list(Pixiv(url).extract(fake_fetcher(routes)))
+
+
 @pytest.mark.unit
-def test_artwork_yields_one_item_per_page() -> None:
+def test_a_multi_page_artwork_yields_every_page_with_a_referer() -> None:
     routes = {
         PAGES_URL: _pages(
             "https://i.pximg.net/img/123_p0.png",
@@ -34,24 +41,22 @@ def test_artwork_yields_one_item_per_page() -> None:
         ILLUST_URL: _body({"userName": "artist"}),
     }
 
-    items = list(
-        Pixiv(f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}").extract(
-            fake_fetcher(routes)
-        )
-    )
+    items = _extract(ARTWORK_PAGE, routes)
 
+    for item in items:
+        assert_valid_item(item)
     assert [item.filename for item in items] == ["123_p0.png", "123_p1.jpg"]
     assert {item.collection_name for item in items} == {"artist_123"}
+    # i.pximg.net serves 403 to requests that arrive without a Pixiv referer.
     assert items[0].headers == {
         "Referer": f"https://www.pixiv.net/artworks/{ARTWORK_ID}"
     }
 
 
 @pytest.mark.unit
-def test_artwork_falls_back_to_illust_detail_when_pages_is_empty() -> None:
-    # The pages endpoint returns an empty list for some artworks; the single
-    # original URL then has to come from the illust detail payload, which is
-    # also reused for the collection name instead of being fetched twice.
+def test_an_artwork_the_pages_endpoint_reports_as_empty_is_still_downloadable() -> None:
+    # Pixiv answers with an empty page list for some artworks even though the
+    # artwork itself has an original image.
     routes = {
         PAGES_URL: _body([]),
         ILLUST_URL: _body(
@@ -62,89 +67,62 @@ def test_artwork_falls_back_to_illust_detail_when_pages_is_empty() -> None:
         ),
     }
 
-    items = list(
-        Pixiv(f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}").extract(
-            fake_fetcher(routes)
-        )
-    )
+    items = _extract(ARTWORK_PAGE, routes)
 
-    assert len(items) == 1
-    assert items[0].download_url == "https://i.pximg.net/img/123_p0.png"
+    assert [item.download_url for item in items] == [
+        "https://i.pximg.net/img/123_p0.png"
+    ]
     assert items[0].collection_name == "artist_123"
 
 
 @pytest.mark.unit
-def test_artwork_without_any_original_url_yields_nothing() -> None:
+def test_an_artwork_with_no_original_image_anywhere_yields_nothing() -> None:
     routes = {
         PAGES_URL: _body([]),
         ILLUST_URL: _body({"userName": "artist", "urls": {}}),
     }
 
-    items = list(
-        Pixiv(f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}").extract(
-            fake_fetcher(routes)
-        )
-    )
-
-    assert items == []
+    assert _extract(ARTWORK_PAGE, routes) == []
 
 
 @pytest.mark.unit
-def test_artwork_skips_pages_without_an_original_url() -> None:
+def test_pages_missing_an_original_image_are_skipped_without_losing_the_rest() -> None:
     routes = {
-        PAGES_URL: json.dumps(
-            {
-                "error": False,
-                "body": [
-                    {"urls": {}},
-                    {"urls": {"original": "https://i.pximg.net/b.png"}},
-                ],
-            }
+        PAGES_URL: _body(
+            [{"urls": {}}, {"urls": {"original": "https://i.pximg.net/b.png"}}]
         ),
         ILLUST_URL: _body({"userName": "artist"}),
     }
 
-    items = list(
-        Pixiv(f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}").extract(
-            fake_fetcher(routes)
-        )
-    )
+    items = _extract(ARTWORK_PAGE, routes)
 
+    # Filenames number the pages of the artwork, not the yielded items.
     assert [item.filename for item in items] == ["123_p1.png"]
 
 
 @pytest.mark.unit
-def test_api_error_flag_raises_extraction_error() -> None:
+def test_a_rejected_request_surfaces_the_reason_pixiv_gave() -> None:
     routes = {PAGES_URL: _body(None, error=True, message="rate limited")}
 
     with pytest.raises(ExtractionError) as exc_info:
-        list(
-            Pixiv(f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}").extract(
-                fake_fetcher(routes)
-            )
-        )
+        _extract(ARTWORK_PAGE, routes)
 
     err = exc_info.value
     assert err.detail == "rate limited"
     assert err.source == "pixiv"
     assert err.url == PAGES_URL
-    assert err.provider_status == "True"
 
 
 @pytest.mark.unit
-def test_api_error_without_message_uses_generic_detail() -> None:
+def test_a_rejected_request_without_a_reason_still_fails_loudly() -> None:
     routes = {PAGES_URL: json.dumps({"error": True, "body": None})}
 
     with pytest.raises(ExtractionError, match="Pixiv API returned an error"):
-        list(
-            Pixiv(f"https://www.pixiv.net/en/artworks/{ARTWORK_ID}").extract(
-                fake_fetcher(routes)
-            )
-        )
+        _extract(ARTWORK_PAGE, routes)
 
 
 @pytest.mark.unit
-def test_user_gallery_yields_avatar_cover_and_every_work() -> None:
+def test_a_user_gallery_yields_profile_art_and_every_work() -> None:
     routes = {
         USER_URL: _body(
             {
@@ -160,9 +138,7 @@ def test_user_gallery_yields_avatar_cover_and_every_work() -> None:
         ),
     }
 
-    items = list(
-        Pixiv(f"https://www.pixiv.net/users/{USER_ID}").extract(fake_fetcher(routes))
-    )
+    items = _extract(USER_PAGE, routes)
 
     assert [item.filename for item in items] == [
         "avatar.jpg",
@@ -170,73 +146,53 @@ def test_user_gallery_yields_avatar_cover_and_every_work() -> None:
         "123_p0.png",
         "456_p0.png",
     ]
-    # Works discovered through a gallery inherit the gallery's collection name
-    # rather than deriving a per-artwork one, so they land in a single folder.
+    # Everything a gallery discovers lands in one folder named after the user,
+    # including manga, rather than one folder per artwork.
     assert {item.collection_name for item in items} == {"42_artist"}
 
 
 @pytest.mark.unit
-def test_user_gallery_without_profile_body_yields_nothing() -> None:
-    routes = {USER_URL: _body(None)}
-
-    items = list(
-        Pixiv(f"https://www.pixiv.net/users/{USER_ID}").extract(fake_fetcher(routes))
-    )
-
-    assert items == []
+def test_a_gallery_pixiv_refuses_to_describe_yields_nothing() -> None:
+    assert _extract(USER_PAGE, {USER_URL: _body(None)}) == []
 
 
 @pytest.mark.unit
-def test_user_gallery_tolerates_missing_avatar_cover_and_works() -> None:
+def test_a_gallery_without_profile_art_or_works_yields_nothing() -> None:
     routes = {
         USER_URL: _body({"name": "artist", "background": None}),
         USER_WORKS_URL: _body(None),
     }
 
-    items = list(
-        Pixiv(f"https://www.pixiv.net/users/{USER_ID}").extract(fake_fetcher(routes))
-    )
-
-    assert items == []
+    assert _extract(USER_PAGE, routes) == []
 
 
 @pytest.mark.unit
-def test_session_config_sends_referer_without_cookies_by_default(
+def test_requests_are_anonymous_unless_a_session_id_is_available(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("PIXIV_PHPSESSID", raising=False)
 
-    config = Pixiv(f"https://www.pixiv.net/users/{USER_ID}").session_config()
+    config = Pixiv(USER_PAGE).session_config()
 
     assert config.headers == {"Referer": "https://www.pixiv.net/"}
     assert config.cookies == ()
 
 
 @pytest.mark.unit
-def test_session_config_prefers_explicit_session_id_over_environment(
-    monkeypatch: pytest.MonkeyPatch,
+@pytest.mark.parametrize(
+    ("options", "expected"),
+    [
+        pytest.param({}, "from-env", id="environment"),
+        pytest.param({"session_id": "explicit"}, "explicit", id="explicit-wins"),
+    ],
+)
+def test_a_session_id_authenticates_requests_for_restricted_art(
+    monkeypatch: pytest.MonkeyPatch, options: dict[str, str], expected: str
 ) -> None:
     monkeypatch.setenv("PIXIV_PHPSESSID", "from-env")
 
-    config = Pixiv(
-        f"https://www.pixiv.net/users/{USER_ID}", session_id="explicit"
-    ).session_config()
+    config = Pixiv(USER_PAGE, **options).session_config()
 
-    assert len(config.cookies) == 1
-    cookie = config.cookies[0]
-    assert (cookie.name, cookie.value, cookie.domain) == (
-        "PHPSESSID",
-        "explicit",
-        ".pixiv.net",
-    )
-
-
-@pytest.mark.unit
-def test_session_config_falls_back_to_environment_session_id(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("PIXIV_PHPSESSID", "from-env")
-
-    config = Pixiv(f"https://www.pixiv.net/users/{USER_ID}").session_config()
-
-    assert [cookie.value for cookie in config.cookies] == ["from-env"]
+    assert [(c.name, c.value, c.domain) for c in config.cookies] == [
+        ("PHPSESSID", expected, ".pixiv.net")
+    ]

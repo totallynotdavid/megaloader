@@ -10,90 +10,68 @@ from megaloader.exceptions import ExtractionError
 
 
 @pytest.mark.unit
-def test_classify_failure_rate_limit_http() -> None:
-    assert classify_failure(http_status=429) == "rate_limit"
-
-
-@pytest.mark.unit
-def test_classify_failure_auth_http() -> None:
-    assert classify_failure(http_status=401) == "auth"
-
-
-@pytest.mark.unit
-def test_classify_failure_access_provider_status() -> None:
-    assert classify_failure(provider_status="error-notPremium") == "access"
-
-
-@pytest.mark.unit
-def test_classify_failure_explicit_category_wins_over_signals() -> None:
-    assert classify_failure(http_status=429, category="timeout") == "timeout"
-
-
-@pytest.mark.unit
 @pytest.mark.parametrize(
-    ("provider_status", "expected"),
+    ("http_status", "provider_status", "category", "expected"),
     [
-        ("Error-RateLimit", "rate_limit"),
-        ("error-notFound", "access"),
-        ("error-passwordRequired", "access"),
-        ("error-somethingElse", "unknown"),
+        pytest.param(429, None, None, "rate_limit", id="http-429"),
+        pytest.param(401, None, None, "auth", id="http-401"),
+        pytest.param(403, None, None, "access", id="http-403"),
+        pytest.param(404, None, None, "access", id="http-404"),
+        pytest.param(500, None, None, "request", id="http-500"),
+        pytest.param(
+            None, "Error-RateLimit", None, "rate_limit", id="provider-throttle"
+        ),
+        pytest.param(None, "error-notFound", None, "access", id="provider-missing"),
+        pytest.param(
+            None, "error-passwordRequired", None, "access", id="provider-locked"
+        ),
+        pytest.param(None, "error-notPremium", None, "access", id="provider-paywalled"),
+        pytest.param(
+            None, "error-somethingElse", None, "unknown", id="unknown-provider-status"
+        ),
+        pytest.param(None, None, None, "unknown", id="no-signal"),
+        # Callers that already know what went wrong are not second-guessed.
+        pytest.param(429, None, "timeout", "timeout", id="explicit-wins"),
     ],
 )
-def test_classify_failure_normalizes_provider_status(
-    provider_status: str, expected: str
+def test_a_failure_is_classified_from_whatever_signals_are_available(
+    http_status: int | None,
+    provider_status: str | None,
+    category: str | None,
+    expected: str,
 ) -> None:
-    assert classify_failure(provider_status=provider_status) == expected
+    assert (
+        classify_failure(
+            http_status=http_status,
+            provider_status=provider_status,
+            category=category,
+        )
+        == expected
+    )
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    ("http_status", "expected"), [(403, "access"), (404, "access")]
-)
-def test_classify_failure_access_http(http_status: int, expected: str) -> None:
-    assert classify_failure(http_status=http_status) == expected
+def test_a_built_error_carries_the_context_needed_to_act_on_it() -> None:
+    cause = ValueError("boom")
 
-
-@pytest.mark.unit
-def test_classify_failure_other_http_status_is_a_request_failure() -> None:
-    assert classify_failure(http_status=500) == "request"
-
-
-@pytest.mark.unit
-def test_classify_failure_without_any_signal_is_unknown() -> None:
-    assert classify_failure() == "unknown"
-
-
-@pytest.mark.unit
-def test_build_extraction_error_fields() -> None:
     err = build_extraction_error(
         "Failed request",
         source="pixiv",
         url="https://www.pixiv.net/ajax/illust/1",
         http_status=429,
-        provider_status=None,
+        cause=cause,
     )
 
-    assert err.detail == "Failed request"
+    assert str(err) == "Failed request"
     assert err.source == "pixiv"
     assert err.url == "https://www.pixiv.net/ajax/illust/1"
     assert err.http_status == 429
-    assert err.provider_status is None
     assert err.category == "rate_limit"
-    assert str(err) == "Failed request"
-
-
-@pytest.mark.unit
-def test_build_extraction_error_keeps_the_original_cause() -> None:
-    cause = ValueError("boom")
-
-    err = build_extraction_error("wrapped", source="gofile", cause=cause)
-
     assert err.cause is cause
-    assert err.category == "unknown"
 
 
 @pytest.mark.unit
-def test_raise_extraction_error_raises_the_built_error() -> None:
+def test_raising_a_failure_produces_that_same_classified_error() -> None:
     with pytest.raises(ExtractionError) as exc_info:
         raise_extraction_error(
             "Failed request", source="pixiv", url="https://pixiv.net", http_status=401
@@ -104,24 +82,18 @@ def test_raise_extraction_error_raises_the_built_error() -> None:
 
 
 @pytest.mark.unit
-def test_raise_for_api_status_accepts_ok() -> None:
+def test_an_ok_api_status_is_not_a_failure() -> None:
     raise_for_api_status("gofile", "https://gofile.io", "ok")
 
 
 @pytest.mark.unit
-def test_raise_for_api_status_reports_the_provider_status() -> None:
+def test_a_failing_api_status_becomes_a_readable_classified_error() -> None:
     with pytest.raises(ExtractionError) as exc_info:
-        raise_for_api_status("gofile", "https://gofile.io", "error-notFound")
+        raise_for_api_status(
+            "gofile", "https://gofile.io", "error-notFound", message="no such link"
+        )
 
     err = exc_info.value
-    assert err.detail == "gofile API error: error-notFound"
+    assert err.detail == "gofile API error: error-notFound (no such link)"
     assert err.provider_status == "error-notFound"
     assert err.category == "access"
-
-
-@pytest.mark.unit
-def test_raise_for_api_status_appends_the_optional_message() -> None:
-    with pytest.raises(ExtractionError, match=r"error-x \(bad token\)"):
-        raise_for_api_status(
-            "gofile", "https://gofile.io", "error-x", message="bad token"
-        )

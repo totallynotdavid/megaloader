@@ -2,19 +2,15 @@ from collections.abc import Mapping
 
 import pytest
 
-from bs4 import BeautifulSoup
 from megaloader.fetcher import Fetcher, Request, Response
-from megaloader.plugins.rule34 import (
-    Rule34,
-    build_item,
-    parse_listing_hrefs,
-    parse_media_url,
-    parse_query,
-)
+from megaloader.plugins.rule34 import Rule34
+
+from tests.helpers import assert_valid_item
 
 
 API_URL = "https://api.rule34.xxx/index.php"
 LISTING_URL = "https://rule34.xxx/index.php"
+POST_URL = "https://rule34.xxx/index.php?page=post&s=view&id=99"
 
 
 def paging_fetcher(
@@ -46,10 +42,6 @@ def paging_fetcher(
     return fetch
 
 
-def _post_page(media_url: str) -> str:
-    return f'<a href="{media_url}">Original image</a>'
-
-
 def _api_page(*posts: tuple[str, str]) -> str:
     entries = "".join(
         f'<post id="{post_id}" file_url="{file_url}"/>' for post_id, file_url in posts
@@ -65,89 +57,54 @@ def _listing_page(*hrefs: str) -> str:
 
 
 @pytest.mark.unit
-def test_parse_query_reads_post_id_and_tags() -> None:
-    assert parse_query("https://rule34.xxx/index.php?page=post&s=view&id=99") == (
-        "99",
-        [],
-    )
-    assert parse_query("https://rule34.xxx/index.php?tags=cat+dog") == (
-        None,
-        ["cat", "dog"],
-    )
-
-
-@pytest.mark.unit
-def test_constructor_rejects_url_without_id_or_tags() -> None:
+def test_a_url_that_names_neither_a_post_nor_tags_is_rejected() -> None:
     with pytest.raises(ValueError, match="'id' or 'tags'"):
         Rule34("https://rule34.xxx/index.php?page=post&s=list")
 
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    ("html", "expected"),
+    ("page", "expected_url"),
     [
-        (
-            '<a href="https://img.rule34.xxx/a.jpg">Original image</a>',
+        pytest.param(
+            '<a href="//img.rule34.xxx/a.jpg">Original image</a>',
             "https://img.rule34.xxx/a.jpg",
+            id="original-image-link",
         ),
-        (
-            '<video><source src="https://img.rule34.xxx/a.mp4"></video>',
+        pytest.param(
+            '<video><source src="//img.rule34.xxx/a.mp4"></video>',
             "https://img.rule34.xxx/a.mp4",
+            id="video-post",
         ),
-        (
-            '<img id="image" src="https://img.rule34.xxx/a.png">',
+        pytest.param(
+            '<img id="image" src="//img.rule34.xxx/a.png">',
             "https://img.rule34.xxx/a.png",
+            id="plain-image-post",
         ),
-        ("<div>no media here</div>", None),
     ],
 )
-def test_parse_media_url_covers_each_post_layout(
-    html: str, expected: str | None
+def test_a_single_post_yields_its_media_whatever_the_page_layout(
+    page: str, expected_url: str
 ) -> None:
-    assert parse_media_url(BeautifulSoup(html, "html.parser")) == expected
-
-
-@pytest.mark.unit
-def test_parse_listing_hrefs_returns_thumbnail_links() -> None:
-    soup = BeautifulSoup(
-        _listing_page("index.php?id=1", "index.php?id=2"), "html.parser"
-    )
-
-    assert parse_listing_hrefs(soup) == ["index.php?id=1", "index.php?id=2"]
-
-
-@pytest.mark.unit
-def test_build_item_upgrades_protocol_relative_urls() -> None:
-    item = build_item("//img.rule34.xxx/images/a.jpg", "cats", "7")
-
-    assert item.download_url == "https://img.rule34.xxx/images/a.jpg"
-    assert item.filename == "a.jpg"
-    assert item.collection_name == "cats"
-    assert item.source_id == "7"
-
-
-@pytest.mark.unit
-def test_single_post_extraction_yields_one_item() -> None:
-    post_url = "https://rule34.xxx/index.php?page=post&s=view&id=99"
-    fetch = paging_fetcher({}, {post_url: _post_page("//img.rule34.xxx/a.jpg")})
-
-    items = list(Rule34(post_url).extract(fetch))
+    items = list(Rule34(POST_URL).extract(paging_fetcher({}, {POST_URL: page})))
 
     assert len(items) == 1
+    assert_valid_item(items[0])
+    # Rule34 serves protocol-relative media URLs, which are not downloadable.
+    assert items[0].download_url == expected_url
     assert items[0].source_id == "99"
     assert items[0].collection_name == "post_99"
 
 
 @pytest.mark.unit
-def test_single_post_without_media_yields_nothing() -> None:
-    post_url = "https://rule34.xxx/index.php?page=post&s=view&id=99"
-    fetch = paging_fetcher({}, {post_url: "<div></div>"})
+def test_a_post_carrying_no_media_yields_nothing() -> None:
+    fetch = paging_fetcher({}, {POST_URL: "<div></div>"})
 
-    assert list(Rule34(post_url).extract(fetch)) == []
+    assert list(Rule34(POST_URL).extract(fetch)) == []
 
 
 @pytest.mark.unit
-def test_api_extraction_pages_until_an_empty_response() -> None:
+def test_a_tag_query_pages_through_the_api_until_it_runs_out_of_posts() -> None:
     fetch = paging_fetcher(
         {
             API_URL: [
@@ -169,7 +126,7 @@ def test_api_extraction_pages_until_an_empty_response() -> None:
 
 
 @pytest.mark.unit
-def test_api_extraction_skips_posts_without_a_file_url() -> None:
+def test_posts_the_api_reports_without_a_file_are_left_out() -> None:
     fetch = paging_fetcher(
         {
             API_URL: [
@@ -187,9 +144,8 @@ def test_api_extraction_skips_posts_without_a_file_url() -> None:
 
 
 @pytest.mark.unit
-def test_api_extraction_stops_when_the_body_is_not_xml() -> None:
-    # Rate limits and outages answer with plain text; the loop must end instead
-    # of paging forever against an endpoint that never returns posts.
+def test_an_api_outage_ends_the_extraction_instead_of_paging_forever() -> None:
+    # Rate limits and outages answer with plain text rather than XML.
     fetch = paging_fetcher({API_URL: ["503 Service Temporarily Unavailable"]})
 
     plugin = Rule34(
@@ -200,9 +156,10 @@ def test_api_extraction_stops_when_the_body_is_not_xml() -> None:
 
 
 @pytest.mark.unit
-def test_scraper_extraction_dedupes_posts_across_pages(
+def test_a_tag_query_without_api_credentials_scrapes_each_post_once(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # Listings repeat posts across pages as new uploads shift the ordering.
     monkeypatch.delenv("RULE34_API_KEY", raising=False)
     monkeypatch.delenv("RULE34_USER_ID", raising=False)
 
@@ -211,8 +168,10 @@ def test_scraper_extraction_dedupes_posts_across_pages(
     fetch = paging_fetcher(
         {LISTING_URL: [_listing_page(first, second), _listing_page(first), ""]},
         {
-            f"https://rule34.xxx/{first}": _post_page("//img.rule34.xxx/a.jpg"),
-            f"https://rule34.xxx/{second}": _post_page("//img.rule34.xxx/b.png"),
+            f"https://rule34.xxx/{first}": '<a href="//img.rule34.xxx/a.jpg">'
+            "Original image</a>",
+            f"https://rule34.xxx/{second}": '<a href="//img.rule34.xxx/b.png">'
+            "Original image</a>",
         },
     )
 
@@ -222,9 +181,12 @@ def test_scraper_extraction_dedupes_posts_across_pages(
 
 
 @pytest.mark.unit
-def test_scraper_extraction_falls_back_when_credentials_are_partial(
+def test_half_a_credential_pair_still_takes_the_scraping_path(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # The API rejects a key without a user id, so anything short of both
+    # credentials must fall back to scraping: only the listing is served here,
+    # and a request to the API endpoint would fail the test.
     monkeypatch.delenv("RULE34_USER_ID", raising=False)
     fetch = paging_fetcher({LISTING_URL: [""]})
 
