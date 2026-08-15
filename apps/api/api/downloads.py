@@ -29,7 +29,7 @@ def cleanup_temp(temp_dir: Path) -> None:
         if temp_dir.exists():
             shutil.rmtree(temp_dir)
             logger.debug("Temp directory cleaned", extra={"path": str(temp_dir)})
-    except Exception:
+    except OSError:
         logger.exception("Cleanup failed")
 
 
@@ -74,12 +74,9 @@ def download_file(item: DownloadItem, output_dir: Path) -> Path | None:
 
         return output_path
 
-    except Exception:
+    except (requests.RequestException, OSError):
         logger.exception("Download failed", extra={"file_name": item.filename})
-
-        if output_path.exists():
-            output_path.unlink()
-
+        output_path.unlink(missing_ok=True)
         return None
 
 

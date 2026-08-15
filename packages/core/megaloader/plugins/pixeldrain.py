@@ -5,7 +5,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from megaloader.error_policy import raise_extraction_error
+from megaloader.error_policy import build_extraction_error, raise_extraction_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
@@ -25,11 +25,21 @@ def parse_viewer_data(page: str, url: str) -> dict[str, Any]:
             category="protocol",
         )
 
-    data: dict[str, Any] = json.loads(match.group(1))
+    try:
+        data: dict[str, Any] = json.loads(match.group(1))
+    except ValueError as e:
+        raise_extraction_error(
+            "Malformed viewer data on page",
+            source="pixeldrain",
+            url=url,
+            category="protocol",
+            cause=e,
+        )
+
     return data
 
 
-def items_from_viewer_data(data: dict[str, Any]) -> list[DownloadItem]:
+def items_from_viewer_data(data: dict[str, Any], url: str) -> list[DownloadItem]:
     """Build download items from viewer_data, handling both list and single-file pages."""
     api_response = data.get("api_response", {})
 
@@ -54,7 +64,13 @@ def items_from_viewer_data(data: dict[str, Any]) -> list[DownloadItem]:
             )
         ]
 
-    return []
+    detail = f"Viewer data carries no files (type={data.get('type')!r})"
+    raise build_extraction_error(
+        detail,
+        source="pixeldrain",
+        url=url,
+        category="protocol",
+    )
 
 
 class PixelDrain(BasePlugin):
@@ -65,4 +81,4 @@ class PixelDrain(BasePlugin):
 
         response = fetch(Request(self.url))
         data = parse_viewer_data(response.text, self.url)
-        yield from items_from_viewer_data(data)
+        yield from items_from_viewer_data(data, self.url)

@@ -10,7 +10,12 @@ from api.config import (
     configure_logging,
 )
 from api.downloads import cleanup_temp, create_temp_dir, download_items
-from api.extraction import extract_items, get_items_with_sizes, validate_url
+from api.extraction import (
+    extract_items,
+    get_items_with_sizes,
+    http_status_for_extraction_error,
+    validate_url,
+)
 from api.models import (
     DownloadPreview,
     DownloadRequest,
@@ -51,6 +56,7 @@ app.add_middleware(
 def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error(
         "Unhandled exception",
+        exc_info=exc,
         extra={
             "client_ip": request.client.host
             if request.client is not None
@@ -146,12 +152,18 @@ async def download_endpoint(
     except ValueError as e:
         raise HTTPException(422, str(e)) from e
     except ExtractionError as e:
+        status, message = http_status_for_extraction_error(e)
         logger.exception(
             "Extraction failed",
             exc_info=not IS_PRODUCTION,
-            extra={"client_ip": client_ip, "domain": domain},
+            extra={
+                "client_ip": client_ip,
+                "domain": domain,
+                "category": e.category,
+                "status_code": status,
+            },
         )
-        raise HTTPException(500, "Extraction failed") from e
+        raise HTTPException(status, message) from e
 
     # Get sizes with timeout
     try:
@@ -197,6 +209,8 @@ async def download_endpoint(
 
         return create_zip(downloaded, f"{domain}_download.zip")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("Download failed")
         raise HTTPException(500, "Download failed") from e

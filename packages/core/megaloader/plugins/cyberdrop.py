@@ -97,14 +97,16 @@ class Cyberdrop(BasePlugin):
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         target = parse_target(self.url)
 
+        if target is None:
+            msg = f"Unrecognized Cyberdrop URL, expected /a/ or /f/: {self.url}"
+            raise ValueError(msg)
+
         if isinstance(target, Album):
             logger.debug("Processing album")
             yield from self._extract_album(fetch)
-        elif isinstance(target, File):
+        else:
             logger.debug("Processing single file")
             yield from self._process_file(fetch, target.file_id)
-        else:
-            logger.warning("Unrecognized Cyberdrop URL format")
 
     def _extract_album(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         response = fetch(Request(self.url))

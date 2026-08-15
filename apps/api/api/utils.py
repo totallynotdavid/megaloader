@@ -55,6 +55,12 @@ def get_file_size(url: str, headers: dict[str, str] | None = None) -> int:
         )
         return 0
 
-    except (ValueError, Exception) as e:  # noqa: BLE001 (catch-all makes sense here)
+    except requests.RequestException as e:
         logger.warning("Size check failed", extra={"url": url, "error": str(e)})
+        return 0
+
+    except ValueError as e:
+        logger.warning(
+            "Non-numeric content-length", extra={"url": url, "error": str(e)}
+        )
         return 0

@@ -90,8 +90,18 @@ def parse_video_metadata(page: str, video_url: str) -> tuple[str, str]:
             category="protocol",
         )
 
-    metadata = json.loads(script.get_text().strip())
-    url = metadata.get("contentUrl")
+    try:
+        metadata = json.loads(script.get_text().strip())
+    except ValueError as e:
+        raise_extraction_error(
+            f"Malformed ld+json video metadata: {video_url}",
+            source="thothubvip",
+            url=video_url,
+            category="protocol",
+            cause=e,
+        )
+
+    url = metadata.get("contentUrl") if isinstance(metadata, dict) else None
 
     if not url:
         raise_extraction_error(
@@ -128,14 +138,19 @@ class ThothubVIP(BasePlugin):
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         target = parse_target(self.url)
 
+        if target is None:
+            msg = (
+                "Unrecognized Thothub.vip URL, expected /video/, /album/ "
+                f"or /models/: {self.url}"
+            )
+            raise ValueError(msg)
+
         if isinstance(target, Video):
             yield self._fetch_video(fetch, target.url)
         elif isinstance(target, Album):
             yield from self._extract_album(fetch, target.url)
-        elif isinstance(target, Model):
-            yield from self._extract_model(fetch)
         else:
-            logger.warning("Unsupported ThothubVIP URL format")
+            yield from self._extract_model(fetch)
 
     def _extract_model(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         response = fetch(Request(self.url))

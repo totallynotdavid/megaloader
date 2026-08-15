@@ -330,7 +330,8 @@ def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
 ## Error handling
 
 Let errors propagate naturally. `RequestsFetcher` raises `ExtractionError` on
-HTTP and network failures, and the top-level `extract()` wraps any other
+HTTP and network failures, `Response.json()` raises it (category `protocol`)
+when the body is not JSON, and the top-level `extract()` wraps any other
 unexpected error in `ExtractionError` too.
 
 ```python

@@ -113,14 +113,24 @@ class Gofile(BasePlugin):
             return
 
         for file_data in files.values():
-            if file_data.get("type") == "file":
-                yield DownloadItem(
-                    download_url=file_data["link"],
-                    filename=file_data["name"],
-                    source_id=file_data["id"],
-                    collection_name=collection_name,
-                    size_bytes=file_data.get("size"),
+            if file_data.get("type") != "file":
+                continue
+
+            if not (file_data.get("link") and file_data.get("name")):
+                raise_extraction_error(
+                    f"File entry {file_data.get('id')!r} has no link or name",
+                    source=self.source,
+                    url=api_url,
+                    category="protocol",
                 )
+
+            yield DownloadItem(
+                download_url=file_data["link"],
+                filename=file_data["name"],
+                source_id=file_data.get("id"),
+                collection_name=collection_name,
+                size_bytes=file_data.get("size"),
+            )
 
     def _get_api_token(self, fetch: Fetcher) -> str:
         """Return caller-provided token, cached guest token, or create a new guest account."""
@@ -144,6 +154,14 @@ class Gofile(BasePlugin):
                 provider_status=status,
             )
 
-        api_token = str(data["data"]["token"])
-        _token_cache["gofile"] = api_token
-        return api_token
+        api_token = data.get("data", {}).get("token")
+        if not api_token:
+            raise_extraction_error(
+                "Guest account response carries no token",
+                source=self.source,
+                url=accounts_url,
+                category="protocol",
+            )
+
+        _token_cache["gofile"] = str(api_token)
+        return str(api_token)

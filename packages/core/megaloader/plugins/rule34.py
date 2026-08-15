@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
+from megaloader.error_policy import raise_extraction_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
@@ -104,8 +105,16 @@ class Rule34(BasePlugin):
         response = fetch(Request(url))
         soup = BeautifulSoup(response.text, "html.parser")
 
-        if media_url := parse_media_url(soup):
-            yield build_item(media_url, f"post_{self.post_id}", self.post_id)
+        media_url = parse_media_url(soup)
+        if not media_url:
+            raise_extraction_error(
+                f"No media found on post page: {url}",
+                source=self.source,
+                url=url,
+                category="protocol",
+            )
+
+        yield build_item(media_url, f"post_{self.post_id}", self.post_id)
 
     def _extract_via_api(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         """Extract using official API (faster, more reliable)."""
@@ -124,8 +133,20 @@ class Rule34(BasePlugin):
                 "user_id": self.user_id,
             }
 
-            response = fetch(Request("https://api.rule34.xxx/index.php", params=params))
+            api_url = "https://api.rule34.xxx/index.php"
+            response = fetch(Request(api_url, params=params))
             posts = parse_api_posts(response.content)
+
+            # A non-XML body means the API answered with something other than a
+            # post list (an outage or rate-limit page), which must not be read as
+            # "no more pages" or the caller silently gets a truncated result.
+            if posts is None:
+                raise_extraction_error(
+                    f"API returned a non-XML body on page {page}",
+                    source=self.source,
+                    url=api_url,
+                    category="protocol",
+                )
 
             if not posts:
                 break

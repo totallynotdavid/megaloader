@@ -61,7 +61,9 @@ class Pixiv(BasePlugin):
 
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         if isinstance(self.target, Artwork):
-            yield from self._extract_artwork(fetch, self.target.artwork_id)
+            yield from self._extract_artwork(
+                fetch, self.target.artwork_id, required=True
+            )
         else:
             yield from self._extract_user(fetch, self.target.user_id)
 
@@ -88,7 +90,16 @@ class Pixiv(BasePlugin):
         fetch: Fetcher,
         artwork_id: str,
         collection_name: str | None = None,
+        *,
+        required: bool = False,
     ) -> Generator[DownloadItem, None, None]:
+        """Yield the pages of one artwork.
+
+        When required is set, an artwork that exposes no original image is a
+        failure (the caller asked for that artwork specifically); inside a user
+        gallery it is skipped, since a single unavailable work must not abort
+        the whole traversal.
+        """
         pages = self._api_request(fetch, f"/illust/{artwork_id}/pages")
 
         info: Any = None
@@ -97,7 +108,15 @@ class Pixiv(BasePlugin):
             info = self._api_request(fetch, f"/illust/{artwork_id}")
             if info and (url := info.get("urls", {}).get("original")):
                 pages = [{"urls": {"original": url}}]
+            elif required:
+                raise_extraction_error(
+                    f"Artwork {artwork_id} exposes no original image",
+                    source=self.source,
+                    url=self.url,
+                    category="protocol",
+                )
             else:
+                logger.warning("Skipping artwork %s: no original image", artwork_id)
                 return
 
         if not collection_name:
@@ -125,7 +144,12 @@ class Pixiv(BasePlugin):
     ) -> Generator[DownloadItem, None, None]:
         profile = self._api_request(fetch, f"/user/{user_id}", params={"full": 1})
         if not profile:
-            return
+            raise_extraction_error(
+                f"Empty profile body for user {user_id}",
+                source=self.source,
+                url=self.url,
+                category="protocol",
+            )
 
         username = profile.get("name", user_id)
         collection_name = f"{user_id}_{username}"

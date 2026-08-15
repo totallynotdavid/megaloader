@@ -58,7 +58,7 @@ def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> Non
         else:
             _print_human_readable(items)
 
-    except MegaloaderError as e:
+    except (MegaloaderError, ValueError) as e:
         console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
 
@@ -108,7 +108,7 @@ def download_command(
         # Download files with progress tracking
         _download_with_progress(items, Path(output_dir), flat)
 
-    except MegaloaderError as e:
+    except (MegaloaderError, ValueError) as e:
         console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
 
