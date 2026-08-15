@@ -1,10 +1,18 @@
+import logging
+
 import pytest
 import requests
 import requests_mock as req_mock
 
 from megaloader.exceptions import ExtractionError
-from megaloader.fetcher import Request, RequestsFetcher
+from megaloader.fetcher import (
+    Cookie,
+    Request,
+    RequestsFetcher,
+    SessionConfig,
+)
 from megaloader.item import DownloadItem
+from megaloader.plugins.pixeldrain import PixelDrain
 
 
 @pytest.mark.unit
@@ -152,3 +160,89 @@ class TestRequestsFetcher:
 
         assert exc_info.value.__cause__ is not None
         assert isinstance(exc_info.value.__cause__, requests.HTTPError)
+
+    def test_maps_other_request_exceptions_to_network_failures(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
+        requests_mock.get(
+            "https://example.com/data", exc=requests.TooManyRedirects("looping")
+        )
+
+        with pytest.raises(ExtractionError) as exc_info:
+            self._fetch()(Request("https://example.com/data"))
+
+        assert exc_info.value.category == "network"
+
+    def test_reuses_a_caller_provided_session_without_default_headers(self) -> None:
+        # A caller-owned session keeps its own headers: only a session the
+        # fetcher builds itself gets the default User-Agent. Plugin-declared
+        # config still applies either way.
+        session = requests.Session()
+        session.headers.clear()
+
+        with req_mock.Mocker(session=session) as mocker:
+            mocker.get("https://example.com/data", text="ok")
+            fetcher = RequestsFetcher(
+                "dummyplugin",
+                config=SessionConfig(
+                    headers={"Referer": "https://example.com/"},
+                    cookies=(Cookie("token", "abc", "example.com"),),
+                ),
+                session=session,
+            )
+            fetcher(Request("https://example.com/data"))
+            request = mocker.request_history[-1]
+
+        assert "User-Agent" not in session.headers
+        assert request.headers["Referer"] == "https://example.com/"
+        assert session.cookies.get("token") == "abc"
+
+    def test_logs_the_response_body_when_live_debug_is_enabled(
+        self,
+        requests_mock: req_mock.Mocker,
+        monkeypatch: pytest.MonkeyPatch,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        monkeypatch.setenv("MEGALOADER_LIVE_DEBUG", "1")
+        requests_mock.get("https://example.com/data", status_code=500, text="upstream")
+
+        with (
+            caplog.at_level(logging.DEBUG, logger="megaloader.fetcher"),
+            pytest.raises(ExtractionError),
+        ):
+            self._fetch()(Request("https://example.com/data"))
+
+        assert "upstream" in caplog.text
+
+    def test_per_request_headers_and_params_reach_the_wire(
+        self, requests_mock: req_mock.Mocker
+    ) -> None:
+        requests_mock.get("https://example.com/data", text="ok")
+
+        self._fetch()(
+            Request(
+                "https://example.com/data",
+                params={"page": 2},
+                headers={"X-Test": "yes"},
+            )
+        )
+
+        request = requests_mock.request_history[-1]
+        assert request.qs == {"page": ["2"]}
+        assert request.headers["X-Test"] == "yes"
+
+
+@pytest.mark.unit
+class TestBasePlugin:
+    def test_rejects_a_blank_url(self) -> None:
+        with pytest.raises(ValueError, match="non-empty string"):
+            PixelDrain("   ")
+
+    def test_strips_the_url_and_keeps_plugin_options(self) -> None:
+        plugin = PixelDrain("  https://pixeldrain.com/l/abc  ", api_key="key")
+
+        assert plugin.url == "https://pixeldrain.com/l/abc"
+        assert plugin.options == {"api_key": "key"}
+
+    def test_source_is_the_lowercased_class_name(self) -> None:
+        assert PixelDrain("https://pixeldrain.com/l/abc").source == "pixeldrain"
