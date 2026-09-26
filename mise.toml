@@ -38,8 +38,8 @@ run = [
 ]
 
 [tasks.check]
-description = "Quick pre-push checks: format, lint, test-unit, validate-snippets"
-depends = ["format", "lint", "test-unit", "validate-snippets"]
+description = "Quick pre-push checks: format, lint, tests, validate-snippets"
+depends = ["format", "lint", "test-unit", "test-api", "validate-snippets"]
 
 # Testing
 [tasks.test]
@@ -47,8 +47,13 @@ description = "Run the full offline suite: unit + cassette replay (no network, <
 run = "uv run --all-packages --extra dev pytest --block-network packages/core/tests"
 
 [tasks.test-unit]
-description = "Run unit tests only (fast: <1 sec)"
+description = "Run core unit and script tests (fast: <1 sec)"
 run = "uv run --all-packages --extra dev pytest packages/core/tests/unit scripts/script_tests"
+
+[tasks.test-api]
+description = "Run API tests"
+run = "uv run pytest"
+dir = "apps/api"
 
 [tasks.test-record]
 description = "Re-fetch every plugin fixture through the proxy, refresh cassettes + snapshots"
