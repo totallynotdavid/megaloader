@@ -55,6 +55,11 @@ python scripts/update-tool-versions.py --tool mypy --version 1.19.0
 python scripts/update-tool-versions.py --tool python --version 3.14.0 --dry-run
 ```
 
+`mise.toml` is the single source for the `uv` and `ruff` versions. Bumping
+either one also rewrites the `version` input of `astral-sh/setup-uv` or
+`astral-sh/ruff-action` in `.github/workflows/`, so CI runs the same version as
+`mise run format`.
+
 **Supported tools:** `python`, `python-min`, `python-matrix`, `uv`, `ruff`,
 `bun`, `biome`, `mypy`, `pytest`
 
