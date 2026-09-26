@@ -1,6 +1,7 @@
 import dataclasses
 import sys
 
+from collections.abc import Iterator
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,18 @@ from megaloader_cli.io import download_file
 from megaloader_cli.utils import console, sanitize_for_filesystem
 
 
+def _extract_items(url: str, options: dict[str, Any]) -> Iterator[mgl.DownloadItem]:
+    """Stream extracted items, reporting invalid caller input as a MegaloaderError.
+
+    Extraction raises ValueError for bad input such as an unrecognized URL
+    shape. A ValueError from any later step is a bug and keeps its traceback.
+    """
+    try:
+        yield from mgl.extract(url, **options)
+    except ValueError as e:
+        raise MegaloaderError(str(e)) from e
+
+
 def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> None:
     """
     Handle extract command logic.
@@ -37,7 +50,7 @@ def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> Non
         items = []
         if output_json:
             # Silent extraction for JSON mode
-            for item in mgl.extract(url, **options):
+            for item in _extract_items(url, options):
                 items.append(item)
         else:
             # Show progress for human-readable mode
@@ -48,7 +61,7 @@ def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> Non
             ) as progress:
                 task = progress.add_task("", total=None)
 
-                for item in mgl.extract(url, **options):
+                for item in _extract_items(url, options):
                     items.append(item)
                     progress.update(task, advance=1)
 
@@ -89,7 +102,7 @@ def download_command(
         ) as progress:
             task = progress.add_task("", total=None)
 
-            for item in mgl.extract(url, **options):
+            for item in _extract_items(url, options):
                 items.append(item)
                 progress.update(task, advance=1)
 
