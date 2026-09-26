@@ -49,3 +49,6 @@ jobs:
 
       - name: Type check API
         run: cd apps/api && uv run mypy .
+
+      - name: Test API
+        run: cd apps/api && uv run pytest
