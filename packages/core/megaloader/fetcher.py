@@ -55,9 +55,22 @@ class Response:
     status_code: int
     text: str
     content: bytes
+    source: str | None = None
 
     def json(self) -> Any:
-        return jsonlib.loads(self.text)
+        """Decode the body as JSON and classify non-JSON responses as protocol errors."""
+        try:
+            return jsonlib.loads(self.text)
+        except ValueError as e:
+            detail = f"{self.source or 'response'} returned a non-JSON body: {self.url}"
+            raise build_extraction_error(
+                detail,
+                source=self.source,
+                url=self.url,
+                http_status=self.status_code,
+                category="protocol",
+                cause=e,
+            ) from e
 
 
 @dataclass(frozen=True)
@@ -183,4 +196,5 @@ class RequestsFetcher:
             status_code=raw.status_code,
             text=raw.text,
             content=raw.content,
+            source=self._source,
         )

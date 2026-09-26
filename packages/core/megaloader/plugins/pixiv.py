@@ -61,7 +61,7 @@ class Pixiv(BasePlugin):
 
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         if isinstance(self.target, Artwork):
-            yield from self._extract_artwork(fetch, self.target.artwork_id)
+            yield from self._extract_requested_artwork(fetch, self.target.artwork_id)
         else:
             yield from self._extract_user(fetch, self.target.user_id)
 
@@ -83,6 +83,39 @@ class Pixiv(BasePlugin):
 
         return data.get("body")
 
+    def _image_url(self, value: Any) -> str | None:
+        """Return an image URL field, None when absent, or raise when not a string."""
+        if not value:
+            return None
+        if not isinstance(value, str):
+            raise_extraction_error(
+                f"Pixiv returned a non-string image URL: {value!r}",
+                source=self.source,
+                url=self.url,
+                category="protocol",
+            )
+        return value
+
+    def _extract_requested_artwork(
+        self, fetch: Fetcher, artwork_id: str
+    ) -> Generator[DownloadItem, None, None]:
+        """Yield one artwork the caller asked for by URL.
+
+        An unavailable artwork is a failure here. Inside a user gallery it is
+        skipped instead (see _extract_artwork), so one deleted or restricted
+        work does not abort the whole gallery.
+        """
+        items = list(self._extract_artwork(fetch, artwork_id))
+        if not items:
+            raise_extraction_error(
+                f"Artwork {artwork_id} exposes no original image",
+                source=self.source,
+                url=self.url,
+                category="protocol",
+            )
+
+        yield from items
+
     def _extract_artwork(
         self,
         fetch: Fetcher,
@@ -95,7 +128,7 @@ class Pixiv(BasePlugin):
 
         if not pages:
             info = self._api_request(fetch, f"/illust/{artwork_id}")
-            if info and (url := info.get("urls", {}).get("original")):
+            if info and (url := self._image_url(info.get("urls", {}).get("original"))):
                 pages = [{"urls": {"original": url}}]
             else:
                 return
@@ -106,7 +139,7 @@ class Pixiv(BasePlugin):
             collection_name = f"{username}_{artwork_id}"
 
         for page_num, page in enumerate(pages):
-            url = page.get("urls", {}).get("original")
+            url = self._image_url(page.get("urls", {}).get("original"))
             if not url:
                 continue
 
@@ -130,14 +163,16 @@ class Pixiv(BasePlugin):
         username = profile.get("name", user_id)
         collection_name = f"{user_id}_{username}"
 
-        if avatar_url := profile.get("imageBig"):
+        if avatar_url := self._image_url(profile.get("imageBig")):
             yield DownloadItem(
                 download_url=avatar_url,
                 filename=f"avatar{Path(avatar_url).suffix}",
                 collection_name=collection_name,
             )
 
-        if (bg := profile.get("background")) and (bg_url := bg.get("url")):
+        if (bg := profile.get("background")) and (
+            bg_url := self._image_url(bg.get("url"))
+        ):
             yield DownloadItem(
                 download_url=bg_url,
                 filename=f"cover{Path(bg_url).suffix}",
@@ -150,4 +185,8 @@ class Pixiv(BasePlugin):
         )
 
         for work_id in work_ids:
-            yield from self._extract_artwork(fetch, work_id, collection_name)
+            items = list(self._extract_artwork(fetch, work_id, collection_name))
+            if not items:
+                # Deliberate: a gallery must survive one unavailable work.
+                logger.warning("Skipping artwork %s: no original image", work_id)
+            yield from items

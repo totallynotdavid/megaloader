@@ -60,10 +60,10 @@ def parse_album_page(page: str, site_base: str) -> tuple[str | None, list[str]]:
 
 def file_info_from_payload(payload: Any, file_id: str, api_url: str) -> tuple[str, str]:
     """Validate the file-info API response and return (name, auth_url)."""
-    if (
-        not isinstance(payload, dict)
-        or not payload.get("name")
-        or not payload.get("auth_url")
+    if not (
+        isinstance(payload, dict)
+        and _is_text(payload.get("name"))
+        and _is_text(payload.get("auth_url"))
     ):
         raise_extraction_error(
             f"Unexpected API response for file {file_id}",
@@ -72,12 +72,12 @@ def file_info_from_payload(payload: Any, file_id: str, api_url: str) -> tuple[st
             category="protocol",
         )
 
-    return str(payload["name"]), str(payload["auth_url"])
+    return payload["name"], payload["auth_url"]
 
 
 def direct_url_from_payload(payload: Any, auth_url: str) -> str:
     """Validate the auth response and return the direct CDN URL."""
-    if not isinstance(payload, dict) or not isinstance(payload.get("url"), str):
+    if not (isinstance(payload, dict) and _is_text(payload.get("url"))):
         raise_extraction_error(
             f"No direct URL in auth response: {auth_url}",
             source="cyberdrop",
@@ -85,7 +85,11 @@ def direct_url_from_payload(payload: Any, auth_url: str) -> str:
             category="protocol",
         )
 
-    return str(payload["url"])
+    return payload["url"]
+
+
+def _is_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value)
 
 
 class Cyberdrop(BasePlugin):
@@ -97,14 +101,16 @@ class Cyberdrop(BasePlugin):
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         target = parse_target(self.url)
 
+        if target is None:
+            msg = f"Unrecognized Cyberdrop URL, expected /a/ or /f/: {self.url}"
+            raise ValueError(msg)
+
         if isinstance(target, Album):
             logger.debug("Processing album")
             yield from self._extract_album(fetch)
-        elif isinstance(target, File):
+        else:
             logger.debug("Processing single file")
             yield from self._process_file(fetch, target.file_id)
-        else:
-            logger.warning("Unrecognized Cyberdrop URL format")
 
     def _extract_album(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         response = fetch(Request(self.url))

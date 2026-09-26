@@ -38,6 +38,10 @@ def parse_content_id(url: str) -> str:
     return match.group(1)
 
 
+def _is_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value)
+
+
 def hash_password(password: str | None) -> str | None:
     if password:
         return hashlib.sha256(password.encode()).hexdigest()
@@ -96,31 +100,65 @@ class Gofile(BasePlugin):
             )
         )
 
-        data = response.json()
+        data = self._require_mapping(response.json(), "response", api_url)
+        content = data.get("data")
         raise_for_api_status(
-            "gofile",
+            self.source,
             api_url,
             data.get("status", "unknown"),
-            message=data.get("data", {}).get("message"),
+            message=content.get("message") if isinstance(content, dict) else None,
         )
 
-        content = data.get("data", {})
+        content = self._require_mapping(content, "data", api_url)
         collection_name = content.get("name", self.content_id)
-        files = content.get("children", {})
+        files = self._require_mapping(content.get("children"), "children", api_url)
 
         if not files:
             logger.warning("No files found (password may be required)")
             return
 
-        for file_data in files.values():
-            if file_data.get("type") == "file":
-                yield DownloadItem(
-                    download_url=file_data["link"],
-                    filename=file_data["name"],
-                    source_id=file_data["id"],
-                    collection_name=collection_name,
-                    size_bytes=file_data.get("size"),
+        for entry in files.values():
+            file_data = self._require_mapping(entry, "file entry", api_url)
+            if not _is_text(file_data.get("type")):
+                raise_extraction_error(
+                    "File entry needs a non-empty string type",
+                    source=self.source,
+                    url=api_url,
+                    category="protocol",
                 )
+
+            if file_data["type"] != "file":
+                continue
+
+            invalid = [
+                k for k in ("link", "name", "id") if not _is_text(file_data.get(k))
+            ]
+            if invalid:
+                raise_extraction_error(
+                    f"File entry needs a non-empty string {', '.join(invalid)}",
+                    source=self.source,
+                    url=api_url,
+                    category="protocol",
+                )
+
+            yield DownloadItem(
+                download_url=file_data["link"],
+                filename=file_data["name"],
+                source_id=file_data["id"],
+                collection_name=collection_name,
+                size_bytes=file_data.get("size"),
+            )
+
+    def _require_mapping(self, value: Any, what: str, api_url: str) -> dict[str, Any]:
+        """Require a JSON object and raise a protocol error for other values."""
+        if not isinstance(value, dict):
+            raise_extraction_error(
+                f"Unexpected {what} in Gofile API response: expected an object",
+                source=self.source,
+                url=api_url,
+                category="protocol",
+            )
+        return value
 
     def _get_api_token(self, fetch: Fetcher) -> str:
         """Return caller-provided token, cached guest token, or create a new guest account."""
@@ -133,17 +171,26 @@ class Gofile(BasePlugin):
 
         accounts_url = f"{self.API_BASE}/accounts"
         response = fetch(Request(accounts_url, method="POST"))
-        data = response.json()
+        data = self._require_mapping(response.json(), "response", accounts_url)
 
         status = data.get("status", "unknown")
         if status != "ok":
             raise_extraction_error(
                 f"Failed to create Gofile guest account: {status}",
-                source="gofile",
+                source=self.source,
                 url=accounts_url,
                 provider_status=status,
             )
 
-        api_token = str(data["data"]["token"])
-        _token_cache["gofile"] = api_token
-        return api_token
+        account = self._require_mapping(data.get("data", {}), "data", accounts_url)
+        api_token = account.get("token")
+        if not _is_text(api_token):
+            raise_extraction_error(
+                "Guest account response carries no token",
+                source=self.source,
+                url=accounts_url,
+                category="protocol",
+            )
+
+        _token_cache["gofile"] = str(api_token)
+        return str(api_token)

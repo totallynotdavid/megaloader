@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
+from megaloader.error_policy import raise_extraction_error
 from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
@@ -110,6 +111,7 @@ class Rule34(BasePlugin):
     def _extract_via_api(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         """Extract using official API (faster, more reliable)."""
         collection_name = "_".join(sorted(self.tags))
+        api_url = "https://api.rule34.xxx/index.php"
         page = 0
 
         while True:
@@ -124,8 +126,18 @@ class Rule34(BasePlugin):
                 "user_id": self.user_id,
             }
 
-            response = fetch(Request("https://api.rule34.xxx/index.php", params=params))
+            response = fetch(Request(api_url, params=params))
             posts = parse_api_posts(response.content)
+
+            # A non-XML body is an outage or rate-limit page, not the last page.
+            # Only a parsed page with no posts ends pagination.
+            if posts is None:
+                raise_extraction_error(
+                    f"API returned a non-XML body on page {page}",
+                    source=self.source,
+                    url=api_url,
+                    category="protocol",
+                )
 
             if not posts:
                 break

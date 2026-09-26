@@ -1,4 +1,5 @@
 import base64
+import binascii
 import html
 import logging
 import math
@@ -97,20 +98,52 @@ def parse_filename(page: str) -> str | None:
     return None
 
 
-def decrypt_direct_url(payload: dict[str, Any], filename: str) -> str:
+def decrypt_direct_url(payload: Any, filename: str, api_url: str) -> str:
     """Decrypt the CDN URL from Bunkr's API payload.
 
     The API returns a base64 blob XORed with a key that rotates hourly, derived
     from the payload timestamp. Decryption is symmetric, so a recorded payload
     replays deterministically.
     """
-    timestamp = payload["timestamp"]
-    encrypted = base64.b64decode(payload["url"])
+    if (
+        not isinstance(payload, dict)
+        or not isinstance(payload.get("timestamp"), int | float)
+        or not isinstance(payload.get("url"), str)
+        or not payload["url"]
+    ):
+        raise_extraction_error(
+            "Unexpected API response: missing url or timestamp",
+            source="bunkr",
+            url=api_url,
+            category="protocol",
+        )
 
-    key = f"SECRET_KEY_{math.floor(timestamp / 3600)}".encode()
-    decrypted = bytes(byte ^ key[i % len(key)] for i, byte in enumerate(encrypted))
+    key = f"SECRET_KEY_{math.floor(payload['timestamp'] / 3600)}".encode()
 
-    return f"{decrypted.decode('utf-8')}?n={quote(filename)}"
+    try:
+        encrypted = base64.b64decode(payload["url"])
+        decrypted = bytes(byte ^ key[i % len(key)] for i, byte in enumerate(encrypted))
+        direct_url = decrypted.decode("utf-8")
+    except (binascii.Error, UnicodeDecodeError) as e:
+        raise_extraction_error(
+            "Could not decrypt the CDN URL from the API response",
+            source="bunkr",
+            url=api_url,
+            category="protocol",
+            cause=e,
+        )
+
+    # XOR never fails on a wrong key, it yields garbage, so the only way to
+    # notice a re-keyed API is that the result is not a URL.
+    if not direct_url.startswith(("http://", "https://")):
+        raise_extraction_error(
+            "Decrypted CDN URL is not an HTTP URL",
+            source="bunkr",
+            url=api_url,
+            category="protocol",
+        )
+
+    return f"{direct_url}?n={quote(filename)}"
 
 
 class Bunkr(BasePlugin):
@@ -121,14 +154,16 @@ class Bunkr(BasePlugin):
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         target = parse_target(self.url)
 
+        if target is None:
+            msg = f"Unrecognized Bunkr URL, expected /a/ or /f/: {self.url}"
+            raise ValueError(msg)
+
         if isinstance(target, Album):
             logger.debug("Processing album")
             yield from self._extract_album(fetch)
-        elif isinstance(target, File):
+        else:
             logger.debug("Processing single file")
             yield from self._extract_file(fetch, target.url)
-        else:
-            logger.warning("Unrecognized Bunkr URL format")
 
     def _extract_album(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         response = fetch(Request(self.url, allow_redirects=True))
@@ -161,4 +196,4 @@ class Bunkr(BasePlugin):
     def _fetch_direct_url(self, fetch: Fetcher, file_id: str, filename: str) -> str:
         """Resolve the direct CDN URL via Bunkr's API."""
         response = fetch(Request(self.API_BASE, method="POST", json={"id": file_id}))
-        return decrypt_direct_url(response.json(), filename)
+        return decrypt_direct_url(response.json(), filename, self.API_BASE)

@@ -147,14 +147,19 @@ class ThothubTO(BasePlugin):
     def extract(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
         target = parse_target(self.url)
 
+        if target is None:
+            msg = (
+                "Unrecognized Thothub.to URL, expected /videos/, /albums/ "
+                f"or /models/: {self.url}"
+            )
+            raise ValueError(msg)
+
         if isinstance(target, Video):
             yield self._fetch_video(fetch, target.url)
         elif isinstance(target, Album):
             yield from self._extract_album(fetch, target.url)
-        elif isinstance(target, Model):
-            yield from self._extract_model(fetch, target.url)
         else:
-            logger.warning("Unrecognized Thothub URL format")
+            yield from self._extract_model(fetch, target.url)
 
     def _fetch_video(
         self, fetch: Fetcher, url: str, collection_name: str | None = None
@@ -201,6 +206,8 @@ class ThothubTO(BasePlugin):
                 f"&sort_by=post_date&from={page}"
             )
 
+            # The site answers 404 for the page past the last one, so a 404 ends
+            # the listing. Any other failure propagates.
             try:
                 response = fetch(Request(pagination_url))
             except ExtractionError as e:
