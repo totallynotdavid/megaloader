@@ -23,6 +23,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "mypy>=2.1.0",
+    "pytest>=9.1.1",
     "types-requests>=2.33.0.20260518",
 ]
 
@@ -35,3 +36,8 @@ packages = ["api"]
 
 [tool.ruff.lint.per-file-ignores]
 "index.py" = ["INP001"]  # entry point for Vercel/uvicorn
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
