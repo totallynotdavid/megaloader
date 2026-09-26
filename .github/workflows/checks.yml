@@ -24,7 +24,7 @@ jobs:
 
       - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
-          version: "0.11.21"
+          version: "0.11.26"
 
       - run: uv python install 3.14.6
 
@@ -36,10 +36,12 @@ jobs:
 
       - uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89 # v4.1.0
         with:
+          version: "0.15.20"
           args: "format --check --diff"
 
       - uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89 # v4.1.0
         with:
+          version: "0.15.20"
           args: "check"
 
       - name: Type check workspace
