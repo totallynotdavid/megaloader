@@ -2,6 +2,7 @@ import logging
 
 import megaloader
 
+from megaloader.exceptions import ExtractionError
 from megaloader.item import DownloadItem
 from megaloader.plugins import get_plugin_for_domain
 
@@ -12,6 +13,16 @@ from api.utils import get_file_size
 
 logger = logging.getLogger(__name__)
 
+# ExtractionError.category -> (HTTP status, client-facing message).
+_STATUS_BY_CATEGORY: dict[str, tuple[int, str]] = {
+    "rate_limit": (429, "Upstream rate limit reached, retry later"),
+    "auth": (401, "Upstream requires authentication"),
+    "access": (404, "Content unavailable or access denied"),
+    "network": (502, "Upstream unreachable"),
+    "timeout": (504, "Upstream timed out"),
+    "protocol": (502, "Unexpected upstream response"),
+}
+
 
 def validate_url(domain: str) -> tuple[bool, str | None]:
     """
@@ -19,25 +30,30 @@ def validate_url(domain: str) -> tuple[bool, str | None]:
 
     Returns (supported, plugin_name).
     """
-    try:
-        plugin_class = get_plugin_for_domain(domain)
+    plugin_class = get_plugin_for_domain(domain)
 
-        if plugin_class is None:
-            return False, None
-
-        is_allowed = domain in ALLOWED_DOMAINS
-        plugin_name = plugin_class.__name__
-
-        logger.debug(
-            "URL validation complete",
-            extra={"domain": domain, "plugin": plugin_name, "allowed": is_allowed},
-        )
-
-        return is_allowed, plugin_name
-
-    except Exception:
-        logger.exception("Plugin detection failed")
+    if plugin_class is None:
         return False, None
+
+    is_allowed = domain in ALLOWED_DOMAINS
+    plugin_name = plugin_class.__name__
+
+    logger.debug(
+        "URL validation complete",
+        extra={"domain": domain, "plugin": plugin_name, "allowed": is_allowed},
+    )
+
+    return is_allowed, plugin_name
+
+
+def http_status_for_extraction_error(error: ExtractionError) -> tuple[int, str]:
+    """
+    Return the client-safe status and message for an extraction failure.
+
+    Preserve whether an upstream failure is retryable or requires a different
+    URL. Never expose the upstream error detail.
+    """
+    return _STATUS_BY_CATEGORY.get(error.category, (500, "Extraction failed"))
 
 
 def extract_items(url: str, domain: str) -> list[DownloadItem]:

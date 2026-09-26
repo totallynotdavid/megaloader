@@ -1,16 +1,26 @@
 import logging
 
 from api.config import (
+    CORS_ALLOW_CREDENTIALS,
     CORS_ORIGINS,
     IS_PRODUCTION,
     MAX_FILE_COUNT,
     MAX_SIZE_BYTES,
     MAX_SIZE_MB,
-    UNKNOWN_CLIENT,
     configure_logging,
 )
-from api.downloads import cleanup_temp, create_temp_dir, download_items
-from api.extraction import extract_items, get_items_with_sizes, validate_url
+from api.downloads import (
+    SizeLimitExceededError,
+    cleanup_temp,
+    create_temp_dir,
+    download_items,
+)
+from api.extraction import (
+    extract_items,
+    get_items_with_sizes,
+    http_status_for_extraction_error,
+    validate_url,
+)
 from api.models import (
     DownloadPreview,
     DownloadRequest,
@@ -18,7 +28,7 @@ from api.models import (
     ValidationResult,
 )
 from api.responses import create_file_response, create_zip
-from api.security import check_rate_limit, validate_domain_whitelist
+from api.security import check_rate_limit, client_ip_from, validate_domain_whitelist
 from api.utils import format_size
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,7 +50,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
+    allow_credentials=CORS_ALLOW_CREDENTIALS,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
     expose_headers=["Content-Disposition"],
@@ -52,9 +62,7 @@ def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error(
         "Unhandled exception",
         extra={
-            "client_ip": request.client.host
-            if request.client is not None
-            else UNKNOWN_CLIENT,
+            "client_ip": client_ip_from(request),
             "url": str(request.url),
             "method": request.method,
         },
@@ -85,7 +93,7 @@ async def validate_endpoint(request: URLValidation, req: Request) -> ValidationR
     2. Domain whitelist validation
     3. Plugin availability check
     """
-    client_ip = req.client.host if req.client is not None else UNKNOWN_CLIENT
+    client_ip = client_ip_from(req)
 
     await check_rate_limit(client_ip)
 
@@ -126,7 +134,7 @@ async def download_endpoint(
 
     Returns preview if size >4MB, otherwise downloads files.
     """
-    client_ip = req.client.host if req.client is not None else UNKNOWN_CLIENT
+    client_ip = client_ip_from(req)
 
     url = request.url.strip()
     if not url:
@@ -146,19 +154,16 @@ async def download_endpoint(
     except ValueError as e:
         raise HTTPException(422, str(e)) from e
     except ExtractionError as e:
+        status, message = http_status_for_extraction_error(e)
         logger.exception(
             "Extraction failed",
             exc_info=not IS_PRODUCTION,
-            extra={"client_ip": client_ip, "domain": domain},
+            extra={"client_ip": client_ip, "domain": domain, "status_code": status},
         )
-        raise HTTPException(500, "Extraction failed") from e
+        raise HTTPException(status, message) from e
 
     # Get sizes with timeout
-    try:
-        total_size, file_infos = get_items_with_sizes(items)
-    except Exception as e:
-        logger.exception("Size calculation failed")
-        raise HTTPException(500, "Unable to verify file sizes") from e
+    total_size, file_infos = get_items_with_sizes(items)
 
     # Return preview if exceeds limit
     if total_size > MAX_SIZE_BYTES:
@@ -197,7 +202,14 @@ async def download_endpoint(
 
         return create_zip(downloaded, f"{domain}_download.zip")
 
-    except Exception as e:
+    except SizeLimitExceededError as e:
+        logger.warning(
+            "Size limit exceeded while downloading",
+            extra={"client_ip": client_ip, "domain": domain, "status_code": 413},
+        )
+        raise HTTPException(413, f"Content exceeds the {MAX_SIZE_MB}MB limit") from e
+
+    except (RuntimeError, OSError, ValueError) as e:
         logger.exception("Download failed")
         raise HTTPException(500, "Download failed") from e
 
