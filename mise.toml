@@ -48,7 +48,7 @@ run = "uv run --all-packages --extra dev pytest --block-network packages/core/te
 
 [tasks.test-unit]
 description = "Run unit tests only (fast: <1 sec)"
-run = "uv run --all-packages --extra dev pytest packages/core/tests/unit"
+run = "uv run --all-packages --extra dev pytest packages/core/tests/unit scripts/script_tests"
 
 [tasks.test-record]
 description = "Re-fetch every plugin fixture through the proxy, refresh cassettes + snapshots"
