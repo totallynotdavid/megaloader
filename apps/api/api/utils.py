@@ -3,6 +3,8 @@ import logging
 import requests
 
 from api.config import SIZE_CHECK_TIMEOUT
+from api.safe_http import open_public_stream
+from api.security import NonPublicURLError
 
 
 logger = logging.getLogger(__name__)
@@ -25,19 +27,15 @@ def get_file_size(url: str, headers: dict[str, str] | None = None) -> int:
     Returns 0 if size cannot be determined (timeout, error, missing header).
     """
     try:
-        response = requests.head(
-            url, headers=headers, timeout=SIZE_CHECK_TIMEOUT, allow_redirects=True
-        )
-        response.raise_for_status()
+        with open_public_stream(
+            "HEAD", url, headers or {}, SIZE_CHECK_TIMEOUT
+        ) as response:
+            response.raise_for_status()
+            content_length = response.headers.get("content-length")
 
-        content_length = response.headers.get("content-length")
-        if not content_length:
-            logger.debug("No content-length header", extra={"url": url})
-            return 0
-
-        size_bytes = int(content_length)
-        logger.debug("Size retrieved", extra={"url": url, "bytes": size_bytes})
-        return size_bytes
+    except NonPublicURLError as e:
+        logger.warning("Size check refused", extra={"url": url, "error": str(e)})
+        return 0
 
     except requests.exceptions.Timeout:
         logger.warning(
@@ -50,11 +48,28 @@ def get_file_size(url: str, headers: dict[str, str] | None = None) -> int:
             "Size check HTTP error",
             extra={
                 "url": url,
-                "status": e.response.status_code if e.response else None,
+                "status": e.response.status_code if e.response is not None else None,
             },
         )
         return 0
 
-    except (ValueError, Exception) as e:  # noqa: BLE001 (catch-all makes sense here)
+    except requests.RequestException as e:
         logger.warning("Size check failed", extra={"url": url, "error": str(e)})
         return 0
+
+    if not content_length:
+        logger.debug("No content-length header", extra={"url": url})
+        return 0
+
+    try:
+        size_bytes = int(content_length)
+    except ValueError:
+        logger.warning("Invalid content-length", extra={"url": url})
+        return 0
+
+    if size_bytes < 0:
+        logger.warning("Negative content-length", extra={"url": url})
+        return 0
+
+    logger.debug("Size retrieved", extra={"url": url, "bytes": size_bytes})
+    return size_bytes
