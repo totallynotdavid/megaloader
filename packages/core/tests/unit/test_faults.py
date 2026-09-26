@@ -1,6 +1,7 @@
 import pytest
 
 from megaloader.error_policy import build_extraction_error
+from megaloader.exceptions import ExtractionError
 from megaloader.plugins.thothub_to import ThothubTO
 
 from tests.helpers import fake_fetcher
@@ -45,3 +46,16 @@ def test_model_traversal_stops_on_404() -> None:
 
     assert len(items) == 1
     assert items[0].filename == "Clip.mp4"
+
+
+@pytest.mark.unit
+def test_model_traversal_propagates_other_pagination_errors() -> None:
+    # Only a 404 marks the end of the listing; a 503 mid-pagination is a
+    # provider failure and must not truncate the result.
+    unavailable = build_extraction_error(
+        "unavailable", source="thothubto", url=_pagination_url(1), http_status=503
+    )
+    routes: dict[str, str | BaseException] = {_pagination_url(1): unavailable}
+
+    with pytest.raises(ExtractionError):
+        list(ThothubTO("https://thothub.to/models/foo/").extract(fake_fetcher(routes)))
