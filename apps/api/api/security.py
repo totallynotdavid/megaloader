@@ -1,15 +1,19 @@
+import ipaddress
 import logging
+import socket
 
-from urllib.parse import urlparse
+from urllib.parse import ParseResult, quote, urlparse
 
 import httpx
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 
 from api.config import (
     ALLOWED_DOMAINS,
     RATE_LIMIT_REQUESTS,
     RATE_LIMIT_WINDOW,
+    TRUST_PROXY_HEADERS,
+    UNKNOWN_CLIENT,
     UPSTASH_REDIS_TOKEN,
     UPSTASH_REDIS_URL,
 )
@@ -20,6 +24,80 @@ from api.config import (
 logger = logging.getLogger(__name__)
 
 
+class NonPublicURLError(ValueError):
+    """A URL that must not be fetched because it does not lead to a public host."""
+
+
+def parse_url(url: str) -> ParseResult:
+    """Parse a URL and force validation of its port."""
+    parsed = urlparse(url)
+    parsed.port  # noqa: B018
+    return parsed
+
+
+def client_ip_from(request: Request) -> str:
+    """
+    Identify the caller for rate limiting.
+
+    Behind a trusted proxy this is the left-most X-Forwarded-For entry, provided
+    it parses as an IP address. Otherwise it is the socket address.
+    """
+    if TRUST_PROXY_HEADERS:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        candidate = forwarded.split(",")[0].strip()
+        try:
+            return str(ipaddress.ip_address(candidate))
+        except ValueError:
+            logger.debug("Ignoring invalid X-Forwarded-For entry")
+
+    return request.client.host if request.client is not None else UNKNOWN_CLIENT
+
+
+def ensure_public_url(url: str) -> None:
+    """
+    Raise NonPublicURLError unless url is HTTP(S) and its host resolves only to
+    global addresses.
+
+    Download URLs come from upstream page content, so a hostile host can aim
+    them at loopback, private or link-local addresses (cloud metadata, internal
+    services). The check must run on every redirect hop, not just the first URL.
+
+    The resolved address is not pinned for the connection, so a host that
+    answers this lookup with a public address and the connection with a private
+    one gets through. The guard does not cover DNS rebinding.
+    """
+    try:
+        parsed = parse_url(url)
+    except ValueError as e:
+        msg = "Malformed download URL"
+        raise NonPublicURLError(msg) from e
+
+    host = parsed.hostname
+    if parsed.scheme not in ("http", "https"):
+        msg = f"Refusing non-HTTP(S) download URL: {parsed.scheme or 'no scheme'}"
+        raise NonPublicURLError(msg)
+
+    if not host:
+        msg = "Download URL has no host"
+        raise NonPublicURLError(msg)
+
+    try:
+        infos = socket.getaddrinfo(host, parsed.port or 0, proto=socket.IPPROTO_TCP)
+    except (socket.gaierror, UnicodeError) as e:
+        # UnicodeError: IDNA encoding rejects empty and over-long labels.
+        msg = f"Could not resolve download host: {host}"
+        raise NonPublicURLError(msg) from e
+
+    for info in infos:
+        address = ipaddress.ip_address(info[4][0])
+        # An IPv4-mapped IPv6 address reaches the IPv4 host behind it.
+        if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped:
+            address = address.ipv4_mapped
+        if not address.is_global or address.is_multicast:
+            msg = f"Refusing download from non-public address: {host}"
+            raise NonPublicURLError(msg)
+
+
 def validate_domain_whitelist(url: str) -> str:
     """
     Extract and validate domain against whitelist.
@@ -28,32 +106,31 @@ def validate_domain_whitelist(url: str) -> str:
     Raises HTTPException(403) if domain not whitelisted.
     """
     try:
-        parsed = urlparse(url)
-
-        if parsed.scheme not in ("http", "https"):
-            raise HTTPException(400, "Only HTTP(S) URLs allowed")
-
-        if not parsed.netloc:
-            raise HTTPException(400, "Invalid URL format")
-
-        domain = parsed.netloc.lower()
-
-        if domain not in ALLOWED_DOMAINS:
-            logger.warning(
-                "Domain not whitelisted", extra={"domain": domain, "status_code": 403}
-            )
-            raise HTTPException(
-                403,
-                f"Domain '{domain}' not allowed. Supported: Bunkr, PixelDrain, Cyberdrop, GoFile",
-            )
-
-        return domain
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.exception("Domain validation failed")
+        parsed = parse_url(url)
+    except ValueError as e:
         raise HTTPException(400, "Invalid URL format") from e
+
+    host = parsed.hostname
+    if parsed.scheme not in ("http", "https"):
+        raise HTTPException(400, "Only HTTP(S) URLs allowed")
+
+    if not host:
+        raise HTTPException(400, "Invalid URL format")
+
+    # Reject credentials because they obscure the destination host.
+    if "@" in parsed.netloc:
+        raise HTTPException(400, "Credentials in URL not allowed")
+
+    if host not in ALLOWED_DOMAINS:
+        logger.warning(
+            "Domain not whitelisted", extra={"domain": host, "status_code": 403}
+        )
+        raise HTTPException(
+            403,
+            f"Domain '{host}' not allowed. Supported: Bunkr, PixelDrain, Cyberdrop, GoFile",
+        )
+
+    return host
 
 
 async def check_rate_limit(client_ip: str) -> None:
@@ -68,7 +145,7 @@ async def check_rate_limit(client_ip: str) -> None:
         return
 
     try:
-        key = f"ratelimit:{client_ip}"
+        key = quote(f"ratelimit:{client_ip}", safe=":")
 
         async with httpx.AsyncClient() as client:
             # Increment counter with expiry

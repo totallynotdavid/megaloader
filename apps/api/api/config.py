@@ -24,7 +24,14 @@ RATE_LIMIT_WINDOW = int(os.getenv("API_RATE_LIMIT_WINDOW", "60"))
 
 # CORS
 CORS_ORIGINS_STR = os.getenv("API_CORS_ORIGINS", "*")
-CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_STR.split(",")]
+CORS_ORIGINS = [
+    origin.strip() for origin in CORS_ORIGINS_STR.split(",") if origin.strip()
+] or ["*"]
+
+# With a wildcard origin Starlette echoes back whatever Origin the request
+# carries, so credentials would be granted to every site. Only an explicit
+# origin list may enable them.
+CORS_ALLOW_CREDENTIALS = "*" not in CORS_ORIGINS
 
 # Logging
 LOG_LEVEL = os.getenv("API_LOG_LEVEL", "INFO")
@@ -32,6 +39,14 @@ LOG_FORMAT: Literal["json", "text"] = os.getenv("API_LOG_FORMAT", "json")  # typ
 
 # Environment detection
 IS_PRODUCTION = "VERCEL" in os.environ or os.getenv("ENV") == "production"
+
+# Read the caller from X-Forwarded-For only behind a proxy that sets it. On by
+# default on Vercel, where the socket peer is the proxy and every caller would
+# otherwise share one rate-limit bucket. Elsewhere a client could forge the
+# header to get a fresh bucket per request.
+TRUST_PROXY_HEADERS = os.getenv(
+    "API_TRUST_PROXY", "true" if "VERCEL" in os.environ else "false"
+).lower() in ("1", "true", "yes")
 
 # Constants
 UNKNOWN_CLIENT = "unknown"
