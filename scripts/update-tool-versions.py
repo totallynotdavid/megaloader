@@ -125,15 +125,25 @@ class ToolVersionUpdater:
             )
         )
 
-    def update_uv_in_actions(self, new_version: str) -> None:
-        """Update uv version across all workflow files dynamically."""
+    def update_action_in_workflows(self, action: str, new_version: str) -> None:
+        """Update one action's `version` input across workflow files.
+
+        The pattern stays within the action's `with:` block. It does not rewrite
+        another action's input or a matching action step without `version`.
+        """
+        pattern = (
+            rf"(?P<head>^(?P<indent>[ ]*)- uses: {re.escape(action)}@[^\n]*\n"
+            rf"(?P=indent)  with:\n"
+            rf"(?:(?P=indent)    (?!version:)[^\n]*\n)*"
+            rf"(?P=indent)    )version: \"[\d.]+\""
+        )
         for workflow in self.repo_root.glob(".github/workflows/*.yml"):
             self.updates.append(
                 VersionUpdate(
                     file_path=workflow,
-                    pattern=r'(?<!-)version: "[\d.]+"',
-                    replacement=f'version: "{new_version}"',
-                    description=f"uv version in {workflow.name}",
+                    pattern=pattern,
+                    replacement=rf'\g<head>version: "{new_version}"',
+                    description=f"{action} version in {workflow.name}",
                 )
             )
 
@@ -259,9 +269,15 @@ def main() -> int:  # noqa: C901
         require_version()
         print(f"Updating uv to {args.version}...\n")
         updater.update_mise_tool("uv", args.version)
-        updater.update_uv_in_actions(args.version)
+        updater.update_action_in_workflows("astral-sh/setup-uv", args.version)
 
-    elif args.tool in ("ruff", "bun", "biome"):
+    elif args.tool == "ruff":
+        require_version()
+        print(f"Updating ruff to {args.version}...\n")
+        updater.update_mise_tool("ruff", args.version)
+        updater.update_action_in_workflows("astral-sh/ruff-action", args.version)
+
+    elif args.tool in ("bun", "biome"):
         require_version()
         print(f"Updating {args.tool} to {args.version}...\n")
         updater.update_mise_tool(args.tool, args.version)
