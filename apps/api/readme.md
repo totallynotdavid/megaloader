@@ -34,17 +34,24 @@ The API is configured through environment variables; defaults allow it to run
 without additional setup.
 
 Size-related limits come from two settings: `API_MAX_SIZE_MB`, which caps the
-total upload size (default is 4 MB), and `API_MAX_FILES`, which restricts the
+total download size (default is 4 MB), and `API_MAX_FILES`, which restricts the
 number of files per request (default is 50). Logging can be tuned with
 `API_LOG_LEVEL` (defaulting to `INFO`) and `API_LOG_FORMAT` (`json` by default).
 
 CORS is configured through `API_CORS_ORIGINS`, which accepts a comma-separated
-list of allowed origins and defaults to allowing all (`*`). Rate limiting is
-handled by `API_RATE_LIMIT_REQUESTS` and `API_RATE_LIMIT_WINDOW`; by default,
-the API allows 10 requests every 60 seconds.
+list of allowed origins and defaults to allowing all (`*`). Credentialed
+cross-origin requests are enabled only for an explicit list; with `*` the API
+sends no `Access-Control-Allow-Credentials`. Rate limiting is handled by
+`API_RATE_LIMIT_REQUESTS` and `API_RATE_LIMIT_WINDOW`; by default, the API
+allows 10 requests every 60 seconds.
+
+Rate limits are keyed on the caller's IP. The left-most `X-Forwarded-For` entry
+is used only when `API_TRUST_PROXY` is true, which is the default on Vercel and
+false elsewhere; otherwise the socket address is used. Enable it only behind a
+proxy that sets the header, since clients can forge it.
 
 Finally, when checking file sizes, HEAD requests use a timeout controlled by
-`API_HEAD_REQUEST_TIMEOUT`, which is set to 10 seconds by default.
+`API_SIZE_CHECK_TIMEOUT`, which is set to 5 seconds by default.
 
 Example:
 
@@ -55,7 +62,7 @@ API_LOG_LEVEL=INFO
 API_CORS_ORIGINS=https://example.com
 API_RATE_LIMIT_REQUESTS=10
 API_RATE_LIMIT_WINDOW=60
-API_HEAD_REQUEST_TIMEOUT=10
+API_SIZE_CHECK_TIMEOUT=5
 ```
 
 ## Endpoints
@@ -94,8 +101,13 @@ Example oversized response:
 }
 ```
 
-Possible error codes include 400 for unsupported domains, 422 for invalid
-requests, 429 for rate limits, and 500 for extraction failures.
+Possible error codes include 400 for unsupported domains or malformed URLs, 401
+when the source requires authentication, 404 when the source content is
+unavailable, 413 when the content exceeds the size limit while downloading, 422
+for invalid requests, 429 for rate limits (ours or the source's), 502 or 504
+when the source is unreachable, sends an unexpected response or times out, and
+500 for any other failure. Download URLs that resolve to non-public addresses
+(loopback, private, link-local), including through redirects, are never fetched.
 
 ---
 
