@@ -16,7 +16,7 @@ biome = "2.5.2"
 description = "Install all dependencies (workspace + API)"
 run = [
   "uv sync --all-packages --extra dev",
-  "cd apps/api && uv sync --extra dev",
+  "cd apps/api && env -u VIRTUAL_ENV uv sync --extra dev",
 ]
 
 [tasks.update]
@@ -37,7 +37,7 @@ run = ["ruff format", "ruff check --fix"]
 description = "Run type checking on all packages"
 run = [
   "uv run --all-packages --extra dev mypy --exclude apps/api .",
-  "cd apps/api && uv run mypy .",
+  "cd apps/api && env -u VIRTUAL_ENV uv run mypy .",
 ]
 
 [tasks.check]
@@ -55,7 +55,7 @@ run = "uv run --all-packages --extra dev pytest packages/core/tests/unit scripts
 
 [tasks.test-api]
 description = "Run API tests"
-run = "uv run pytest"
+run = "env -u VIRTUAL_ENV uv run pytest"
 dir = "apps/api"
 
 [tasks.test-record]
@@ -75,7 +75,7 @@ run = "uv run --all-packages --extra dev megaloader"
 # Development: API
 [tasks.api-serve]
 description = "Run local API server"
-run = "uv run uvicorn index:app --reload" # pass '--host 0.0.0.0' to expose on local network
+run = "env -u VIRTUAL_ENV uv run uvicorn index:app --reload" # Use --host 0.0.0.0 to expose the server on the local network.
 dir = "apps/api"
 
 # Development: Docs
