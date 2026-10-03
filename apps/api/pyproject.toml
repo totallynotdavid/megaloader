@@ -16,7 +16,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "requests>=2.34.2",
     "chardet>=7.4.3", # caused by uvicorn, otherwise we have a warning
-    "httpx>=0.28.1",
+    "httpx2>=2.13.1",
     "megaloader>=0.1.0",
 ]
 

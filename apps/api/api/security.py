@@ -4,7 +4,7 @@ import socket
 
 from urllib.parse import ParseResult, quote, urlparse
 
-import httpx
+import httpx2
 
 from fastapi import HTTPException, Request
 
@@ -147,7 +147,7 @@ async def check_rate_limit(client_ip: str) -> None:
     try:
         key = quote(f"ratelimit:{client_ip}", safe=":")
 
-        async with httpx.AsyncClient() as client:
+        async with httpx2.AsyncClient() as client:
             # Increment counter with expiry
             response = await client.post(
                 f"{UPSTASH_REDIS_URL}/incr/{key}",

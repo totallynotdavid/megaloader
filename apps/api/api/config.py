@@ -106,5 +106,5 @@ def configure_logging() -> None:
     root_logger.addHandler(handler)
 
     # Silence noisy libraries
-    for lib in ["urllib3", "requests", "httpx", "uvicorn.access"]:
+    for lib in ["urllib3", "requests", "httpx2", "uvicorn.access"]:
         logging.getLogger(lib).setLevel(logging.WARNING)
