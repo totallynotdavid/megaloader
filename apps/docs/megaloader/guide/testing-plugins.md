@@ -191,7 +191,8 @@ mise run test-record
 Two workflows:
 
 - `test.yml` runs the offline suite (unit + cassette replay, `--block-network`)
-  on every push and PR, on Python 3.12 and 3.13, and uploads coverage to
+  on every push and PR across Python 3.10 (the minimum supported version), 3.12,
+  3.13, and 3.14. It uploads coverage to
   [Codecov](https://app.codecov.io/gh/totallynotdavid/megaloader).
 - `live.yml` runs weekly (Monday 05:00 UTC). It re-fetches every fixture through
   the proxy and compares against the committed snapshots without updating them,

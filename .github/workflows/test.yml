@@ -28,9 +28,12 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      # Overrides the tracked .python-version for every uv command in the job.
+      UV_PYTHON: ${{ matrix.python-version }}
     strategy:
       matrix:
-        python-version: ["3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v7
@@ -43,6 +46,11 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --extra dev --package megaloader
+
+      - name: Check interpreter
+        run: |
+          uv run python -c "import sys; print(sys.version)"
+          uv run python -c "import sys; v = '${{ matrix.python-version }}'.split('.'); assert sys.version_info[:2] == (int(v[0]), int(v[1])), sys.version"
 
       - name: Run tests
         run:
