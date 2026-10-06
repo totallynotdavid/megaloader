@@ -1,123 +1,118 @@
 # Contributing
 
-## Setup
+[`architecture.md`](../architecture.md) maps the code. The
+[manual](https://totallynotdavid.github.io/megaloader) documents the library and
+the CLI.
 
-Clone the repository and install dependencies. The project uses uv for
-dependency management:
+## Set up
+
+The repository pins its tools in `mise.toml`: Python, uv, ruff, bun, and biome.
 
 ```bash
 git clone https://github.com/totallynotdavid/megaloader
 cd megaloader
-uv sync
-```
-
-Python 3.13+ is recommended for reproducibility. The project includes mise
-configuration for automated tool setup. If you prefer automated environment
-management, run:
-
-```bash
 mise install
-mise run install
+mise run sync
 ```
 
-## Testing
-
-Run the full test suite including live API tests:
+Without mise, install Python 3.10 or newer and uv, then:
 
 ```bash
-uv run pytest
+uv sync --all-packages --extra dev
+cd apps/api && uv sync --extra dev
 ```
 
-Run unit tests only to skip slow integration tests:
+## Check your change
 
 ```bash
-uv run pytest -m "not integration"
-```
-
-Format the code and run type checks before committing:
-
-```bash
-uv run ruff format .
-uv run ruff check --fix .
-uv run mypy packages/core
-```
-
-If you have mise installed, you can instead run:
-
-```bash
-mise run format
-mise run mypy
+mise run check
 mise run test
 ```
 
-## Creating plugins
+`check` runs these tasks:
 
-Plugins inherit from `BasePlugin` and implement the `extract()` method. This
-method yields `DownloadItem` objects containing file metadata:
+| Task                         | Does                                      |
+| ---------------------------- | ----------------------------------------- |
+| `mise run format`            | `ruff format` and `ruff check --fix`      |
+| `mise run lint`              | `mypy` on the workspace and on `apps/api` |
+| `mise run test-unit`         | Core unit tests and the script tests      |
+| `mise run test-api`          | The API tests                             |
+| `mise run validate-snippets` | Checks Python blocks in `apps/docs` parse |
 
-```python
-from megaloader.plugin import BasePlugin
-from megaloader.item import DownloadItem
-from collections.abc import Generator
-from typing import Any
+`mise run test` adds the offline plugin tests, which replay recorded responses
+with the network blocked. `mise run dev-cli -- extract <url>` runs the CLI from
+the working tree.
 
-class NewPlatformPlugin(BasePlugin):
-    def __init__(self, url: str, **kwargs: Any) -> None:
-        super().__init__(url, **kwargs)
-        self.session.headers.update({"User-Agent": "..."})
+## Commit and open a pull request
 
-    def extract(self) -> Generator[DownloadItem, None, None]:
-        response = self.session.get(self.url)
-        response.raise_for_status()
+Branch from `main`. Keep each pull request focused on one change. Write each
+commit subject as `area: imperative lowercase summary`, as in
+`api: replace httpx with httpx2`. Describe the problem and the fix in the pull
+request, and update the docs when behavior changes.
 
-        # Parse response and extract file information
-        yield DownloadItem(
-            filename="example.jpg",
-            download_url="https://...",
-            size_bytes=1024,
-        )
+## Add a platform
+
+[Writing plugins](https://totallynotdavid.github.io/megaloader/writing-plugins)
+walks through a plugin end to end, and
+[Testing plugins](https://totallynotdavid.github.io/megaloader/testing-plugins)
+covers its tests. A new plugin needs:
+
+- `packages/core/megaloader/plugins/<name>.py`
+- Entries in `PLUGIN_REGISTRY` and `PLUGIN_NAME_REGISTRY`
+- Fixture URLs in `packages/core/tests/test_urls.py`
+- A recorded test, and unit tests for URL handling and failures
+- Rows in `apps/docs/megaloader/platforms.md` and, for options, in
+  `plugin-options.md`
+
+Recording needs the proxy credentials listed in Testing plugins.
+
+## Change the docs
+
+The manual is a VitePress site in `apps/docs/megaloader/`:
+
+```bash
+mise run docs-serve        # http://localhost:5173
+mise run docs-build        # exits 1 on a dead link
+mise run format-docs       # biome for Vue, prettier for Markdown
+mise run validate-snippets
 ```
 
-Register your plugin in `packages/core/megaloader/plugins/__init__.py` by adding
-a domain mapping to `PLUGIN_REGISTRY`:
+Markdown wraps at 80 columns:
 
-```python
-PLUGIN_REGISTRY: dict[str, type[BasePlugin]] = {
-    "newplatform.com": NewPlatformPlugin,
-}
+```bash
+bunx prettier --print-width 80 --prose-wrap always --write '**/*.md'
 ```
 
-For subdomain support like `www.pixiv.net`, add the base domain to
-`SUBDOMAIN_SUPPORTED`.
+## Update tool versions
 
-Handle network errors broadly. Individual failures should be logged without
-stopping the entire extraction:
+`scripts/update-tool-versions.py` changes one tool's version in every file that
+pins it:
 
-```python
-try:
-    response = self.session.get(url)
-    response.raise_for_status()
-except requests.RequestException as e:
-    logger.warning(f"Failed to fetch {url}: {e}")
-    return
+```bash
+python scripts/update-tool-versions.py --tool ruff --version 0.15.0 --dry-run
 ```
 
-## Dependencies
+See [`scripts/readme.md`](../scripts/readme.md) for the tools it supports.
 
-Keep runtime dependencies minimal. The core library depends on requests,
-beautifulsoup4, and lxml. Avoid adding additional dependencies unless necessary.
+## Release
 
-Development dependencies include ruff for formatting, mypy for type checking,
-and pytest for testing. Their configurations are set in the root pyproject.toml.
+A release is a tag. The tag version must equal the `version` in the package's
+`pyproject.toml`, or the workflow stops.
 
-## Submitting changes
+| Tag           | Workflow           | Publishes                                                                                                   |
+| ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `vcore-X.Y.Z` | `release-core.yml` | `megaloader` on PyPI                                                                                        |
+| `vcli-X.Y.Z`  | `release-cli.yml`  | `megaloader-cli` on PyPI, and a GitHub release with `megaloader-cli-linux` and `megaloader-cli-windows.exe` |
 
-Create a feature branch from main. Keep pull requests focused on a single
-feature or fix. Run format and type checks before committing. Test thoroughly,
-especially for new plugins.
+Before tagging, set the new version in `packages/<core|cli>/pyproject.toml` and
+in the package's `__version__` (`megaloader/_version.py` for core,
+`megaloader_cli/__init__.py` for the CLI). PyPI publishing uses a trusted
+publisher in the `pypi` GitHub environment. `mise run build-bin` builds the
+Windows binary locally to test the PyInstaller build.
 
-Write clear commit messages and PR descriptions. Explain what problem you're
-solving and how. Update documentation for public API changes.
+## Get help
 
-Use GitHub Discussions for design questions before starting large changes. When
-reporting bugs, include your Python version, error messages, and relevant URLs.
+Ask questions and float ideas in
+[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
+Report a bug through the issue templates, with your Python version, the full
+error message, and the URL.
