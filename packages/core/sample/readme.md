@@ -1,35 +1,20 @@
-# Sample media for testing
+# Sample media
 
-This folder contains small image and video files used to check that the package
-handles different file formats correctly. The files are uploaded to external
-hosts; the resulting URLs are used in the test suite.
+Small image and video files for trying Megaloader on files of different formats.
+They have been uploaded to the supported hosts, and the resulting links are the
+fixtures in `packages/core/tests/test_urls.py`.
 
 ## Images
 
-> **Location:** `images/`\
-> **Source:** [yavuzceliker/sample-images](https://github.com/yavuzceliker/sample-images)\
-> **License:**
-> Pixabay Content License.
-
-Files:
-
-- sample-image-01.jpg
-- sample-image-02.jpg
-- sample-image-03.jpg
-- sample-image-04.jpg
-- sample-image-05.jpg
-- sample-image-06.jpg
+`images/sample-image-01.jpg` to `sample-image-06.jpg`, from
+[yavuzceliker/sample-images](https://github.com/yavuzceliker/sample-images)
+under the Pixabay Content License.
 
 ## Videos
 
-> **Location:** `videos/`
-
-Files:
-
-- `sample-video-bunny.webm` (5 MB) – from
-  [file-examples.com](https://file-examples.com)
-- `sample-video-planet.mov` (2 MB) – from
-  [file-examples.com](https://file-examples.com)
-- `sample-video-jellyfish.mkv` (5 MB) – from
-  [test-videos.co.uk](https://test-videos.co.uk)
-- `sample-video-rick.mp4` (1.5 MB) – custom sample
+| File                                | Size   | Source                                         |
+| ----------------------------------- | ------ | ---------------------------------------------- |
+| `videos/sample-video-bunny.webm`    | 5 MB   | [file-examples.com](https://file-examples.com) |
+| `videos/sample-video-planet.mov`    | 2 MB   | [file-examples.com](https://file-examples.com) |
+| `videos/sample-video-jellyfish.mkv` | 5 MB   | [test-videos.co.uk](https://test-videos.co.uk) |
+| `videos/sample-video-rick.mp4`      | 1.5 MB | Custom sample                                  |
