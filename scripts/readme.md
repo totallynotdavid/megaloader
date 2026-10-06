@@ -1,71 +1,48 @@
 # Scripts
 
-Utility scripts used throughout the Megaloader project.
+Run these from the repository root.
 
 ## generate-logo.py
 
-Generates the project logo as an SVG.
+Writes the project logo to `apps/docs/megaloader/public/logo.svg`.
 
 ```bash
 mise run generate-logo
 ```
 
-The script outputs `apps/docs/megaloader/public/logo.svg` for use in the VitePress docs site.
-
 ## validate-code-snippets.py
 
-Validates Python code snippets in documentation files for syntax correctness.
+Parses every `python` code block in the Markdown files under `apps/docs` with
+`ast.parse`. It checks syntax only and runs nothing. Blocks in other languages
+are ignored, and so are blocks that contain `...` and function signatures with
+no body. It exits 1 and lists the file and line of each syntax error.
 
 ```bash
-python scripts/validate-code-snippets.py
+mise run validate-snippets
 ```
 
-The script scans all Markdown files in `docs/` and checks **only Python** code
-blocks. Other languages (Bash, PowerShell, JSON, etc.) are ignored. Certain
-patterns are intentionally skipped:
-
-- Blocks containing placeholder `...`
-- Function or method signatures without bodies
-
-The script exits with:
-
-- **0** if all snippets are valid
-- **1** if any syntax errors are found
+On success it prints `All Python code snippets are valid` and the number of
+files it checked.
 
 ## update-tool-versions.py
 
-Updates tool versions across the repository using pattern-based matching.
+Changes one tool's version in every file that pins it. `--dry-run` shows the
+changes without writing them.
 
 ```bash
-# Update Python exact version (3.13.7 -> 3.14.0)
 python scripts/update-tool-versions.py --tool python --version 3.14.0
-
-# Update Python minimum requirement (>=3.10 -> >=3.11)
 python scripts/update-tool-versions.py --tool python-min --version 3.11
-
-# Update Python test matrix
 python scripts/update-tool-versions.py --tool python-matrix --matrix-versions "3.13,3.14"
-
-# Update development tools
-python scripts/update-tool-versions.py --tool uv --version 0.10.0
-python scripts/update-tool-versions.py --tool ruff --version 0.15.0
-python scripts/update-tool-versions.py --tool mypy --version 1.19.0
-
-# Dry run to preview changes
-python scripts/update-tool-versions.py --tool python --version 3.14.0 --dry-run
+python scripts/update-tool-versions.py --tool ruff --version 0.15.0 --dry-run
 ```
 
-`mise.toml` is the single source for the `uv` and `ruff` versions. Bumping
-either one also rewrites the `version` input of `astral-sh/setup-uv` or
-`astral-sh/ruff-action` in `.github/workflows/`, so CI runs the same version as
-`mise run format`.
+`--tool` takes `python`, `python-min`, `python-matrix`, `uv`, `ruff`, `bun`,
+`biome`, `mypy`, or `pytest`.
 
-**Supported tools:** `python`, `python-min`, `python-matrix`, `uv`, `ruff`,
-`bun`, `biome`, `mypy`, `pytest`
+`mise.toml` holds the `uv` and `ruff` versions. Changing either also rewrites
+the `version` input of `astral-sh/setup-uv` or `astral-sh/ruff-action` in
+`.github/workflows/`, so CI uses the version used by `mise run format`.
 
-The script updates:
-
-- `.python-version` and `mise.toml` tool versions
-- All `pyproject.toml` files for Python requirements
-- GitHub Actions workflows for CI/CD version consistency
-- Tooling configuration across the monorepo to ensure aligned versions
+The script edits `.python-version`, `mise.toml`, the `pyproject.toml` files, and
+the workflows. Its tests are in `scripts/script_tests/` and run with
+`mise run test-unit`.

@@ -1,129 +1,86 @@
-# [monorepo]: megaloader
+# Megaloader
 
-<img src="https://raw.githubusercontent.com/totallynotdavid/megaloader/main/apps/docs/megaloader/public/logo.svg" alt="Megaloader Logo" width="100">
+<img src="https://raw.githubusercontent.com/totallynotdavid/megaloader/main/apps/docs/megaloader/public/logo.svg" alt="Megaloader logo" width="100">
 
 [![CodeQL](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml)
 [![lint and format check](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml)
 [![codecov](https://codecov.io/gh/totallynotdavid/megaloader/graph/badge.svg?token=SBHAGJJB8L)](https://codecov.io/gh/totallynotdavid/megaloader)
 
-Python library and CLI for extracting downloadable content from file hosting
-platforms. Supports 11 platforms through a plugin architecture with automatic
-URL detection.
+Megaloader finds the files behind an album, gallery, or file link on a hosting
+site, and downloads them. It is a command-line tool and a Python library with
+plugins for the platforms below. The library lists files and the headers each
+download needs. It leaves the transfer to your code. The CLI does the transfer.
 
-Megaloader is available as two independent packages:
+```console
+$ pip install megaloader-cli
+$ megaloader extract https://bunkr.si/a/xYKtNmBx
+✓ Using plugin: Bunkr
+Extracting metadata... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```bash
-pip install megaloader          # core library
-pip install megaloader-cli      # terminal CLI
+Found 6 files:
+
+  01. sample-image-06.jpg
+  02. sample-image-04.jpg
+  03. sample-image-05.jpg
+  04. sample-image-03.jpg
+  05. sample-image-01.jpg
+  06. sample-image-02.jpg
+$ megaloader download https://bunkr.si/a/xYKtNmBx images
 ```
 
-Install one or both depending on whether you need API integration, command-line
-tools, or both.
+The library needs Python 3.10 or newer:
 
-## Usage
-
-Library usage:
+```bash
+pip install megaloader
+```
 
 ```python
-from megaloader import extract
+import megaloader as mgl
 
-for item in extract("https://pixeldrain.com/l/abc123"):
-    print(f"{item.filename} - {item.download_url}")
+for item in mgl.extract("https://bunkr.si/a/xYKtNmBx"):
+    print(item.filename, item.download_url)
 ```
 
-CLI usage:
+## Features
 
-```bash
-megaloader download https://pixeldrain.com/l/abc123
-```
+- One call for every platform. `extract()` picks the plugin from the URL's
+  domain and yields `DownloadItem` objects as it finds them.
+- Each item carries its filename, direct URL, collection name, size when the
+  platform reports it, and the headers the download must send.
+- `megaloader download` saves collections into folders, filters by filename, and
+  skips files that already exist.
+- `megaloader extract --json` prints the items for scripts.
+- Failures are typed. `ExtractionError` has a category: `rate_limit`, `auth`,
+  `access`, `request`, `network`, `timeout`, `protocol`, or `unknown`.
+- Plugins make no network calls of their own. They send requests through a
+  fetcher, so tests run a plugin against recorded responses.
+- A FastAPI server wraps the library as an HTTP service.
 
-More detailed information is available in the package-specific documentation:
+## Platforms
 
-- Core library: [packages/core/readme.md](packages/core/readme.md)
-- CLI: [packages/cli/readme.md](packages/cli/readme.md)
+| Platform   | Domains                                        |
+| ---------- | ---------------------------------------------- |
+| Bunkr      | bunkr.ax, .black, .fi, .is, .la, .ru, .si, .su |
+| Cyberdrop  | cyberdrop.cr, .me, .to                         |
+| Fapello    | fapello.com                                    |
+| GoFile     | gofile.io                                      |
+| PixelDrain | pixeldrain.com                                 |
+| Pixiv      | pixiv.net                                      |
+| Rule34     | rule34.xxx                                     |
+| Thothub    | thothub.ch, thothub.to, thothub.vip            |
+| Thotslife  | thotslife.com                                  |
 
-## Supported platforms
+## Documentation
 
-The library supports four core platforms with active maintenance and seven
-extended platforms on best-effort basis. Core platforms receive priority for bug
-fixes and feature development. Extended platforms work as of November 2025 but
-may break without immediate fixes.
+The [manual](https://totallynotdavid.github.io/megaloader) covers the library,
+the command line, and writing plugins. Its source is in
+[`apps/docs/megaloader/`](apps/docs/megaloader/readme.md).
 
-| Platform    | Domains                | Supports                                      | Status   |
-| ----------- | ---------------------- | --------------------------------------------- | -------- |
-| Bunkr       | bunkr.{si,la,is,ru,su} | Albums, single files                          | Core     |
-| PixelDrain  | pixeldrain.com         | Lists, files, proxy support                   | Core     |
-| Cyberdrop   | cyberdrop.{me,to,cr}   | Albums, single files                          | Core     |
-| GoFile      | gofile.io              | Folders (including password-protected), files | Core     |
-| Pixiv       | pixiv.net              | Artworks, galleries, authentication           | Extended |
-| Rule34      | rule34.xxx             | Tags, posts, API                              | Extended |
-| ThotsLife   | thotslife.com          | Albums, posts                                 | Extended |
-| ThotHub.VIP | thothub.vip            | Videos, albums                                | Extended |
-| ThotHub.TO  | thothub.to             | Videos, albums                                | Extended |
-| Fapello     | fapello.com            | Model profiles                                | Extended |
+## Contributing
 
-Additional notes on authentication and platform-specific features are documented
-in the core library's [readme](packages/core/readme.md).
+[`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) explains how to set up,
+test, and submit a change. [`architecture.md`](architecture.md) maps the code.
 
-## Development
+## License
 
-This monorepo uses a uv workspace. The core library is in
-[`packages/core/`](packages/core/) and the CLI tool is in
-[`packages/cli/`](packages/cli/). Each one is published to PyPI as a separate
-package.
-
-The repository is organized like this:
-
-```
-megaloader/
-├── apps/
-│   ├── api/        # FastAPI server (deployed to Vercel)
-│   └── docs/       # VitePress site (deployed to GitHub Pages)
-├── packages/
-│   ├── core/       # megaloader, the core library
-│   └── cli/        # megaloader-cli, the command-line interface
-└── scripts/        # Development utilities
-```
-
-To set up a development environment, clone the repository and install all
-workspace dependencies:
-
-```bash
-git clone https://github.com/totallynotdavid/megaloader
-cd megaloader
-uv sync
-```
-
-If you prefer to manage tools with mise, run:
-
-```bash
-mise install
-mise run sync
-```
-
-This installs the toolchain versions defined in [`mise.toml`](mise.toml).
-
-Before submitting changes, run the formatters, linters, and tests:
-
-```bash
-uv run ruff format .        # mise run format
-uv run ruff check --fix .   # mise run format
-uv run mypy packages/core   # mise run mypy
-uv run pytest               # mise run test, mise run test-unit
-```
-
-These commands format the code, fix lint issues, check types, and run the test
-suite.
-
-See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for plugin development
-guidelines.
-
-## Project history
-
-Originally created by [@Ximaz](https://github.com/Ximaz) before 2023. The
-repository was later deleted or made private. Current maintainer
-[@totallynotdavid](https://github.com/totallynotdavid) rebuilt the codebase from
-scratch to fix platform changes and modernize the architecture.
-
-Feature discussions and issue reports take place on
-[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
+Apache-2.0. See [LICENSE](LICENSE).
