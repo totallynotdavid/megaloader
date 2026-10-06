@@ -1,4 +1,4 @@
-from typing import Never
+from typing import NoReturn
 
 from megaloader.exceptions import ExtractionError
 
@@ -66,7 +66,7 @@ def raise_extraction_error(
     provider_status: str | None = None,
     category: str | None = None,
     cause: Exception | None = None,
-) -> Never:
+) -> NoReturn:
     raise build_extraction_error(
         detail,
         source=source,
