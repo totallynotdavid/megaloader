@@ -5,24 +5,21 @@ const baseUrl = process.env.VITE_BASE || "/";
 export default defineConfig({
   title: "Megaloader",
   description:
-    "Python library for extracting file metadata from 11+ hosting platforms",
+    "Python library and CLI for extracting file metadata from file hosting platforms",
 
   base: baseUrl,
   lastUpdated: true,
   cleanUrls: true,
   metaChunk: true,
 
+  rewrites: {
+    "readme.md": "index.md",
+  },
+
   themeConfig: {
     logo: "/logo.svg",
     nav: nav(),
-
-    sidebar: {
-      "/guide/": { base: "/guide/", items: sidebarGuide() },
-      "/reference/": {
-        base: "/reference/",
-        items: sidebarReference(),
-      },
-    },
+    sidebar: sidebar(),
 
     socialLinks: [
       {
@@ -33,7 +30,7 @@ export default defineConfig({
 
     footer: {
       message: "Released under the Apache-2.0 License.",
-      copyright: `Copyright © 2024 - <a href="${baseUrl}team">The Megaloader Authors</a>`,
+      copyright: "Copyright © 2024 - The Megaloader Authors",
     },
 
     editLink: {
@@ -54,33 +51,20 @@ export default defineConfig({
 
 function nav(): DefaultTheme.NavItem[] {
   return [
+    { text: "Manual", link: "/", activeMatch: "^/(?!$)" },
     {
-      text: "Guide",
-      link: "/guide/getting-started",
-      activeMatch: "/guide/",
+      text: "Contributing",
+      link: "https://github.com/totallynotdavid/megaloader/blob/main/.github/CONTRIBUTING.md",
     },
     {
-      text: "Reference",
-      link: "/reference/api",
-      activeMatch: "/reference/",
-    },
-    {
-      text: "More",
+      text: "PyPI",
       items: [
         {
-          text: "Team",
-          link: "/team",
-        },
-        {
-          text: "Contributing",
-          link: "/development/contributing",
-        },
-        {
-          text: "PyPI: megaloader",
+          text: "megaloader",
           link: "https://pypi.org/project/megaloader/",
         },
         {
-          text: "PyPI: megaloader-cli",
+          text: "megaloader-cli",
           link: "https://pypi.org/project/megaloader-cli/",
         },
       ],
@@ -88,77 +72,18 @@ function nav(): DefaultTheme.NavItem[] {
   ];
 }
 
-function sidebarGuide(): DefaultTheme.SidebarItem[] {
+function sidebar(): DefaultTheme.SidebarItem[] {
   return [
-    {
-      text: "Introduction",
-      collapsed: false,
-      items: [
-        {
-          text: "Getting started",
-          link: "getting-started",
-        },
-      ],
-    },
-    {
-      text: "Core library",
-      collapsed: false,
-      items: [
-        { text: "Using the library", link: "using-the-library" },
-        {
-          text: "Downloading files",
-          link: "downloading-files",
-        },
-        { text: "Advanced patterns", link: "advanced-patterns" },
-      ],
-    },
-    {
-      text: "CLI",
-      collapsed: false,
-      items: [
-        { text: "Using the CLI", link: "cli" },
-        { text: "CLI automation", link: "cli-automation" },
-      ],
-    },
-    {
-      text: "Plugin development",
-      collapsed: false,
-      items: [
-        {
-          text: "Creating plugins",
-          link: "creating-plugins",
-        },
-        {
-          text: "Testing plugins",
-          link: "testing-plugins",
-        },
-      ],
-    },
-  ];
-}
-
-function sidebarReference(): DefaultTheme.SidebarItem[] {
-  return [
-    {
-      text: "API",
-      collapsed: false,
-      items: [{ text: "API reference", link: "api" }],
-    },
-    {
-      text: "CLI",
-      collapsed: false,
-      items: [{ text: "CLI reference", link: "cli" }],
-    },
-    {
-      text: "Plugins",
-      collapsed: false,
-      items: [
-        {
-          text: "Supported platforms",
-          link: "platforms",
-        },
-        { text: "Plugin options", link: "options" },
-      ],
-    },
+    { text: "Manual", link: "/" },
+    { text: "Getting started", link: "/getting-started" },
+    { text: "Library", link: "/library" },
+    { text: "Downloading files", link: "/downloading" },
+    { text: "Errors", link: "/errors" },
+    { text: "Command line", link: "/cli" },
+    { text: "Scripting the CLI", link: "/cli-scripting" },
+    { text: "Platforms", link: "/platforms" },
+    { text: "Plugin options", link: "/plugin-options" },
+    { text: "Writing plugins", link: "/writing-plugins" },
+    { text: "Testing plugins", link: "/testing-plugins" },
   ];
 }
