@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Megaloader finds the downloadable files behind a hosting-site link. Read
-[`architecture.md`](architecture.md) for the code map and
+[`docs/architecture.md`](docs/architecture.md) for the code map and
 [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for the workflow.
 
 ## Rules
@@ -17,8 +17,9 @@ Megaloader finds the downloadable files behind a hosting-site link. Read
 - Register a new plugin in both `PLUGIN_REGISTRY` and `PLUGIN_NAME_REGISTRY` in
   `packages/core/megaloader/plugins/registry.py`.
 - A new plugin comes with entries in `packages/core/tests/test_urls.py`, a
-  `tests/plugins/test_<plugin>.py` module, and rows in
-  `apps/docs/megaloader/platforms.md` and `plugin-options.md`.
+  `packages/core/tests/plugins/test_<plugin>.py` module, and rows in
+  `apps/docs/megaloader/platforms.md` and
+  `apps/docs/megaloader/plugin-options.md`.
 - Tests in `packages/core/tests/plugins/` replay recorded cassettes.
   Hand-written input goes in `packages/core/tests/unit/` through `fake_fetcher`.
 - Run offline tests with `--block-network`.

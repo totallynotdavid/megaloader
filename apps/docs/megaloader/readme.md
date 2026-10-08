@@ -17,6 +17,6 @@ on a hosting site. Use it from the command line or from Python.
 The
 [API server](https://github.com/totallynotdavid/megaloader/blob/main/apps/api/readme.md)
 wraps the library in an HTTP service. The
-[architecture](https://github.com/totallynotdavid/megaloader/blob/main/architecture.md)
+[architecture](https://github.com/totallynotdavid/megaloader/blob/main/docs/architecture.md)
 document maps the code. To change Megaloader, read the
 [contributing guide](https://github.com/totallynotdavid/megaloader/blob/main/.github/CONTRIBUTING.md).

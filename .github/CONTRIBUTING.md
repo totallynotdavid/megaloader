@@ -1,12 +1,13 @@
 # Contributing
 
-[`architecture.md`](../architecture.md) maps the code. The
-[manual](https://totallynotdavid.github.io/megaloader) documents the library and
-the CLI.
+Megaloader contains a Python library, a CLI, an HTTP API, and a VitePress
+manual. The [architecture map](../docs/architecture.md) shows their boundaries;
+the [manual](https://totallynotdavid.github.io/megaloader) describes the
+user-facing behavior.
 
 ## Set up
 
-The repository pins its tools in `mise.toml`: Python, uv, ruff, bun, and biome.
+The repository pins Python, uv, ruff, bun, and biome in `mise.toml`.
 
 ```bash
 git clone https://github.com/totallynotdavid/megaloader
@@ -15,78 +16,71 @@ mise install
 mise run sync
 ```
 
-Without mise, install Python 3.10 or newer and uv, then:
+Without mise, install Python 3.10 or newer and uv:
 
 ```bash
 uv sync --all-packages --extra dev
 cd apps/api && uv sync --extra dev
 ```
 
-## Check your change
+## Check a change
+
+Run the quick checks and the offline suite:
 
 ```bash
 mise run check
 mise run test
 ```
 
-`check` runs these tasks:
+`check` formats Python, runs type checks, runs unit and API tests, and parses
+Python snippets in `apps/docs`. `test` replays the plugin recordings with the
+network blocked. To run the CLI from the working tree:
 
-| Task                         | Does                                      |
-| ---------------------------- | ----------------------------------------- |
-| `mise run format`            | `ruff format` and `ruff check --fix`      |
-| `mise run lint`              | `mypy` on the workspace and on `apps/api` |
-| `mise run test-unit`         | Core unit tests and the script tests      |
-| `mise run test-api`          | The API tests                             |
-| `mise run validate-snippets` | Checks Python blocks in `apps/docs` parse |
-
-`mise run test` adds the offline plugin tests, which replay recorded responses
-with the network blocked. `mise run dev-cli -- extract <url>` runs the CLI from
-the working tree.
-
-## Commit and open a pull request
-
-Branch from `main`. Keep each pull request focused on one change. Write each
-commit subject as `area: imperative lowercase summary`, as in
-`api: replace httpx with httpx2`. Describe the problem and the fix in the pull
-request, and update the docs when behavior changes.
+```bash
+mise run dev-cli -- extract <url>
+```
 
 ## Add a platform
 
+Follow
 [Writing plugins](https://totallynotdavid.github.io/megaloader/writing-plugins)
-walks through a plugin end to end, and
-[Testing plugins](https://totallynotdavid.github.io/megaloader/testing-plugins)
-covers its tests. A new plugin needs:
+and
+[Testing plugins](https://totallynotdavid.github.io/megaloader/testing-plugins).
+A platform change includes the plugin, both registry entries, fixture URLs, a
+recorded plugin test, unit tests for URL handling and failures, and the platform
+table. Add an entry to `apps/docs/megaloader/plugin-options.md` when the plugin
+accepts options.
 
-- `packages/core/megaloader/plugins/<name>.py`
-- Entries in `PLUGIN_REGISTRY` and `PLUGIN_NAME_REGISTRY`
-- Fixture URLs in `packages/core/tests/test_urls.py`
-- A recorded test, and unit tests for URL handling and failures
-- Rows in `apps/docs/megaloader/platforms.md` and, for options, in
-  `plugin-options.md`
+## Change the manual
 
-Recording needs the proxy credentials listed in Testing plugins.
-
-## Change the docs
-
-The manual is a VitePress site in `apps/docs/megaloader/`:
+The manual is in `apps/docs/megaloader/`:
 
 ```bash
-mise run docs-serve        # http://localhost:5173
-mise run docs-build        # exits 1 on a dead link
-mise run format-docs       # biome for Vue, prettier for Markdown
+mise run docs-serve
+mise run docs-build
+mise run format-docs
 mise run validate-snippets
 ```
 
-Markdown wraps at 80 columns:
+`docs-build` fails when VitePress finds a dead link. `format-docs` formats Vue
+files with Biome and Markdown with Prettier. Markdown uses an 80-column prose
+width:
 
 ```bash
 bunx prettier --print-width 80 --prose-wrap always --write '**/*.md'
 ```
 
+## Submit a change
+
+Branch from `main` and keep a pull request focused. Write the commit subject as
+`area: imperative lowercase summary`. Describe the problem and the fix, and
+update the manual when behavior changes. Report bugs with the Python version,
+the complete error, and the source URL.
+
 ## Update tool versions
 
-`scripts/update-tool-versions.py` changes one tool's version in every file that
-pins it:
+[`scripts/update-tool-versions.py`](../scripts/update-tool-versions.py) changes
+one tool's version in every file that pins it:
 
 ```bash
 python scripts/update-tool-versions.py --tool ruff --version 0.15.0 --dry-run
@@ -109,10 +103,3 @@ in the package's `__version__` (`megaloader/_version.py` for core,
 `megaloader_cli/__init__.py` for the CLI). PyPI publishing uses a trusted
 publisher in the `pypi` GitHub environment. `mise run build-bin` builds the
 Windows binary locally to test the PyInstaller build.
-
-## Get help
-
-Ask questions and float ideas in
-[GitHub Discussions](https://github.com/totallynotdavid/megaloader/discussions).
-Report a bug through the issue templates, with your Python version, the full
-error message, and the URL.

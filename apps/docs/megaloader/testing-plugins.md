@@ -3,14 +3,15 @@
 Plugin tests live in `packages/core/tests/`. Two kinds cover a plugin, and each
 has one job.
 
-| Directory        | Tests                                                           | Input                                   |
-| ---------------- | --------------------------------------------------------------- | --------------------------------------- |
-| `tests/unit/`    | Parsing, URL classification, and error handling                 | Hand-written strings and `fake_fetcher` |
-| `tests/plugins/` | Full traversal and item assembly through the public `extract()` | Recorded responses (vcr cassettes)      |
+| Directory                      | Tests                                                           | Input                                   |
+| ------------------------------ | --------------------------------------------------------------- | --------------------------------------- |
+| `packages/core/tests/unit/`    | Parsing, URL classification, and error handling                 | Hand-written strings and `fake_fetcher` |
+| `packages/core/tests/plugins/` | Full traversal and item assembly through the public `extract()` | Recorded responses (vcr cassettes)      |
 
-A test in `tests/plugins/` replays a real recording, so it asserts what the site
-returns and not what a developer imagined it returns. Hand-written input belongs
-in `tests/unit/`, where the input's shape is the thing under test.
+A test in `packages/core/tests/plugins/` replays a real recording, so it asserts
+what the site returns and not what a developer imagined it returns. Hand-written
+input belongs in `packages/core/tests/unit/`, where the input's shape is the
+thing under test.
 
 Run the offline suite:
 
@@ -23,10 +24,10 @@ credentials.
 
 ## Unit tests with `fake_fetcher`
 
-`fake_fetcher` in `tests/helpers.py` builds a `Fetcher` from a dictionary of
-request URL to outcome. A `str` becomes a `200` response with that body. A
-`Response` is returned as is. An exception is raised. A URL missing from the
-dictionary fails the test, so a plugin cannot reach the network by accident.
+`fake_fetcher` in `packages/core/tests/helpers.py` builds a `Fetcher` from a
+dictionary of request URL to outcome. A `str` becomes a `200` response with that
+body. A `Response` is returned as is. An exception is raised. A URL missing from
+the dictionary fails the test, so a plugin cannot reach the network by accident.
 
 ```python
 import pytest
@@ -55,14 +56,14 @@ def test_post_lists_videos_and_images() -> None:
 
 Use this style for pagination boundaries and failures that a recording cannot
 capture cleanly. `test_model_traversal_stops_on_404` in
-`tests/unit/test_faults.py` injects an `ExtractionError` with `http_status=404`
-to end a model listing.
+`packages/core/tests/unit/test_faults.py` injects an `ExtractionError` with
+`http_status=404` to end a model listing.
 
 ## Recorded tests
 
-One module per plugin, named `test_<plugin>.py`. Each test is marked
-`@pytest.mark.vcr`, calls `extract()` on a fixture URL, validates each item, and
-compares the normalised items with a snapshot:
+One module per plugin, named `packages/core/tests/plugins/test_<plugin>.py`.
+Each test is marked `@pytest.mark.vcr`, calls `extract()` on a fixture URL,
+validates each item, and compares the normalised items with a snapshot:
 
 ```python
 @pytest.mark.vcr
@@ -75,18 +76,19 @@ def test_pixeldrain_list_images(snapshot: SnapshotAssertion) -> None:
     assert normalize_items(items) == snapshot
 ```
 
-| Path                                             | Holds                                                                                                           |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `tests/test_urls.py`                             | The fixture URLs, one dictionary per platform.                                                                  |
-| `tests/plugins/cassettes/test_<plugin>/*.yaml`   | The recorded HTTP exchanges.                                                                                    |
-| `tests/plugins/__snapshots__/test_<plugin>.ambr` | The syrupy snapshot of the extracted items.                                                                     |
-| `tests/plugins/normalize.py`                     | `normalize_items`, which drops each download URL's query string, so signed CDN parameters do not read as drift. |
-| `tests/helpers.py`                               | `assert_valid_item`, which rejects a non-HTTP URL and an unsafe filename.                                       |
+| Path                                                           | Holds                                                                                                           |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `packages/core/tests/test_urls.py`                             | The fixture URLs, one dictionary per platform.                                                                  |
+| `packages/core/tests/plugins/cassettes/test_<plugin>/*.yaml`   | The recorded HTTP exchanges.                                                                                    |
+| `packages/core/tests/plugins/__snapshots__/test_<plugin>.ambr` | The syrupy snapshot of the extracted items.                                                                     |
+| `packages/core/tests/plugins/normalize.py`                     | `normalize_items`, which drops each download URL's query string, so signed CDN parameters do not read as drift. |
+| `packages/core/tests/helpers.py`                               | `assert_valid_item`, which rejects a non-HTTP URL and an unsafe filename.                                       |
 
 Vcr matches a request on method, scheme, host, port, path, query, and body. It
 removes the `Authorization`, `Cookie`, `X-Api-Key`, and `X-Api-Token` request
 headers, and `Set-Cookie` from responses, before it writes a cassette
-(`tests/conftest.py`). A request that a cassette lacks fails the test.
+(`packages/core/tests/conftest.py`). A request that a cassette lacks fails the
+test.
 
 Prefer a small album or a single file as the fixture. A model that walks
 hundreds of pages makes a large, brittle cassette. Cover its pagination with a
@@ -130,8 +132,8 @@ debugging a live site. It accepts `-X`, headers, cookies, and `--no-proxy`.
 
 ## Add tests for a new plugin
 
-1. Add fixture URLs to `tests/test_urls.py`.
-2. Create `tests/plugins/test_<plugin>.py` in the shape above.
+1. Add fixture URLs to `packages/core/tests/test_urls.py`.
+2. Create `packages/core/tests/plugins/test_<plugin>.py` in the shape above.
 3. Record it with `--record-mode=rewrite --snapshot-update`, and run
    `mise run test`.
 4. Add unit tests for URL classification, parsing helpers, and failure paths.

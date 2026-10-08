@@ -1,8 +1,14 @@
-# Docs
+# Documentation
 
-The [manual](https://totallynotdavid.github.io/megaloader) is a VitePress site.
-Its pages are in `megaloader/`, and
-[`megaloader/readme.md`](megaloader/readme.md) is their index.
+This directory builds the
+[Megaloader manual](https://totallynotdavid.github.io/megaloader) with
+VitePress. Its pages are in `megaloader/`, and
+[`megaloader/readme.md`](megaloader/readme.md) is the ordered manual index.
+
+The manual covers the library, CLI, supported platforms, and plugin authoring.
+The repository [architecture map](../../docs/architecture.md) and
+[contributing guide](../../.github/CONTRIBUTING.md) live outside the published
+manual.
 
 ```bash
 mise run docs-serve   # bun install, then vitepress dev at http://localhost:5173
