@@ -12,7 +12,11 @@ and the API server are two front ends to it. The docs site is the manual.
 
 `packages/core` and `packages/cli` form a uv workspace at the repository root.
 `apps/api` is a separate uv project, so Vercel installs only its own
-dependencies. `apps/docs` uses bun.
+dependencies, and it takes `megaloader` from PyPI, not from `packages/core`.
+`apps/docs` uses bun.
+
+Vercel builds `apps/api` and `apps/docs` only when a push changed files under
+that app's folder. The `ignoreCommand` in each folder's `vercel.json` decides.
 
 ## Core
 
