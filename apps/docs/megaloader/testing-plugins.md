@@ -142,5 +142,5 @@ debugging a live site. It accepts `-X`, headers, cookies, and `--no-proxy`.
 
 | Workflow   | Runs                                                                                                                    |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `test.yml` | The offline suite with `--block-network` on Python 3.10, 3.12, 3.13, and 3.14.                                          |
+| `test.yml` | The offline suite with `--block-network` on Python 3.10, 3.12, 3.13, 3.14, and 3.15.                                    |
 | `live.yml` | A weekly run that re-records the plugin cassettes against the live sites. A snapshot mismatch means a platform changed. |
