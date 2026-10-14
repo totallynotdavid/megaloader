@@ -1,4 +1,5 @@
 import importlib.util
+import re
 import shutil
 import subprocess
 import sys
@@ -44,6 +45,14 @@ def update_tool(repo: Path, tool: str, version: str) -> None:
     assert updater.apply_updates() == 0
 
 
+def ruff_version() -> str:
+    match = re.search(
+        r'^ruff = "([^"]+)"', (REPO_ROOT / "mise.toml").read_text(), re.MULTILINE
+    )
+    assert match
+    return match.group(1)
+
+
 def changed_lines(repo: Path) -> dict[str, list[str]]:
     changes = {}
     workflows = sorted(REPO_ROOT.glob(".github/workflows/*.yml"))
@@ -74,7 +83,7 @@ def test_uv_bump_leaves_ruff_action_version_alone(repo_copy: Path) -> None:
     assert changes["mise.toml"] == ['uv = "9.9.9"']
     checks = (repo_copy / ".github/workflows/checks.yml").read_text()
     assert checks.count('version: "9.9.9"') == 1
-    assert checks.count('version: "0.15.20"') == 2
+    assert checks.count(f'version: "{ruff_version()}"') == 2
 
 
 def test_step_without_version_does_not_borrow_a_later_step(repo_copy: Path) -> None:
@@ -82,7 +91,7 @@ def test_step_without_version_does_not_borrow_a_later_step(repo_copy: Path) -> N
     text = workflow.read_text()
     workflow.write_text(
         text.replace(
-            '        with:\n          version: "0.15.20"\n          args: "check"',
+            f'        with:\n          version: "{ruff_version()}"\n          args: "check"',
             '        with:\n          args: "check"',
         )
         + '      - uses: some/other-action@v1\n        with:\n          version: "1.0.0"\n'
