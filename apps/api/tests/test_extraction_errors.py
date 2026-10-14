@@ -32,7 +32,8 @@ def test_extraction_category_maps_to_status(
     index = load_app()
 
     def fail(url: str, domain: str) -> None:
-        raise ExtractionError("boom", category=category)
+        msg = "boom"
+        raise ExtractionError(msg, category=category)
 
     monkeypatch.setattr(index, "extract_items", fail)
 

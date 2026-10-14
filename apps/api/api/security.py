@@ -19,7 +19,7 @@ from api.config import (
 )
 
 
-# ruff: noqa: TRY301 (FastAPI idiom: raise HTTPException directly)
+# ruff: file-ignore[raise-within-try] (FastAPI idiom: raise HTTPException directly)
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class NonPublicURLError(ValueError):
 def parse_url(url: str) -> ParseResult:
     """Parse a URL and force validation of its port."""
     parsed = urlparse(url)
-    parsed.port  # noqa: B018
+    parsed.port  # ruff: ignore[useless-expression]
     return parsed
 
 

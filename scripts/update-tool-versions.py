@@ -30,7 +30,7 @@ class VersionUpdate(NamedTuple):
 class ToolVersionUpdater:
     """Update tool versions across repository files."""
 
-    def __init__(self, repo_root: Path, dry_run: bool = False) -> None:  # noqa: FBT001, FBT002
+    def __init__(self, repo_root: Path, dry_run: bool = False) -> None:  # ruff: ignore[boolean-type-hint-positional-argument, boolean-default-value-positional-argument]
         self.repo_root = repo_root
         self.dry_run = dry_run
         self.updates: list[VersionUpdate] = []
@@ -234,7 +234,7 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> int:  # noqa: C901
+def main() -> int:  # ruff: ignore[complex-structure]
     args = parse_arguments()
     repo_root = Path(__file__).parent.parent
     updater = ToolVersionUpdater(repo_root, dry_run=args.dry_run)

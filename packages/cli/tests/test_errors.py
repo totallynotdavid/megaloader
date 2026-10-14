@@ -4,6 +4,7 @@ import pytest
 
 from click.testing import CliRunner
 from megaloader.item import DownloadItem
+
 from megaloader_cli import commands
 from megaloader_cli.main import cli
 

@@ -50,7 +50,7 @@ class LoopbackServer:
 
 
 class QuietHandler(BaseHTTPRequestHandler):
-    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+    def log_message(self, format: str, *args: object) -> None:  # ruff: ignore[builtin-argument-shadowing]
         pass
 
 
@@ -115,7 +115,7 @@ class UpstashStub(LoopbackServer):
                 command, _, key = self.path.lstrip("/").partition("/")
                 result = 60
                 if command == "incr":
-                    result = stub._counts[key] = stub._counts.get(key, 0) + 1  # noqa: SLF001
+                    result = stub._counts[key] = stub._counts.get(key, 0) + 1
                 body = f'{{"result": {result}}}'.encode()
                 self.send_response(200)
                 self.send_header("Content-Length", str(len(body)))

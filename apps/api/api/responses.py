@@ -103,7 +103,7 @@ def create_zip(files: list[Path], filename: str) -> Response:
 
         if files_added == 0:
             msg = "No valid files to create ZIP"
-            raise ValueError(msg)  # noqa: TRY301
+            raise ValueError(msg)  # ruff: ignore[raise-within-try]
 
         zip_buffer.seek(0)
         zip_content = zip_buffer.getvalue()

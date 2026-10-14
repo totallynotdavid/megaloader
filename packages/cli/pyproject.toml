@@ -30,6 +30,12 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["megaloader_cli"]
 
+[tool.ruff]
+extend = "../../pyproject.toml"
+
 [tool.ruff.lint]
 # click flags (--verbose, --force, etc.) are booleans by design
-ignore = ["FBT001"]
+ignore = ["boolean-type-hint-positional-argument"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["implicit-namespace-package"]  # Mypy sees this as a second tests package.

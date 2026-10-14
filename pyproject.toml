@@ -69,7 +69,7 @@ extend-select = [
     "UP",  # pyupgrade
 ]
 
-ignore = ["COM812", "TRY300", "CPY001"]
+ignore = ["missing-trailing-comma", "try-consider-else", "missing-copyright-notice"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"

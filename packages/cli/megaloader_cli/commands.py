@@ -50,8 +50,7 @@ def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> Non
         items = []
         if output_json:
             # Silent extraction for JSON mode
-            for item in _extract_items(url, options):
-                items.append(item)
+            items = list(_extract_items(url, options))
         else:
             # Show progress for human-readable mode
             with Progress(

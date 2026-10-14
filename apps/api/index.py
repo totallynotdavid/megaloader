@@ -1,5 +1,10 @@
 import logging
 
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
+from megaloader.exceptions import ExtractionError, UnsupportedDomainError
+
 from api.config import (
     CORS_ALLOW_CREDENTIALS,
     CORS_ORIGINS,
@@ -30,10 +35,6 @@ from api.models import (
 from api.responses import create_file_response, create_zip
 from api.security import check_rate_limit, client_ip_from, validate_domain_whitelist
 from api.utils import format_size
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
-from megaloader.exceptions import ExtractionError, UnsupportedDomainError
 
 
 configure_logging()
@@ -83,7 +84,7 @@ async def root() -> dict:
     }
 
 
-@app.post("/validate", response_model=ValidationResult)
+@app.post("/validate")
 async def validate_endpoint(request: URLValidation, req: Request) -> ValidationResult:
     """
     Validate URL against whitelist and check plugin support.

@@ -136,9 +136,7 @@ from megaloader.fetcher import Cookie, SessionConfig
 def session_config(self) -> SessionConfig:
     api_key = self.options.get("api_key") or os.getenv("FILEBOX_API_KEY")
     cookies = (Cookie("session", api_key, ".filebox.com"),) if api_key else ()
-    return SessionConfig(
-        headers={"Referer": "https://filebox.com/"}, cookies=cookies
-    )
+    return SessionConfig(headers={"Referer": "https://filebox.com/"}, cookies=cookies)
 ```
 
 A caller passes the option as `mgl.extract(url, api_key="...")`.
@@ -152,7 +150,9 @@ iterating:
 ```python
 page = 1
 while True:
-    request = Request(f"{self.API_BASE}/albums/{self.content_id}", params={"page": page})
+    request = Request(
+        f"{self.API_BASE}/albums/{self.content_id}", params={"page": page}
+    )
     files = fetch(request).json().get("files", [])
     if not files:
         break

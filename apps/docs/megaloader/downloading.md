@@ -91,8 +91,7 @@ def download_parallel(url: str, directory: Path, workers: int = 4) -> None:
     items = list(mgl.extract(url))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {
-            pool.submit(download_with_retry, item, directory): item
-            for item in items
+            pool.submit(download_with_retry, item, directory): item for item in items
         }
         for future in as_completed(futures):
             item = futures[future]
