@@ -1,19 +1,40 @@
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/packages/core"
+  - package-ecosystem: bun
+    directories:
+      - /apps/docs
     schedule:
-      interval: "daily"
-  - package-ecosystem: "pip"
-    directory: "/packages/cli"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "pip"
-    directory: "/apps/api"
-    schedule:
-      interval: "daily"
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: uv
+    directories:
+      - /
+      - /apps/api
     schedule:
-      interval: "weekly"
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directories:
+      - /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      all:
+        patterns:
+          - "*"
