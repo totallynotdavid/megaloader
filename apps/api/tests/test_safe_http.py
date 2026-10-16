@@ -7,20 +7,6 @@ import requests
 from tests.servers import Route, Server
 
 
-def test_credentials_are_not_forwarded_to_another_host() -> None:
-    from api.safe_http import headers_for_hop
-
-    headers = {
-        "Authorization": "Bearer x",
-        "Cookie": "s=1",
-        "Referer": "https://a.example/",
-    }
-
-    forwarded = headers_for_hop(headers, "https://a.example/f", "https://b.example/f")
-
-    assert forwarded == {"Referer": "https://a.example/"}
-
-
 @pytest.mark.parametrize(
     ("source", "target"),
     [

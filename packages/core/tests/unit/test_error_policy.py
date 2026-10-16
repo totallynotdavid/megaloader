@@ -4,18 +4,23 @@ from megaloader.error_policy import build_extraction_error, classify_failure
 
 
 @pytest.mark.unit
-def test_classify_failure_rate_limit_http() -> None:
-    assert classify_failure(http_status=429) == "rate_limit"
-
-
-@pytest.mark.unit
-def test_classify_failure_auth_http() -> None:
-    assert classify_failure(http_status=401) == "auth"
-
-
-@pytest.mark.unit
-def test_classify_failure_access_provider_status() -> None:
-    assert classify_failure(provider_status="error-notPremium") == "access"
+@pytest.mark.parametrize(
+    ("failure", "category"),
+    [
+        ({"http_status": 429}, "rate_limit"),
+        ({"http_status": 401}, "auth"),
+        ({"http_status": 403}, "access"),
+        ({"http_status": 404}, "access"),
+        ({"http_status": 500}, "request"),
+        ({"provider_status": "error-ratelimit"}, "rate_limit"),
+        ({"provider_status": "error-notPremium"}, "access"),
+        ({"provider_status": "error-something-new"}, "unknown"),
+        ({}, "unknown"),
+        ({"http_status": 429, "category": "timeout"}, "timeout"),
+    ],
+)
+def test_classify_failure(failure: dict[str, object], category: str) -> None:
+    assert classify_failure(**failure) == category  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

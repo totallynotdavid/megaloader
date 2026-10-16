@@ -17,9 +17,9 @@ class DummyPlugin(BasePlugin):
 
 
 @pytest.mark.unit
-def test_extract_supports_explicit_plugin_name_override() -> None:
-    generator = extract("https://unknown.example/path", plugin="gofile")
-    assert generator is not None
+def test_extract_resolves_plugin_by_name() -> None:
+    with pytest.raises(ValueError, match="Invalid Gofile URL"):
+        list(extract("https://unknown.example/path", plugin="gofile"))
 
 
 @pytest.mark.unit
