@@ -104,6 +104,22 @@ def test_step_without_version_does_not_borrow_a_later_step(repo_copy: Path) -> N
     assert new_text.count('version: "9.9.9"') == 1
 
 
+@pytest.mark.parametrize(
+    "versions", [["3.11", "3.12"], ["3.10", "3.11", "3.12", "3.13"]]
+)
+def test_python_matrix_is_replaced_whatever_its_length(
+    repo_copy: Path, versions: list[str]
+) -> None:
+    updater = load_updater_class()(repo_copy)
+    updater.update_python_test_matrix(versions)
+    assert updater.apply_updates() == 0
+
+    listed = ", ".join(f'"{v}"' for v in versions)
+    assert changed_lines(repo_copy) == {
+        ".github/workflows/test.yml": [f"python-version: [{listed}]"]
+    }
+
+
 def test_cli_dry_run_reports_ruff_updates_without_writing() -> None:
     before = (REPO_ROOT / ".github/workflows/checks.yml").read_text()
 

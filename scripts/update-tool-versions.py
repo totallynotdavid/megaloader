@@ -109,7 +109,7 @@ class ToolVersionUpdater:
         self.updates.append(
             VersionUpdate(
                 file_path=self.repo_root / ".github/workflows/test.yml",
-                pattern=r'python-version: \["[\d.]+",\s*"[\d.]+"\]',
+                pattern=r'python-version: \[(?:\s*"[\d.]+"\s*,?)+\]',
                 replacement=f'python-version: ["{versions_str}"]',
                 description="Python test matrix",
             )
