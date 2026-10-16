@@ -98,8 +98,8 @@ A release is a tag. The tag version must equal the `version` in the package's
 | `vcore-X.Y.Z` | `release-core.yml` | `megaloader` on PyPI                                                                                        |
 | `vcli-X.Y.Z`  | `release-cli.yml`  | `megaloader-cli` on PyPI, and a GitHub release with `megaloader-cli-linux` and `megaloader-cli-windows.exe` |
 
-Before tagging, set the new version in `packages/<core|cli>/pyproject.toml` and
-in the package's `__version__` (`megaloader/_version.py` for core,
-`megaloader_cli/__init__.py` for the CLI). PyPI publishing uses a trusted
-publisher in the `pypi` GitHub environment. `mise run build-bin` builds the
-Windows binary locally to test the PyInstaller build.
+Before tagging, set the new version in `packages/<core|cli>/pyproject.toml`. For
+core, also set `__version__` in `packages/core/megaloader/_version.py`. PyPI
+publishing uses a trusted publisher in the `pypi` GitHub environment.
+`mise run build-bin` builds the Windows binary locally to test the PyInstaller
+build.

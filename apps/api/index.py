@@ -77,7 +77,7 @@ async def root() -> dict:
     return {
         "status": "online",
         "service": "Megaloader API",
-        "version": "2.0.0",
+        "version": app.version,
         "limits": {"max_size_mb": MAX_SIZE_MB, "max_files": MAX_FILE_COUNT},
         "endpoints": {"validate": "POST /validate", "download": "POST /download"},
         "docs": "/docs",
@@ -147,7 +147,6 @@ async def download_endpoint(
 
     logger.info("Download request", extra={"client_ip": client_ip, "domain": domain})
 
-    # Extract with count limits
     try:
         items = extract_items(url, domain)
     except UnsupportedDomainError as e:
@@ -163,10 +162,8 @@ async def download_endpoint(
         )
         raise HTTPException(status, message) from e
 
-    # Get sizes with timeout
     total_size, file_infos = get_items_with_sizes(items)
 
-    # Return preview if exceeds limit
     if total_size > MAX_SIZE_BYTES:
         logger.info(
             "Size limit exceeded, returning preview",
@@ -188,7 +185,6 @@ async def download_endpoint(
             message=f"Size {format_size(total_size)} exceeds {MAX_SIZE_MB}MB limit",
         )
 
-    # Download files
     temp_dir = create_temp_dir()
     try:
         downloaded = download_items(items, temp_dir)
