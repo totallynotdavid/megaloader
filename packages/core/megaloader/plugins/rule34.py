@@ -109,7 +109,7 @@ class Rule34(BasePlugin):
             yield build_item(media_url, f"post_{self.post_id}", self.post_id)
 
     def _extract_via_api(self, fetch: Fetcher) -> Generator[DownloadItem, None, None]:
-        """Extract using official API (faster, more reliable)."""
+        """Extract through the official API, which needs an API key and user id."""
         collection_name = "_".join(sorted(self.tags))
         api_url = "https://api.rule34.xxx/index.php"
         page = 0
@@ -151,7 +151,7 @@ class Rule34(BasePlugin):
     def _extract_via_scraper(
         self, fetch: Fetcher
     ) -> Generator[DownloadItem, None, None]:
-        """Extract by scraping web pages (fallback method)."""
+        """Extract by scraping web pages, used when no API credentials are set."""
         collection_name = "_".join(sorted(self.tags))
         pid = 0
         seen_urls: set[str] = set()

@@ -121,8 +121,8 @@ class RequestsFetcher:
     ) -> None:
         self._source = source
         self._timeout = timeout if timeout is not None else DEFAULT_TIMEOUT
-        # A caller-provided session keeps its own headers; only a session we
-        # build here gets the default User-Agent, matching prior behavior.
+        # A caller-provided session keeps its own headers.
+        # Only a session built here gets the default User-Agent.
         self._session = session if session is not None else self._build_session()
         self._apply_config(config or SessionConfig())
 

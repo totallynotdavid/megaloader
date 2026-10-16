@@ -1,16 +1,5 @@
 name: live drift check
 
-# Hits real production sites to detect when a platform changes its API or page
-# structure. This is the "the platform changed" signal, kept separate from the
-# offline PR gate (test.yml): it is slow and flaky by nature. It runs only on a
-# schedule, so a failure notifies maintainers without ever blocking a PR. The
-# failure is the signal, so the step is allowed to fail loudly, not suppressed.
-#
-# It re-fetches every plugin's fixtures through the proxy (--record-mode=rewrite)
-# and compares against the committed snapshots without updating them, so a
-# mismatch surfaces as a failure. When it fails, re-record the affected cassettes
-# locally (`mise run test-record`) and review the diff.
-
 on:
   schedule:
     - cron: "0 5 * * 1" # 05:00 UTC every Monday

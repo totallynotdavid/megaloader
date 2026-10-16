@@ -148,7 +148,6 @@ async def check_rate_limit(client_ip: str) -> None:
         key = quote(f"ratelimit:{client_ip}", safe=":")
 
         async with httpx2.AsyncClient() as client:
-            # Increment counter with expiry
             response = await client.post(
                 f"{UPSTASH_REDIS_URL}/incr/{key}",
                 headers={"Authorization": f"Bearer {UPSTASH_REDIS_TOKEN}"},
@@ -162,7 +161,6 @@ async def check_rate_limit(client_ip: str) -> None:
             data = response.json()
             count = data.get("result", 0)
 
-            # Set expiry on first request
             if count == 1:
                 await client.post(
                     f"{UPSTASH_REDIS_URL}/expire/{key}/{RATE_LIMIT_WINDOW}",
@@ -171,7 +169,6 @@ async def check_rate_limit(client_ip: str) -> None:
                 )
 
             if count > RATE_LIMIT_REQUESTS:
-                # Get TTL for retry-after
                 ttl_response = await client.post(
                     f"{UPSTASH_REDIS_URL}/ttl/{key}",
                     headers={"Authorization": f"Bearer {UPSTASH_REDIS_TOKEN}"},

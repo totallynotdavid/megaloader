@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import megaloader as mgl
 
@@ -36,23 +37,14 @@ def _extract_items(url: str, options: dict[str, Any]) -> Iterator[mgl.DownloadIt
 
 
 def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> None:
-    """
-    Handle extract command logic.
-
-    Fetches metadata and displays items without downloading.
-    """
     try:
-        # Show which plugin is being used (only in human-readable mode)
         if not output_json and (plugin_name := _get_plugin_name(url)):
             console.print(f"[green]✓[/green] Using plugin: [bold]{plugin_name}[/bold]")
 
-        # Stream items as they're discovered
         items = []
         if output_json:
-            # Silent extraction for JSON mode
             items = list(_extract_items(url, options))
         else:
-            # Show progress for human-readable mode
             with Progress(
                 TextColumn("[bold blue]Extracting metadata..."),
                 BarColumn(),
@@ -64,7 +56,6 @@ def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> Non
                     items.append(item)
                     progress.update(task, advance=1)
 
-        # Display results
         if output_json:
             _print_json(url, items)
         else:
@@ -82,17 +73,10 @@ def download_command(
     pattern: str | None,
     options: dict[str, Any],
 ) -> None:
-    """
-    Handle download command logic.
-
-    Extracts metadata, filters items, and downloads files with progress tracking.
-    """
     try:
-        # Show which plugin is being used
         if plugin_name := _get_plugin_name(url):
             console.print(f"[green]✓[/green] Using plugin: [bold]{plugin_name}[/bold]")
 
-        # Stream and collect items
         items = []
         with Progress(
             TextColumn("[bold blue]Discovering files..."),
@@ -105,7 +89,6 @@ def download_command(
                 items.append(item)
                 progress.update(task, advance=1)
 
-        # Apply filter if specified
         if pattern:
             original_count = len(items)
             items = [item for item in items if fnmatch(item.filename, pattern)]
@@ -117,7 +100,6 @@ def download_command(
 
         console.print(f"[green]✓[/green] Found [bold]{len(items)}[/bold] files.")
 
-        # Download files with progress tracking
         _download_with_progress(items, Path(output_dir), flat)
 
     except MegaloaderError as e:
@@ -130,11 +112,6 @@ def _download_with_progress(
     base_dir: Path,
     flat: bool,
 ) -> None:
-    """
-    Download all items with rich progress bars.
-
-    Shows individual file progress and overall completion.
-    """
     success_count = 0
     failed_count = 0
 
@@ -152,7 +129,6 @@ def _download_with_progress(
     )
 
     with progress:
-        # Overall progress tracker
         overall = progress.add_task(
             "Overall Progress",
             total=len(items),
@@ -160,7 +136,6 @@ def _download_with_progress(
         )
 
         for item in items:
-            # Determine destination path
             if flat or not item.collection_name:
                 dest_dir = base_dir
             else:
@@ -168,24 +143,20 @@ def _download_with_progress(
 
             dest_path = dest_dir / sanitize_for_filesystem(item.filename)
 
-            # Create individual file task
             file_task = progress.add_task(
                 "download",
                 filename=item.filename,
                 start=False,
             )
 
-            # Perform download
             if download_file(item, dest_path, progress, file_task):
                 success_count += 1
             else:
                 failed_count += 1
 
-            # Update overall progress
             progress.remove_task(file_task)
             progress.advance(overall)
 
-    # Summary
     console.print()
     if failed_count == 0:
         console.print(
@@ -201,9 +172,6 @@ def _download_with_progress(
 
 
 def _get_plugin_name(url: str) -> str | None:
-    """Get plugin name for UI feedback."""
-    from urllib.parse import urlparse
-
     domain = urlparse(url).netloc
     plugin_class = get_plugin_for_domain(domain)
     return plugin_class.__name__ if plugin_class else None

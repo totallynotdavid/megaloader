@@ -1,10 +1,5 @@
 name: tests
 
-# Offline gate: unit tests plus the cassette replay suite. Deterministic, no
-# network, no credentials, so it runs on every push and PR. --block-network
-# makes a stale or missing cassette fail loudly instead of reaching live sites.
-# Live drift detection lives in live.yml (scheduled, allowed to fail).
-
 on:
   push:
     branches: ["main"]

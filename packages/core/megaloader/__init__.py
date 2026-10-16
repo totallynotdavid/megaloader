@@ -1,16 +1,4 @@
-"""
-Megaloader - Extract downloadable content metadata from file hosting platforms.
-
-Basic usage:
-    import megaloader as mgl
-
-    for item in mgl.extract(url):
-        print(item.url, item.filename)
-
-    # With plugin-specific options
-    items = mgl.extract(url, password="secret")
-    items = mgl.extract(url, session_id="cookie_value")
-"""
+"""Megaloader: find the downloadable files behind a hosting-site link."""
 
 from megaloader._version import __version__
 from megaloader.api import extract
