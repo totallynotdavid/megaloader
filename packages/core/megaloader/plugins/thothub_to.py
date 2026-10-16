@@ -1,4 +1,3 @@
-import logging
 import re
 import time
 
@@ -14,9 +13,6 @@ from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
-
-
-logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)

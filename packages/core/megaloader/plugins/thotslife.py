@@ -1,5 +1,3 @@
-import logging
-
 from collections.abc import Generator
 
 from bs4 import BeautifulSoup, Tag
@@ -8,9 +6,6 @@ from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
-
-
-logger = logging.getLogger(__name__)
 
 
 def parse_post(page: str) -> tuple[str, list[tuple[str, str]]]:
@@ -39,7 +34,6 @@ def parse_post(page: str) -> tuple[str, list[tuple[str, str]]]:
         if src := img.get("data-src"):
             src_str = str(src)
 
-            # Skip base64 embedded images
             if not src_str.startswith("data:") and src_str not in seen:
                 seen.add(src_str)
                 filename = filename_from_url(src_str, "image.jpg")

@@ -1,14 +1,9 @@
-import logging
-
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from typing import Any
 
 from megaloader.fetcher import Fetcher, SessionConfig
 from megaloader.item import DownloadItem
-
-
-logger = logging.getLogger(__name__)
 
 
 class BasePlugin(ABC):

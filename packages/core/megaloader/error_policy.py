@@ -27,8 +27,6 @@ def classify_failure(
         return "access"
     if http_status is not None:
         return "request"
-    if provider_status is not None:
-        return "unknown"
     return "unknown"
 
 

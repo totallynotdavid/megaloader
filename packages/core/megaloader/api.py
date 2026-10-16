@@ -14,7 +14,7 @@ from megaloader.plugin import BasePlugin
 from megaloader.plugins.registry import get_plugin_by_name, get_plugin_for_domain
 
 
-logging.getLogger(__name__).addHandler(logging.NullHandler())
+logging.getLogger("megaloader").addHandler(logging.NullHandler())
 logger = logging.getLogger(__name__)
 
 

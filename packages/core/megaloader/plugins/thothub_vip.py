@@ -1,5 +1,4 @@
 import json
-import logging
 
 from collections.abc import Generator
 from dataclasses import dataclass
@@ -12,9 +11,6 @@ from megaloader.fetcher import Fetcher, Request
 from megaloader.filenames import filename_from_url
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
-
-
-logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
