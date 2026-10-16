@@ -11,7 +11,6 @@ ruff = "0.17.0"
 bun = "1.4.3"
 biome = "2.5.15"
 
-# Dependencies
 [tasks.sync]
 description = "Install all dependencies (workspace + API)"
 run = [
@@ -28,7 +27,6 @@ run = "uv sync --all-packages --extra dev -U"
 description = "List outdated dependencies"
 run = "uv pip list --outdated"
 
-# Code quality
 [tasks.format]
 description = "Format and fix linting issues"
 run = ["ruff format", "ruff check --fix"]
@@ -44,14 +42,13 @@ run = [
 description = "Quick pre-push checks: format, lint, tests, validate-snippets"
 depends = ["format", "lint", "test-unit", "test-api", "validate-snippets"]
 
-# Testing
 [tasks.test]
 description = "Run the full offline suite: unit + cassette replay (no network, <1 sec)"
-run = "uv run --all-packages --extra dev pytest --block-network packages/core/tests"
+run = "uv run --all-packages --extra dev pytest --block-network packages/core/tests packages/cli/tests"
 
 [tasks.test-unit]
-description = "Run core unit and script tests (fast: <1 sec)"
-run = "uv run --all-packages --extra dev pytest packages/core/tests/unit scripts/script_tests"
+description = "Run core unit, CLI and script tests (fast: <1 sec)"
+run = "uv run --all-packages --extra dev pytest packages/core/tests/unit packages/cli/tests scripts/script_tests"
 
 [tasks.test-api]
 description = "Run API tests"
@@ -67,18 +64,15 @@ description = "Make an ad-hoc request through the rotating proxy (e.g. mise run 
 run = "uv run --all-packages --extra dev --env-file .env python -m tests.plugins.probe"
 dir = "packages/core"
 
-# Development: CLI
 [tasks.dev-cli]
 description = "Run CLI during development (e.g., mise run dev-cli -- extract <url>)"
 run = "uv run --all-packages --extra dev megaloader"
 
-# Development: API
 [tasks.api-serve]
 description = "Run local API server"
 run = "env -u VIRTUAL_ENV uv run uvicorn index:app --reload" # Use --host 0.0.0.0 to expose the server on the local network.
 dir = "apps/api"
 
-# Development: Docs
 [tasks.docs-serve]
 description = "Serve documentation locally"
 run = [
@@ -104,12 +98,10 @@ dir = "apps/docs"
 description = "Validate Python code snippets in documentation"
 run = "uv run --all-packages --extra dev python scripts/validate-code-snippets.py"
 
-# Logo
 [tasks.generate-logo]
 description = "Generate project logo as SVG"
 run = "uv run --all-packages --extra dev python scripts/generate-logo.py"
 
-# Build
 [tasks.build-bin]
 description = "Build CLI binary locally for testing (Windows only)"
 run = [
@@ -117,7 +109,6 @@ run = [
   "uv run pyinstaller --onefile --name megaloader-cli-windows --paths packages/core packages/cli/megaloader_cli/main.py",
 ]
 
-# Deploy
 [tasks.api-deploy]
 description = "Deploy API to Vercel"
 run = "vercel --prod"
