@@ -19,8 +19,8 @@ Run the offline suite:
 mise run test
 ```
 
-It is `pytest --block-network packages/core/tests`. It needs no network and no
-credentials.
+It is `pytest --block-network packages/core/tests packages/cli/tests`. It needs
+no network and no credentials.
 
 ## Unit tests with `fake_fetcher`
 
@@ -62,8 +62,9 @@ capture cleanly. `test_model_traversal_stops_on_404` in
 ## Recorded tests
 
 One module per plugin, named `packages/core/tests/plugins/test_<plugin>.py`.
-Each test is marked `@pytest.mark.vcr`, calls `extract()` on a fixture URL,
-validates each item, and compares the normalised items with a snapshot:
+Each test is marked `@pytest.mark.vcr`, calls `extract()` on a fixture URL, and
+compares the normalised items with a snapshot. `DownloadItem` rejects an empty
+URL and an unsafe filename when it is built, so the test does not check them:
 
 ```python
 @pytest.mark.vcr
@@ -71,8 +72,6 @@ def test_pixeldrain_list_images(snapshot: SnapshotAssertion) -> None:
     items = list(extract(PIXELDRAIN_URLS["images"]))
 
     assert items
-    for item in items:
-        assert_valid_item(item)
     assert normalize_items(items) == snapshot
 ```
 
@@ -82,7 +81,6 @@ def test_pixeldrain_list_images(snapshot: SnapshotAssertion) -> None:
 | `packages/core/tests/plugins/cassettes/test_<plugin>/*.yaml`   | The recorded HTTP exchanges.                                                                                    |
 | `packages/core/tests/plugins/__snapshots__/test_<plugin>.ambr` | The syrupy snapshot of the extracted items.                                                                     |
 | `packages/core/tests/plugins/normalize.py`                     | `normalize_items`, which drops each download URL's query string, so signed CDN parameters do not read as drift. |
-| `packages/core/tests/helpers.py`                               | `assert_valid_item`, which rejects a non-HTTP URL and an unsafe filename.                                       |
 
 Vcr matches a request on method, scheme, host, port, path, query, and body. It
 removes the `Authorization`, `Cookie`, `X-Api-Key`, and `X-Api-Token` request
@@ -144,3 +142,13 @@ debugging a live site. It accepts `-X`, headers, cookies, and `--no-proxy`.
 | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `test.yml` | The offline suite with `--block-network` on Python 3.10, 3.12, 3.13, 3.14, and 3.15.                                    |
 | `live.yml` | A weekly run that re-records the plugin cassettes against the live sites. A snapshot mismatch means a platform changed. |
+
+`test.yml` runs on a push or pull request to `main` that changes the root
+`pyproject.toml`, `packages/core/pyproject.toml`, a Python file under
+`packages/core`, or a file under `packages/core/tests`. You can also start it by
+hand. The CLI tests run in `checks.yml`. A stale or missing cassette fails there
+instead of reaching a live site. `live.yml` runs on a schedule or when you start
+it by hand. It never runs on a pull request, so a failure tells the maintainers
+without blocking one. It compares the re-recorded items with the committed
+snapshots without updating them. When it fails, run `mise run test-record`
+locally and review the snapshot diff.
