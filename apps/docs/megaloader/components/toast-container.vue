@@ -1,12 +1,12 @@
 <template>
   <TransitionGroup name="toast" tag="div" class="toast-container">
-    <div 
-      v-for="toast in toasts" 
-      :key="toast.id" 
-      class="toast" 
+    <div
+      v-for="toast in toasts"
+      :key="toast.id"
+      class="toast"
       :class="toast.type"
     >
-      <span class="toast-icon">{{ toast.type === 'success' ? '✓' : '!' }}</span>
+      <span class="toast-icon">{{ toast.type === "success" ? "✓" : "!" }}</span>
       {{ toast.message }}
     </div>
   </TransitionGroup>
@@ -38,7 +38,7 @@ defineProps({
   border-radius: 8px;
   background: var(--vp-c-bg);
   border: 1px solid var(--vp-c-divider);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -59,8 +59,12 @@ defineProps({
   font-weight: bold;
 }
 
-.toast.success .toast-icon { color: var(--vp-c-green); }
-.toast.error .toast-icon { color: var(--vp-c-red); }
+.toast.success .toast-icon {
+  color: var(--vp-c-green);
+}
+.toast.error .toast-icon {
+  color: var(--vp-c-red);
+}
 
 /* Toast Transitions */
 .toast-enter-active,

@@ -1,27 +1,25 @@
 <template>
   <div class="api-demo">
     <div class="input-group">
-      <input 
-        id="url-input" 
-        v-model="url" 
-        type="url" 
+      <input
+        id="url-input"
+        v-model="url"
+        type="url"
         placeholder="https://pixeldrain.com/u/..."
-        @keyup.enter="startDownload" 
+        @keyup.enter="startDownload"
         :disabled="isDownloading"
       />
-      <button 
-        class="download-btn" 
-        @click="startDownload" 
+      <button
+        class="download-btn"
+        @click="startDownload"
         :disabled="!url.trim() || isDownloading"
       >
         <span v-if="isDownloading" class="spinner"></span>
-        {{ isDownloading ? 'Processing...' : 'Download' }}
+        {{ isDownloading ? "Processing..." : "Download" }}
       </button>
     </div>
-    
-    <div class="demo-limits">
-      Demo limits: Max 4MB file size • Max 50 files
-    </div>
+
+    <div class="demo-limits">Demo limits: Max 4MB file size • Max 50 files</div>
 
     <ToastContainer :toasts="toasts" />
   </div>
@@ -145,7 +143,9 @@ const startDownload = async () => {
   font-size: 0.9rem;
   background: var(--vp-c-bg-alt);
   color: var(--vp-c-text-1);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   font-family: var(--vp-font-family-mono);
 }
 
@@ -190,7 +190,7 @@ const startDownload = async () => {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s linear infinite;
