@@ -13,11 +13,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          version: "0.13.1"
-          python-version: "3.15.0"
+          persist-credentials: false
+
+      - uses: jdx/mise-action@v5
+      - run: mise run install
 
       - run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/vcli-}"
@@ -27,7 +27,7 @@ jobs:
             exit 1
           fi
 
-      - run: uv build --package megaloader-cli
+      - run: mise run build:cli
 
       - uses: actions/upload-artifact@v7
         with:
@@ -45,21 +45,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          version: "0.13.1"
-          python-version: "3.15.0"
+          persist-credentials: false
 
-      - run: uv venv
-
-      - run: uv pip install -e packages/core -e packages/cli
-
-      - run: uv pip install pyinstaller
+      - uses: jdx/mise-action@v5
+      - run: mise run install
 
       - run:
-          uv run pyinstaller --onefile --name megaloader-cli-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'windows' }} --paths
-          packages/core packages/cli/megaloader_cli/main.py
+          PYINSTALLER_NAME=megaloader-cli-${{ matrix.os == 'ubuntu-latest' &&
+          'linux' || 'windows' }} mise run build-bin
         shell: bash
 
       - uses: actions/upload-artifact@v7

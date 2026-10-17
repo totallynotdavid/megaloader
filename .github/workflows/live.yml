@@ -15,19 +15,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          version: "0.13.1"
+          persist-credentials: false
 
-      - name: Set up Python
-        run: uv python install 3.13
-
-      - name: Install dependencies
-        run: uv sync --extra dev --package megaloader
+      - uses: jdx/mise-action@v5
+      - run: mise run install
 
       - name: Re-fetch fixtures and check for drift
-        working-directory: packages/core
-        run: uv run pytest tests/plugins --record-mode=rewrite -v --tb=short
+        run: mise run test:live
         env:
           GEONODE_USERNAME: ${{ secrets.GEONODE_USERNAME }}
           GEONODE_PASSWORD: ${{ secrets.GEONODE_PASSWORD }}

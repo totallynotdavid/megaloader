@@ -13,11 +13,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          version: "0.13.1"
-          python-version: "3.15.0"
+          persist-credentials: false
+
+      - uses: jdx/mise-action@v5
+      - run: mise run install
 
       - run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/vcore-}"
@@ -27,7 +27,7 @@ jobs:
             exit 1
           fi
 
-      - run: uv build --package megaloader
+      - run: mise run build:core
 
       - uses: actions/upload-artifact@v7
         with:

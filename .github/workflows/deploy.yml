@@ -20,22 +20,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./apps/docs
-
     steps:
       - uses: actions/checkout@v7
-
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.4.3
+          persist-credentials: false
+
+      - uses: jdx/mise-action@v5
+
+      - run: mise run install
 
       - uses: actions/configure-pages@v6
 
-      - run: bun ci
-
-      - run: bun run docs:build
+      - run: mise run build:docs
         env:
           VITE_BASE: "/megaloader/"
           VITE_API_URL: "https://megaloader-api.vercel.app"
