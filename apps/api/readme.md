@@ -12,7 +12,7 @@ refuses downloads over a size limit and requests over a rate limit.
 From the repository root:
 
 ```bash
-mise run sync        # install the API's dependencies
+mise run install     # install the API's dependencies
 mise run api-serve   # uvicorn index:app --reload, in apps/api
 ```
 
@@ -146,7 +146,7 @@ not stop DNS rebinding. Redirects to another origin drop `Authorization` and
 ## Tests
 
 ```bash
-mise run test-api
+mise run test:api
 ```
 
 ## Deploy

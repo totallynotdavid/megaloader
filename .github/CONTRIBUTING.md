@@ -7,13 +7,13 @@ user-facing behavior.
 
 ## Set up
 
-The repository pins Python, uv, ruff, bun, and biome in `mise.toml`.
+The repository pins Python, uv, ruff, and Bun in `mise.toml`. The docs lockfile
+pins the JavaScript tooling.
 
 ```bash
 git clone https://github.com/totallynotdavid/megaloader
 cd megaloader
-mise install
-mise run sync
+mise run install
 ```
 
 Without mise, install Python 3.10 or newer and uv:
@@ -32,9 +32,10 @@ mise run check
 mise run test
 ```
 
-`check` formats Python, runs type checks, runs unit and API tests, and parses
-Python snippets in `apps/docs`. `test` replays the plugin recordings with the
-network blocked. To run the CLI from the working tree:
+`check` is read-only. It checks formatting, runs strict type checks, runs the
+offline core and API tests, builds the packages and manual, and parses Python
+snippets in `apps/docs`. `test` replays the plugin recordings with the network
+blocked. To run the CLI from the working tree:
 
 ```bash
 mise run dev-cli -- extract <url>
@@ -57,18 +58,13 @@ The manual is in `apps/docs/megaloader/`:
 
 ```bash
 mise run docs-serve
-mise run docs-build
-mise run format-docs
+mise run build:docs
+mise run fix
 mise run validate-snippets
 ```
 
-`docs-build` fails when VitePress finds a dead link. `format-docs` formats Vue
-files with Biome and Markdown with Prettier. Markdown uses an 80-column prose
-width:
-
-```bash
-bunx prettier --print-width 80 --prose-wrap always --write '**/*.md'
-```
+`build:docs` fails when VitePress finds a dead link. `fix` formats Vue files and
+Markdown with oxfmt. Markdown uses an 80-column prose width.
 
 ## Submit a change
 

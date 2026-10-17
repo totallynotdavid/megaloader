@@ -138,17 +138,15 @@ debugging a live site. It accepts `-X`, headers, cookies, and `--no-proxy`.
 
 ## Continuous integration
 
-| Workflow   | Runs                                                                                                                    |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `test.yml` | The offline suite with `--block-network` on Python 3.10, 3.12, 3.13, 3.14, and 3.15.                                    |
-| `live.yml` | A weekly run that re-records the plugin cassettes against the live sites. A snapshot mismatch means a platform changed. |
+| Workflow   | Runs                                                                                                                                               |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`   | The offline suite with `--block-network`.                                                                                                          |
+| `live.yml` | A weekly run that re-records the plugin cassettes against the live sites without updating snapshots. A snapshot mismatch means a platform changed. |
 
-`test.yml` runs on a push or pull request to `main` that changes the root
-`pyproject.toml`, `packages/core/pyproject.toml`, a Python file under
-`packages/core`, or a file under `packages/core/tests`. You can also start it by
-hand. The CLI tests run in `checks.yml`. A stale or missing cassette fails there
-instead of reaching a live site. `live.yml` runs on a schedule or when you start
-it by hand. It never runs on a pull request, so a failure tells the maintainers
-without blocking one. It compares the re-recorded items with the committed
-snapshots without updating them. When it fails, run `mise run test-record`
-locally and review the snapshot diff.
+`ci.yml` runs on every push and pull request. A stale or missing cassette fails
+there instead of reaching a live site. `live.yml` runs on a schedule or when you
+start it by hand. It never runs on a pull request, so a failure tells the
+maintainers without blocking one. It runs `mise run test:live`, which compares
+the re-recorded items with the committed snapshots without updating them. When
+it fails, run `mise run test-record` locally to refresh the fixtures and review
+the snapshot diff.

@@ -6,8 +6,8 @@ Megaloader finds the downloadable files behind a hosting-site link. Read
 
 ## Rules
 
-- Run `mise run check` and `mise run test` before finishing. `check` formats
-  code, so commit what it changes.
+- Run `mise run check` and `mise run test` before finishing. `check` is
+  read-only; use `mise run fix` when formatting changes are needed.
 - Keep Python 3.10 compatibility in `packages/core` and `packages/cli`.
 - Run API commands through the mise tasks, which clear `VIRTUAL_ENV`.
 - A plugin does no network I/O. It sends every request through the `fetch`
@@ -26,8 +26,7 @@ Megaloader finds the downloadable files behind a hosting-site link. Read
 - Run `--record-mode=rewrite` only when asked. Commit cassettes and snapshots
   together.
 - Never commit `.env` or credentials.
-- Format Markdown with
-  `bunx prettier --print-width 80 --prose-wrap always --write <file>`.
+- Format Markdown with `mise run fix`.
 - A Python code block in `apps/docs` must parse. `mise run validate-snippets`
   checks it.
 - Write commit messages as `area: imperative lowercase summary`.

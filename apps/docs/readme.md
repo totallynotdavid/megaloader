@@ -12,7 +12,7 @@ manual.
 
 ```bash
 mise run docs-serve   # bun install, then vitepress dev at http://localhost:5173
-mise run docs-build   # output in megaloader/.vitepress/dist
+mise run build:docs   # output in megaloader/.vitepress/dist
 ```
 
 Without mise, run `bun install` in this folder, then `bun run docs:dev` or
@@ -22,11 +22,11 @@ Without mise, run `bun install` in this folder, then `bun run docs:dev` or
 Format before committing:
 
 ```bash
-mise run format-docs
+mise run fix
 mise run validate-snippets
 ```
 
-`format-docs` runs biome on the Vue components and prettier on the Markdown.
+`fix` runs Ruff on Python and oxfmt on the Vue components and Markdown.
 `validate-snippets` checks that Python blocks parse. It skips blocks that
 contain `...` and function signatures with no body.
 

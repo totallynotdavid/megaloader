@@ -1,7 +1,7 @@
 # Megaloader
 
 [![CodeQL](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml)
-[![lint and format check](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml)
+[![CI](https://github.com/totallynotdavid/megaloader/actions/workflows/ci.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/ci.yml)
 
 Megaloader finds the files behind an album, gallery, or file link on a hosting
 site. It is for shell users and Python programs that need file metadata. The

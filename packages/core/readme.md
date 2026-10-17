@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/megaloader.svg)](https://badge.fury.io/py/megaloader)
 [![CodeQL](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/codeql.yml)
-[![lint and format check](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/checks.yml)
+[![CI](https://github.com/totallynotdavid/megaloader/actions/workflows/ci.yml/badge.svg)](https://github.com/totallynotdavid/megaloader/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/totallynotdavid/megaloader/graph/badge.svg?token=SBHAGJJB8L)](https://codecov.io/gh/totallynotdavid/megaloader)
 
 A Python library that lists the downloadable files behind an album, gallery, or
