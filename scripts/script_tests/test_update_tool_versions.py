@@ -1,5 +1,4 @@
 import importlib.util
-import re
 import shutil
 import subprocess
 import sys
@@ -22,6 +21,13 @@ def repo_copy(tmp_path: Path) -> Path:
         tmp_path / ".github/workflows",
         copy_function=shutil.copyfile,
     )
+    for relative_path in (
+        Path("packages/core/pyproject.toml"),
+        Path("apps/api/pyproject.toml"),
+    ):
+        destination = tmp_path / relative_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO_ROOT / relative_path, destination)
     return tmp_path
 
 
@@ -36,27 +42,19 @@ def load_updater_class() -> type:
 
 def update_tool(repo: Path, tool: str, version: str) -> None:
     updater = load_updater_class()(repo)
-    if tool == "ruff":
-        updater.update_mise_tool("ruff", version)
-        updater.update_action_in_workflows("astral-sh/ruff-action", version)
-    else:
-        updater.update_mise_tool("uv", version)
-        updater.update_action_in_workflows("astral-sh/setup-uv", version)
+    updater.update_mise_tool(tool, version)
     assert updater.apply_updates() == 0
 
 
-def ruff_version() -> str:
-    match = re.search(
-        r'^ruff = "([^"]+)"', (REPO_ROOT / "mise.toml").read_text(), re.MULTILINE
-    )
-    assert match
-    return match.group(1)
+def update_python_dependency(repo: Path, package: str, version: str) -> None:
+    updater = load_updater_class()(repo)
+    updater.update_python_dev_dependency(package, version)
+    assert updater.apply_updates() == 0
 
 
 def changed_lines(repo: Path) -> dict[str, list[str]]:
     changes = {}
-    workflows = sorted(REPO_ROOT.glob(".github/workflows/*.yml"))
-    tracked = [Path("mise.toml"), *(w.relative_to(REPO_ROOT) for w in workflows)]
+    tracked = [Path("mise.toml")]
     for name in tracked:
         old = (REPO_ROOT / name).read_text().splitlines()
         new = (repo / name).read_text().splitlines()
@@ -70,59 +68,17 @@ def changed_lines(repo: Path) -> dict[str, list[str]]:
 def test_ruff_bump_changes_only_ruff_lines(repo_copy: Path) -> None:
     update_tool(repo_copy, "ruff", "9.9.9")
 
-    assert changed_lines(repo_copy) == {
-        "mise.toml": ['ruff = "9.9.9"'],
-        ".github/workflows/checks.yml": ['version: "9.9.9"', 'version: "9.9.9"'],
-    }
+    assert changed_lines(repo_copy) == {"mise.toml": ['ruff = "9.9.9"']}
 
 
-def test_uv_bump_leaves_ruff_action_version_alone(repo_copy: Path) -> None:
+def test_uv_bump_changes_only_uv_in_mise(repo_copy: Path) -> None:
     update_tool(repo_copy, "uv", "9.9.9")
 
     changes = changed_lines(repo_copy)
     assert changes["mise.toml"] == ['uv = "9.9.9"']
-    checks = (repo_copy / ".github/workflows/checks.yml").read_text()
-    assert checks.count('version: "9.9.9"') == 1
-    assert checks.count(f'version: "{ruff_version()}"') == 2
-
-
-def test_step_without_version_does_not_borrow_a_later_step(repo_copy: Path) -> None:
-    workflow = repo_copy / ".github/workflows/checks.yml"
-    text = workflow.read_text()
-    workflow.write_text(
-        text.replace(
-            f'        with:\n          version: "{ruff_version()}"\n          args: "check"',
-            '        with:\n          args: "check"',
-        )
-        + '      - uses: some/other-action@v1\n        with:\n          version: "1.0.0"\n'
-    )
-
-    update_tool(repo_copy, "ruff", "9.9.9")
-
-    new_text = workflow.read_text()
-    assert 'version: "1.0.0"' in new_text
-    assert new_text.count('version: "9.9.9"') == 1
-
-
-@pytest.mark.parametrize(
-    "versions", [["3.11", "3.12"], ["3.10", "3.11", "3.12", "3.13"]]
-)
-def test_python_matrix_is_replaced_whatever_its_length(
-    repo_copy: Path, versions: list[str]
-) -> None:
-    updater = load_updater_class()(repo_copy)
-    updater.update_python_test_matrix(versions)
-    assert updater.apply_updates() == 0
-
-    listed = ", ".join(f'"{v}"' for v in versions)
-    assert changed_lines(repo_copy) == {
-        ".github/workflows/test.yml": [f"python-version: [{listed}]"]
-    }
 
 
 def test_cli_dry_run_reports_ruff_updates_without_writing() -> None:
-    before = (REPO_ROOT / ".github/workflows/checks.yml").read_text()
-
     result = subprocess.run(
         [
             sys.executable,
@@ -139,6 +95,16 @@ def test_cli_dry_run_reports_ruff_updates_without_writing() -> None:
     )
 
     assert "Would update: ruff in mise.toml" in result.stdout
-    assert "Would update: astral-sh/ruff-action version in checks.yml" in result.stdout
-    assert "setup-uv" not in result.stdout
-    assert (REPO_ROOT / ".github/workflows/checks.yml").read_text() == before
+
+
+def test_python_dev_dependency_bump_updates_every_python_project(
+    repo_copy: Path,
+) -> None:
+    update_python_dependency(repo_copy, "pytest", "9.9.9")
+
+    for relative_path in (
+        Path("packages/core/pyproject.toml"),
+        Path("apps/api/pyproject.toml"),
+    ):
+        content = (repo_copy / relative_path).read_text()
+        assert '"pytest>=9.9.9"' in content

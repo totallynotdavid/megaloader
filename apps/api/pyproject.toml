@@ -37,10 +37,11 @@ packages = ["api"]
 [tool.ruff]
 extend = "../../pyproject.toml"
 
-[tool.ruff.lint.per-file-ignores]
-"index.py" = ["implicit-namespace-package"]  # entry point for Vercel/uvicorn
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "-q"
+addopts = "-q --strict-markers"
+
+[tool.mypy]
+files = ["api", "index.py"]
+strict = true

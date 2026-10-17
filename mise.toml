@@ -9,13 +9,13 @@ python = "3.15.0"
 uv = "0.13.1"
 ruff = "0.17.0"
 bun = "1.4.3"
-biome = "2.5.15"
 
-[tasks.sync]
-description = "Install all dependencies (workspace + API)"
+[tasks.install]
+description = "Install dependencies from the lockfiles"
 run = [
-  "uv sync --all-packages --extra dev",
-  "cd apps/api && env -u VIRTUAL_ENV uv sync --extra dev",
+  "uv sync --locked --all-packages --extra dev",
+  "cd apps/api && env -u VIRTUAL_ENV uv sync --locked --extra dev",
+  "cd apps/docs && bun install --frozen-lockfile",
 ]
 
 [tasks.update]
@@ -27,37 +27,74 @@ run = "uv sync --all-packages --extra dev -U"
 description = "List outdated dependencies"
 run = "uv pip list --outdated"
 
-[tasks.format]
-description = "Format and fix linting issues"
-run = ["ruff format", "ruff check --fix"]
-
 [tasks.lint]
-description = "Run type checking on all packages"
+description = "Check Python, JavaScript, TypeScript, and documentation formatting"
 run = [
-  "uv run --all-packages --extra dev mypy --exclude apps/api .",
-  "cd apps/api && env -u VIRTUAL_ENV uv run mypy .",
+  "uv run --all-packages --extra dev ruff check --no-fix packages scripts",
+  "uv run --all-packages --extra dev ruff format --check packages scripts",
+  "cd apps/api && env -u VIRTUAL_ENV uv run ruff check --no-fix .",
+  "cd apps/api && env -u VIRTUAL_ENV uv run ruff format --check .",
+  "cd apps/docs && bunx oxlint --deny-warnings .",
+  "cd apps/docs && bunx oxfmt --check .",
+  "apps/docs/node_modules/.bin/oxfmt -c apps/docs/.oxfmtrc.json --check AGENTS.md readme.md docs .github apps/api/readme.md apps/docs packages/cli/readme.md packages/core/readme.md packages/core/sample/readme.md scripts/readme.md",
+]
+
+[tasks.fix]
+description = "Apply safe lint and formatting fixes"
+run = [
+  "uv run --all-packages --extra dev ruff check --fix packages scripts",
+  "uv run --all-packages --extra dev ruff format packages scripts",
+  "cd apps/api && env -u VIRTUAL_ENV uv run ruff check --fix .",
+  "cd apps/api && env -u VIRTUAL_ENV uv run ruff format .",
+  "cd apps/docs && bunx oxlint --fix .",
+  "cd apps/docs && bunx oxfmt .",
+  "apps/docs/node_modules/.bin/oxfmt -c apps/docs/.oxfmtrc.json AGENTS.md readme.md docs .github apps/api/readme.md apps/docs packages/cli/readme.md packages/core/readme.md packages/core/sample/readme.md scripts/readme.md",
+]
+
+[tasks.typecheck]
+description = "Run strict mypy checks for every Python package"
+run = [
+  "uv run --all-packages --extra dev mypy --strict packages/core/megaloader packages/cli/megaloader_cli",
+  "cd apps/api && env -u VIRTUAL_ENV uv run mypy --strict api index.py",
 ]
 
 [tasks.check]
-description = "Quick pre-push checks: format, lint, tests, validate-snippets"
-depends = ["format", "lint", "test-unit", "test-api", "validate-snippets"]
+description = "Run all read-only checks"
+depends = ["lint", "typecheck", "test", "test:api", "build", "validate-snippets"]
 
 [tasks.test]
-description = "Run the full offline suite: unit + cassette replay (no network, <1 sec)"
-run = "uv run --all-packages --extra dev pytest --block-network packages/core/tests packages/cli/tests"
+description = "Run the offline core, CLI, and script test suite"
+run = "uv run --all-packages --extra dev pytest --block-network packages/core/tests packages/cli/tests scripts/script_tests"
 
-[tasks.test-unit]
-description = "Run core unit, CLI and script tests (fast: <1 sec)"
-run = "uv run --all-packages --extra dev pytest packages/core/tests/unit packages/cli/tests scripts/script_tests"
-
-[tasks.test-api]
-description = "Run API tests"
-run = "env -u VIRTUAL_ENV uv run pytest"
+[tasks."test:api"]
+description = "Run the API test suite"
+run = "env -u VIRTUAL_ENV uv run pytest --strict-markers"
 dir = "apps/api"
+
+[tasks."build:core"]
+description = "Build the core Python package"
+run = "uv build --package megaloader"
+
+[tasks."build:cli"]
+description = "Build the CLI Python package"
+run = "uv build --package megaloader-cli"
+
+[tasks."build:docs"]
+description = "Build the VitePress documentation site"
+run = "env -u VIRTUAL_ENV bun run docs:build"
+dir = "apps/docs"
+
+[tasks.build]
+description = "Build the packages and documentation site"
+depends = ["build:core", "build:cli", "build:docs"]
 
 [tasks.test-record]
 description = "Re-fetch every plugin fixture through the proxy, refresh cassettes + snapshots"
-run = "uv run --all-packages --extra dev --env-file .env pytest -vv -rA --log-cli-level=INFO packages/core/tests/plugins --record-mode=rewrite --snapshot-update"
+run = "uv run --all-packages --extra dev pytest -vv -rA --log-cli-level=INFO packages/core/tests/plugins --record-mode=rewrite --snapshot-update"
+
+[tasks."test:live"]
+description = "Re-fetch plugin fixtures and compare snapshots without updating them"
+run = "uv run --all-packages --extra dev pytest -vv -rA --log-cli-level=INFO packages/core/tests/plugins --record-mode=rewrite"
 
 [tasks.proxy-probe]
 description = "Make an ad-hoc request through the rotating proxy (e.g. mise run proxy-probe -- <url> -X POST)"
@@ -75,24 +112,12 @@ dir = "apps/api"
 
 [tasks.docs-serve]
 description = "Serve documentation locally"
-run = [
-  "bun install",
-  "bun run docs:dev",
-] # pass '--host' to expose the server in local network
+run = ["bun install", "bun run docs:dev"] # pass '--host' to expose the server in local network
 dir = "apps/docs"
 
 [tasks.docs-build]
 description = "Build documentation"
-run = ["bun install", "bun run docs:build"]
-dir = "apps/docs"
-
-[tasks.format-docs]
-description = "Format docs with biome (Vue only, markdown not supported)"
-run = [
-  "biome format --write .",
-  "bun x prettier \"**/*.md\" --write --print-width=80 --prose-wrap=always",
-]
-dir = "apps/docs"
+depends = ["build:docs"]
 
 [tasks.validate-snippets]
 description = "Validate Python code snippets in documentation"
@@ -104,10 +129,7 @@ run = "uv run --all-packages --extra dev python scripts/generate-logo.py"
 
 [tasks.build-bin]
 description = "Build CLI binary locally for testing (Windows only)"
-run = [
-  "uv pip install pyinstaller",
-  "uv run pyinstaller --onefile --name megaloader-cli-windows --paths packages/core packages/cli/megaloader_cli/main.py",
-]
+run = "uv run pyinstaller --onefile --name \"${PYINSTALLER_NAME:-megaloader-cli-windows}\" --paths packages/core packages/cli/megaloader_cli/main.py"
 
 [tasks.api-deploy]
 description = "Deploy API to Vercel"

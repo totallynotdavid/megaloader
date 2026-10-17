@@ -27,6 +27,11 @@ megaloader = "megaloader_cli.main:cli"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.22.3",
+]
+
 [tool.hatch.build.targets.sdist]
 include = ["/megaloader_cli", "/readme.md"]
 
@@ -36,9 +41,6 @@ packages = ["megaloader_cli"]
 [tool.ruff]
 extend = "../../pyproject.toml"
 
-[tool.ruff.lint]
-# click flags (--verbose, --force, etc.) are booleans by design
-ignore = ["boolean-type-hint-positional-argument"]
-
-[tool.ruff.lint.per-file-ignores]
-"tests/*" = ["implicit-namespace-package"]  # Mypy sees this as a second tests package.
+[tool.mypy]
+files = ["megaloader_cli"]
+strict = true

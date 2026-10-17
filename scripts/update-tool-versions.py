@@ -30,15 +30,14 @@ class VersionUpdate(NamedTuple):
 class ToolVersionUpdater:
     """Update tool versions across repository files."""
 
-    def __init__(self, repo_root: Path, dry_run: bool = False) -> None:  # ruff: ignore[boolean-type-hint-positional-argument, boolean-default-value-positional-argument]
+    def __init__(self, repo_root: Path, dry_run: bool = False) -> None:
         self.repo_root = repo_root
         self.dry_run = dry_run
         self.updates: list[VersionUpdate] = []
 
     def update_python_exact(self, new_version: str) -> None:
-        """Update exact Python version across standard configs and workflows."""
+        """Update the exact Python version in the standard config files."""
         files_to_update = [
-            (self.repo_root / ".python-version", r"^\d+\.\d+\.\d+$", new_version),
             (
                 self.repo_root / "mise.toml",
                 r'python = "\d+\.\d+\.\d+"',
@@ -50,22 +49,6 @@ class ToolVersionUpdater:
                 f'placeholder: "{new_version}"',
             ),
         ]
-
-        for workflow in self.repo_root.glob(".github/workflows/*.yml"):
-            files_to_update.extend(
-                [
-                    (
-                        workflow,
-                        r'python-version: "\d+\.\d+\.\d+"',
-                        f'python-version: "{new_version}"',
-                    ),
-                    (
-                        workflow,
-                        r"uv python install \d+\.\d+\.\d+",
-                        f"uv python install {new_version}",
-                    ),
-                ]
-            )
 
         for file_path, pattern, replacement in files_to_update:
             if file_path.exists():
@@ -104,17 +87,6 @@ class ToolVersionUpdater:
             )
         )
 
-    def update_python_test_matrix(self, versions: list[str]) -> None:
-        versions_str = '", "'.join(versions)
-        self.updates.append(
-            VersionUpdate(
-                file_path=self.repo_root / ".github/workflows/test.yml",
-                pattern=r'python-version: \[(?:\s*"[\d.]+"\s*,?)+\]',
-                replacement=f'python-version: ["{versions_str}"]',
-                description="Python test matrix",
-            )
-        )
-
     def update_mise_tool(self, tool: str, new_version: str) -> None:
         self.updates.append(
             VersionUpdate(
@@ -125,37 +97,16 @@ class ToolVersionUpdater:
             )
         )
 
-    def update_action_in_workflows(self, action: str, new_version: str) -> None:
-        """Update one action's `version` input across workflow files.
-
-        The pattern stays within the action's `with:` block. It does not rewrite
-        another action's input or a matching action step without `version`.
-        """
-        pattern = (
-            rf"(?P<head>^(?P<indent>[ ]*)- uses: {re.escape(action)}@[^\n]*\n"
-            rf"(?P=indent)  with:\n"
-            rf"(?:(?P=indent)    (?!version:)[^\n]*\n)*"
-            rf"(?P=indent)    )version: \"[\d.]+\""
-        )
-        for workflow in self.repo_root.glob(".github/workflows/*.yml"):
+    def update_python_dev_dependency(self, package: str, new_version: str) -> None:
+        for file_path in sorted(self.repo_root.rglob("pyproject.toml")):
             self.updates.append(
                 VersionUpdate(
-                    file_path=workflow,
-                    pattern=pattern,
-                    replacement=rf'\g<head>version: "{new_version}"',
-                    description=f"{action} version in {workflow.name}",
+                    file_path=file_path,
+                    pattern=rf'"{package}>=[\d.]+"',
+                    replacement=f'"{package}>={new_version}"',
+                    description=f"{package} minimum version in {file_path}",
                 )
             )
-
-    def update_python_dev_dependency(self, package: str, new_version: str) -> None:
-        self.updates.append(
-            VersionUpdate(
-                file_path=self.repo_root / "packages/core/pyproject.toml",
-                pattern=rf'"{package}>=[\d.]+"',
-                replacement=f'"{package}>={new_version}"',
-                description=f"{package} minimum version",
-            )
-        )
 
     def apply_updates(self) -> int:
         """Apply all queued updates."""
@@ -211,21 +162,15 @@ def parse_arguments() -> argparse.Namespace:
         choices=[
             "python",
             "python-min",
-            "python-matrix",
             "uv",
             "ruff",
             "bun",
-            "biome",
             "mypy",
             "pytest",
         ],
         help="Tool to update",
     )
     parser.add_argument("--version", help="New version number")
-    parser.add_argument(
-        "--matrix-versions",
-        help='Python matrix versions (comma-separated, e.g., "3.12,3.13")',
-    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -234,7 +179,7 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> int:  # ruff: ignore[complex-structure]
+def main() -> int:
     args = parse_arguments()
     repo_root = Path(__file__).parent.parent
     updater = ToolVersionUpdater(repo_root, dry_run=args.dry_run)
@@ -257,27 +202,17 @@ def main() -> int:  # ruff: ignore[complex-structure]
         print(f"Updating Python minimum version to >={args.version}...\n")
         updater.update_python_minimum(args.version)
 
-    elif args.tool == "python-matrix":
-        if not args.matrix_versions:
-            print("Error: --matrix-versions required for Python matrix update")
-            return 1
-        versions = [v.strip() for v in args.matrix_versions.split(",")]
-        print(f"Updating Python test matrix to {versions}...\n")
-        updater.update_python_test_matrix(versions)
-
     elif args.tool == "uv":
         require_version()
         print(f"Updating uv to {args.version}...\n")
         updater.update_mise_tool("uv", args.version)
-        updater.update_action_in_workflows("astral-sh/setup-uv", args.version)
 
     elif args.tool == "ruff":
         require_version()
         print(f"Updating ruff to {args.version}...\n")
         updater.update_mise_tool("ruff", args.version)
-        updater.update_action_in_workflows("astral-sh/ruff-action", args.version)
 
-    elif args.tool in ("bun", "biome"):
+    elif args.tool == "bun":
         require_version()
         print(f"Updating {args.tool} to {args.version}...\n")
         updater.update_mise_tool(args.tool, args.version)
