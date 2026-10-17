@@ -73,7 +73,7 @@ def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
 
 
 @app.get("/")
-async def root() -> dict:
+async def root() -> dict[str, object]:
     return {
         "status": "online",
         "service": "Megaloader API",

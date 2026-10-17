@@ -50,7 +50,7 @@ class LoopbackServer:
 
 
 class QuietHandler(BaseHTTPRequestHandler):
-    def log_message(self, format: str, *args: object) -> None:  # ruff: ignore[builtin-argument-shadowing]
+    def log_message(self, format: str, *args: object) -> None:
         pass
 
 

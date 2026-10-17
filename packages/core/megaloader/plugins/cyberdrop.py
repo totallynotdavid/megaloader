@@ -3,7 +3,7 @@ import re
 
 from collections.abc import Generator
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeGuard
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
@@ -77,7 +77,8 @@ def file_info_from_payload(payload: Any, file_id: str, api_url: str) -> tuple[st
 
 def direct_url_from_payload(payload: Any, auth_url: str) -> str:
     """Validate the auth response and return the direct CDN URL."""
-    if not (isinstance(payload, dict) and _is_text(payload.get("url"))):
+    direct_url = payload.get("url") if isinstance(payload, dict) else None
+    if not _is_text(direct_url):
         raise_extraction_error(
             f"No direct URL in auth response: {auth_url}",
             source="cyberdrop",
@@ -85,10 +86,10 @@ def direct_url_from_payload(payload: Any, auth_url: str) -> str:
             category="protocol",
         )
 
-    return payload["url"]
+    return direct_url
 
 
-def _is_text(value: Any) -> bool:
+def _is_text(value: Any) -> TypeGuard[str]:
     return isinstance(value, str) and bool(value)
 
 
