@@ -4,6 +4,8 @@ __pycache__/
 
 # environment variables
 .env
+.env.*
+!.env.example
 
 # coverage outputs
 .coverage
