@@ -128,7 +128,7 @@ run = "uv run --all-packages --extra dev python scripts/generate-logo.py"
 
 [tasks.build-bin]
 description = "Build the CLI binary with PyInstaller"
-run = "uv run --locked --package megaloader-cli pyinstaller --onefile --copy-metadata megaloader-cli --name \"${PYINSTALLER_NAME:-megaloader-cli-windows}\" --paths packages/core packages/cli/megaloader_cli/main.py"
+run = "uv run --locked --package megaloader-cli pyinstaller --onefile --copy-metadata megaloader-cli --name \"{{ get_env(name='PYINSTALLER_NAME', default='megaloader-cli') }}\" --paths packages/core packages/cli/megaloader_cli/main.py"
 
 [tasks.api-deploy]
 description = "Deploy API to Vercel"

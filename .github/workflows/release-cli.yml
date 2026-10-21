@@ -115,7 +115,7 @@ jobs:
 
   pypi-cli:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [preflight, build-pkg]
+    needs: [preflight, build-pkg, build-bin]
     runs-on: ubuntu-latest
 
     environment:
