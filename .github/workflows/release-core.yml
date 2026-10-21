@@ -3,8 +3,42 @@ name: release-core
 on:
   push:
     tags: ["vcore-*.*.*"]
+  pull_request:
+  workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Upload steps and jobs run only on tag pushes. Everything else also runs on
+# pull requests and manual runs as a dry run of the release.
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      deployments: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Check that every environment the workflow names exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW: .github/workflows/release-core.yml
+        run: |
+          for NAME in $(yq '.jobs[].environment | select(. != null) | (.name // .)' "$WORKFLOW"); do
+            if ! gh api "repos/$GITHUB_REPOSITORY/environments/$NAME" --silent; then
+              echo "::error::Environment '$NAME' named by $WORKFLOW does not exist in $GITHUB_REPOSITORY"
+              exit 1
+            fi
+            echo "Environment '$NAME' exists"
+          done
+
   build:
     runs-on: ubuntu-latest
 
@@ -19,22 +53,22 @@ jobs:
       - uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5
       - run: mise run install
 
-      - run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/vcore-}"
-          CORE_PKG_VERSION=$(grep '^version = ' packages/core/pyproject.toml | cut -d'"' -f2)
-          if [ "$TAG_VERSION" != "$CORE_PKG_VERSION" ]; then
-            echo "Tag $TAG_VERSION != core package $CORE_PKG_VERSION"
+      - name: Check version and notes
+        run: |
+          PKG_VERSION=$(grep '^version = ' packages/core/pyproject.toml | cut -d'"' -f2)
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG_VERSION="${GITHUB_REF#refs/tags/vcore-}"
+            if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+              echo "Tag $TAG_VERSION != core package $PKG_VERSION"
+              exit 1
+            fi
+          fi
+          MODULE_VERSION=$(grep '^__version__ = ' packages/core/megaloader/_version.py | cut -d'"' -f2)
+          if [ "$PKG_VERSION" != "$MODULE_VERSION" ]; then
+            echo "Core package $PKG_VERSION != megaloader.__version__ $MODULE_VERSION"
             exit 1
           fi
-          CORE_MODULE_VERSION=$(grep '^__version__ = ' packages/core/megaloader/_version.py | cut -d'"' -f2)
-          if [ "$TAG_VERSION" != "$CORE_MODULE_VERSION" ]; then
-            echo "Tag $TAG_VERSION != megaloader.__version__ $CORE_MODULE_VERSION"
-            exit 1
-          fi
-
-      - run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/vcore-}"
-          EXPECTED="megaloader $TAG_VERSION is out."
+          EXPECTED="megaloader $PKG_VERSION is out."
           FIRST_LINE=$(head -n 1 .github/release-notes-core.md | tr -d '\r')
           if [ "$FIRST_LINE" != "$EXPECTED" ]; then
             echo "First line of .github/release-notes-core.md is '$FIRST_LINE', expected '$EXPECTED'"
@@ -42,6 +76,7 @@ jobs:
           fi
 
       - run: mise run build:core
+      - run: uvx twine check --strict dist/*
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -49,7 +84,8 @@ jobs:
           path: dist/*
 
   pypi-core:
-    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [preflight, build]
     runs-on: ubuntu-latest
 
     environment:
@@ -69,3 +105,25 @@ jobs:
         with:
           packages-dir: dist/
           print-hash: true
+
+  github:
+    needs: [preflight, build]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: core-dist
+          path: dist
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/*
+          body_path: .github/release-notes-core.md
+          generate_release_notes: true

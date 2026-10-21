@@ -3,8 +3,42 @@ name: release-cli
 on:
   push:
     tags: ["vcli-*.*.*"]
+  pull_request:
+  workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Upload steps and jobs run only on tag pushes. Everything else also runs on
+# pull requests and manual runs as a dry run of the release.
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      deployments: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Check that every environment the workflow names exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW: .github/workflows/release-cli.yml
+        run: |
+          for NAME in $(yq '.jobs[].environment | select(. != null) | (.name // .)' "$WORKFLOW"); do
+            if ! gh api "repos/$GITHUB_REPOSITORY/environments/$NAME" --silent; then
+              echo "::error::Environment '$NAME' named by $WORKFLOW does not exist in $GITHUB_REPOSITORY"
+              exit 1
+            fi
+            echo "Environment '$NAME' exists"
+          done
+
   build-pkg:
     runs-on: ubuntu-latest
 
@@ -19,17 +53,17 @@ jobs:
       - uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5
       - run: mise run install
 
-      - run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/vcli-}"
-          CLI_PKG_VERSION=$(grep '^version = ' packages/cli/pyproject.toml | cut -d'"' -f2)
-          if [ "$TAG_VERSION" != "$CLI_PKG_VERSION" ]; then
-            echo "Tag $TAG_VERSION != cli package $CLI_PKG_VERSION"
-            exit 1
+      - name: Check version and notes
+        run: |
+          PKG_VERSION=$(grep '^version = ' packages/cli/pyproject.toml | cut -d'"' -f2)
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG_VERSION="${GITHUB_REF#refs/tags/vcli-}"
+            if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+              echo "Tag $TAG_VERSION != cli package $PKG_VERSION"
+              exit 1
+            fi
           fi
-
-      - run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/vcli-}"
-          EXPECTED="megaloader-cli $TAG_VERSION is out."
+          EXPECTED="megaloader-cli $PKG_VERSION is out."
           FIRST_LINE=$(head -n 1 .github/release-notes-cli.md | tr -d '\r')
           if [ "$FIRST_LINE" != "$EXPECTED" ]; then
             echo "First line of .github/release-notes-cli.md is '$FIRST_LINE', expected '$EXPECTED'"
@@ -37,6 +71,7 @@ jobs:
           fi
 
       - run: mise run build:cli
+      - run: uvx twine check --strict dist/*
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -46,6 +81,7 @@ jobs:
   build-bin:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
 
@@ -58,11 +94,17 @@ jobs:
           persist-credentials: false
 
       - uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5
-      - run: mise run install
 
       - run:
           PYINSTALLER_NAME=megaloader-cli-${{ matrix.os == 'ubuntu-latest' &&
           'linux' || 'windows' }} mise run build-bin
+        shell: bash
+
+      - name: Run the binary
+        run: |
+          for BINARY in dist/*; do
+            "$BINARY" --help
+          done
         shell: bash
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -71,7 +113,8 @@ jobs:
           path: dist/*
 
   pypi-cli:
-    needs: build-pkg
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [preflight, build-pkg]
     runs-on: ubuntu-latest
 
     environment:
@@ -93,7 +136,7 @@ jobs:
           print-hash: true
 
   github:
-    needs: [build-pkg, build-bin]
+    needs: [preflight, build-pkg, build-bin]
     runs-on: ubuntu-latest
 
     permissions:
@@ -101,6 +144,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: cli-pkg-dist
@@ -114,6 +159,7 @@ jobs:
           name: cli-bin-windows-latest
           path: dist
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: dist/*
           body_path: .github/release-notes-cli.md

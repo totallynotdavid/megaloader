@@ -91,7 +91,7 @@ A release is a tag. The tag version must equal the `version` in the package's
 
 | Tag           | Workflow           | Publishes                                                                                                   |
 | ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |
-| `vcore-X.Y.Z` | `release-core.yml` | `megaloader` on PyPI                                                                                        |
+| `vcore-X.Y.Z` | `release-core.yml` | `megaloader` on PyPI, and a GitHub release with the wheel and sdist                                         |
 | `vcli-X.Y.Z`  | `release-cli.yml`  | `megaloader-cli` on PyPI, and a GitHub release with `megaloader-cli-linux` and `megaloader-cli-windows.exe` |
 
 Before tagging, set the new version in `packages/<core|cli>/pyproject.toml`. For
@@ -100,8 +100,35 @@ the announcement to `.github/release-notes-core.md` or
 `.github/release-notes-cli.md`. Its first line must be
 `megaloader X.Y.Z is out.` for core or `megaloader-cli X.Y.Z is out.` for the
 CLI. Each workflow stops before it builds when the tag, the manifests or that
-first line disagree. The CLI release body is that file followed by GitHub's
+first line disagree. Each GitHub release body is that file followed by GitHub's
 generated change list. The CLI requires the matching core release, so tag
 `vcore-*` first when both change. PyPI publishing uses a trusted publisher in
-the `pypi` GitHub environment. `mise run build-bin` builds the Windows binary
+the `pypi` GitHub environment. `mise run build-bin` builds the CLI binary
 locally to test the PyInstaller build.
+
+Both workflows also run on every pull request and on manual runs
+(`gh workflow run release-cli.yml --ref <branch>`). That dry run does everything
+a tag does except upload: it builds the packages and binaries, checks the
+manifest version against the first line of the notes file, and runs `preflight`,
+which fails when an environment the workflow names is missing from the
+repository. Only the PyPI job and the GitHub release step wait for a tag.
+
+### Set up releases on a fork
+
+A fork needs no secrets. Publishing uses PyPI trusted publishing.
+
+1. In the repository, open Settings, Environments, and create an environment
+   named `pypi`. Or run `gh api -X PUT repos/OWNER/REPO/environments/pypi`.
+2. On pypi.org, sign in and open the project's Manage page, then Publishing. Add
+   a GitHub trusted publisher for each project, `megaloader` and
+   `megaloader-cli`. A project that does not exist yet takes a pending publisher
+   from Your account, Publishing.
+3. Fill in the form. The owner is the GitHub user or organization. The
+   repository is the repository name. The workflow is `release-core.yml` for
+   `megaloader` and `release-cli.yml` for `megaloader-cli`. The environment is
+   `pypi`.
+4. Run `gh workflow run release-core.yml --ref main` and the same for
+   `release-cli.yml`. Both must pass before you tag.
+
+The GitHub release needs no setup. The workflow creates it with the repository's
+`GITHUB_TOKEN`.
