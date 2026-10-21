@@ -9,7 +9,7 @@ from megaloader_cli.utils import console, setup_logging
 
 
 @click.group()
-@click.version_option(prog_name="megaloader")
+@click.version_option(package_name="megaloader-cli", prog_name="megaloader")
 def cli() -> None:
     """
     Megaloader: Extract and download content from file hosting platforms.
