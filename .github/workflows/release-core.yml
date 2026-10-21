@@ -26,6 +26,20 @@ jobs:
             echo "Tag $TAG_VERSION != core package $CORE_PKG_VERSION"
             exit 1
           fi
+          CORE_MODULE_VERSION=$(grep '^__version__ = ' packages/core/megaloader/_version.py | cut -d'"' -f2)
+          if [ "$TAG_VERSION" != "$CORE_MODULE_VERSION" ]; then
+            echo "Tag $TAG_VERSION != megaloader.__version__ $CORE_MODULE_VERSION"
+            exit 1
+          fi
+
+      - run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/vcore-}"
+          EXPECTED="megaloader $TAG_VERSION is out."
+          FIRST_LINE=$(head -n 1 .github/release-notes-core.md | tr -d '\r')
+          if [ "$FIRST_LINE" != "$EXPECTED" ]; then
+            echo "First line of .github/release-notes-core.md is '$FIRST_LINE', expected '$EXPECTED'"
+            exit 1
+          fi
 
       - run: mise run build:core
 

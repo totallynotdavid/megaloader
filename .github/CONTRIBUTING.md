@@ -95,7 +95,13 @@ A release is a tag. The tag version must equal the `version` in the package's
 | `vcli-X.Y.Z`  | `release-cli.yml`  | `megaloader-cli` on PyPI, and a GitHub release with `megaloader-cli-linux` and `megaloader-cli-windows.exe` |
 
 Before tagging, set the new version in `packages/<core|cli>/pyproject.toml`. For
-core, also set `__version__` in `packages/core/megaloader/_version.py`. PyPI
-publishing uses a trusted publisher in the `pypi` GitHub environment.
-`mise run build-bin` builds the Windows binary locally to test the PyInstaller
-build.
+core, also set `__version__` in `packages/core/megaloader/_version.py`. Write
+the announcement to `.github/release-notes-core.md` or
+`.github/release-notes-cli.md`. Its first line must be
+`megaloader X.Y.Z is out.` for core or `megaloader-cli X.Y.Z is out.` for the
+CLI. Each workflow stops before it builds when the tag, the manifests or that
+first line disagree. The CLI release body is that file followed by GitHub's
+generated change list. The CLI requires the matching core release, so tag
+`vcore-*` first when both change. PyPI publishing uses a trusted publisher in
+the `pypi` GitHub environment. `mise run build-bin` builds the Windows binary
+locally to test the PyInstaller build.

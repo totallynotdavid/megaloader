@@ -27,6 +27,15 @@ jobs:
             exit 1
           fi
 
+      - run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/vcli-}"
+          EXPECTED="megaloader-cli $TAG_VERSION is out."
+          FIRST_LINE=$(head -n 1 .github/release-notes-cli.md | tr -d '\r')
+          if [ "$FIRST_LINE" != "$EXPECTED" ]; then
+            echo "First line of .github/release-notes-cli.md is '$FIRST_LINE', expected '$EXPECTED'"
+            exit 1
+          fi
+
       - run: mise run build:cli
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -107,4 +116,5 @@ jobs:
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: dist/*
+          body_path: .github/release-notes-cli.md
           generate_release_notes: true
