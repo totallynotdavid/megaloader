@@ -1,22 +1,27 @@
-megaloader-cli 0.2.1 is out.
+megaloader-cli 0.2.2 is out.
 
-This is a small fix release, four months after 0.2.0. Upgrade if you hit a
-traceback after typing a bad link.
+This is a fix release, a few hours after 0.2.1. Upgrade if you want the Windows
+binary, or if you use a binary and run `--version`. If you install with `pip`,
+nothing changes for you.
 
-`megaloader extract` and `megaloader download` now report an invalid URL as a
-one-line error. Before, a link the plugin could not parse, such as
-`https://gofile.io/nope`, ended in a full Python traceback. Now it prints
-`Error: Invalid Gofile URL: https://gofile.io/nope` and exits with status 1, the
-same status as before. A `ValueError` raised anywhere after extraction is still
-a bug and keeps its traceback, so real defects stay visible.
+0.2.1 went out without `megaloader-cli-windows.exe`. The release build ran
+PyInstaller from the workspace root, where `uv` could not find it after it
+recreated the environment on Windows, so the job failed and the release had no
+Windows asset. The build task now runs PyInstaller from the CLI package, which
+declares it.
 
-The package now requires `megaloader>=0.3.0`. Core 0.2.0 does not import on
-Python 3.10, which this CLI supports, and 0.3.0 fixes that. The Linux and
-Windows binaries bundle core 0.3.0, so they also report provider responses in an
-unexpected shape as errors instead of returning an empty result.
+While checking the binaries I found that `megaloader --version` crashed in both
+of them with `RuntimeError: Could not determine the version`. A PyInstaller
+build runs the entry file as a script, so click could not tell which package to
+ask for its version, and the package metadata was not bundled either. The CLI
+now names its package, the build bundles the metadata, and the binary prints
+`megaloader, version 0.2.2`. The release workflow runs `--version` on each
+binary beside `--help`, so this cannot ship broken again.
 
-The rest is tests, docs and build configuration. There are no breaking changes
-to commands, flags or output.
+The release workflow also runs the whole build on pull requests and manual runs
+now, so a broken binary shows up before a tag instead of after it. The rest is
+CI and docs. There are no changes to commands, flags or output, and no breaking
+changes.
 
 ## Known problems
 

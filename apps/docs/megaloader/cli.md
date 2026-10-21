@@ -9,7 +9,7 @@ pip install megaloader-cli
 
 ```console
 $ megaloader --version
-megaloader, version 0.2.1
+megaloader, version 0.2.2
 ```
 
 Each CLI [release](https://github.com/totallynotdavid/megaloader/releases) also
