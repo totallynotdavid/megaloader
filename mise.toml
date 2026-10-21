@@ -21,7 +21,10 @@ run = [
 [tasks.update]
 description = "Update all dependencies"
 alias = "u"
-run = "uv sync --all-packages --extra dev -U"
+run = [
+  "uv lock --upgrade",
+  "uv sync --locked --all-packages --extra dev",
+]
 
 [tasks.outdated]
 description = "List outdated dependencies"
@@ -112,12 +115,8 @@ dir = "apps/api"
 
 [tasks.docs-serve]
 description = "Serve documentation locally"
-run = ["bun install", "bun run docs:dev"] # pass '--host' to expose the server in local network
+run = ["bun install --frozen-lockfile", "bun run docs:dev"] # pass '--host' to expose the server in local network
 dir = "apps/docs"
-
-[tasks.docs-build]
-description = "Build documentation"
-depends = ["build:docs"]
 
 [tasks.validate-snippets]
 description = "Validate Python code snippets in documentation"
