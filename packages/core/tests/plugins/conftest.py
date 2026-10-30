@@ -26,12 +26,26 @@ from tests.plugins.proxy import credentials, missing_creds, proxy_url
 
 
 _PROXY_ENV_VARS = ("HTTP_PROXY", "HTTPS_PROXY")
+_PLUGIN_CREDENTIAL_PREFIXES = ("RULE34_", "PIXIV_", "FANBOX_")
 
 
 def _recording(config: pytest.Config) -> bool:
     """True when vcr will reach the network (any record mode other than none)."""
     mode = config.getoption("record_mode", default="none")
     return mode not in (None, "none")
+
+
+@pytest.fixture(autouse=True)
+def _clean_plugin_credentials(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Keep ambient plugin credentials from changing offline cassette paths."""
+    if _recording(request.config):
+        return
+
+    for name in list(os.environ):
+        if name.startswith(_PLUGIN_CREDENTIAL_PREFIXES):
+            monkeypatch.delenv(name)
 
 
 # autouse is intentional: every plugin test must route through the proxy when
