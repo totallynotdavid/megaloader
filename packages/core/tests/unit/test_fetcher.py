@@ -1,3 +1,7 @@
+import threading
+
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
 import pytest
 import requests
 import requests_mock as req_mock
@@ -39,6 +43,45 @@ def test_http_error_carries_status_source_and_cause(
     assert err.category == "access"
     assert err.source == "dummyplugin"
     assert isinstance(err.__cause__, requests.HTTPError)
+
+
+class _AlwaysStatus(BaseHTTPRequestHandler):
+    status = 429
+
+    def do_GET(self) -> None:
+        self.send_response(self.status)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    def log_message(self, format: str, *args: object) -> None:
+        pass
+
+
+@pytest.mark.unit
+@pytest.mark.block_network(allowed_hosts=["127.0.0.1"])
+@pytest.mark.parametrize(
+    ("status", "category"),
+    [(429, "rate_limit"), (503, "request")],
+)
+def test_retried_status_keeps_its_classification_when_retries_run_out(
+    monkeypatch: pytest.MonkeyPatch, status: int, category: str
+) -> None:
+    monkeypatch.setattr("megaloader.fetcher.RETRY_BACKOFF", 0)
+    handler = type("Handler", (_AlwaysStatus,), {"status": status})
+    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        with pytest.raises(ExtractionError) as exc_info:
+            _fetch()(Request(f"http://127.0.0.1:{server.server_port}/"))
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+    err = exc_info.value
+    assert err.http_status == status
+    assert err.category == category
 
 
 @pytest.mark.unit

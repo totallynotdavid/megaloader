@@ -135,6 +135,7 @@ class RequestsFetcher:
             backoff_factor=RETRY_BACKOFF,
             status_forcelist=[429, 500, 502, 503, 504],
             allowed_methods=["GET", "POST"],
+            raise_on_status=False,
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("https://", adapter)
