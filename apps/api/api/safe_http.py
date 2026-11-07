@@ -23,9 +23,9 @@ def open_public_stream(
     Raises security.NonPublicURLError, requests.TooManyRedirects or any other
     requests.RequestException.
     """
-    for _ in range(MAX_REDIRECTS + 1):
-        security.ensure_public_url(url)
+    security.ensure_public_url(url)
 
+    for _ in range(MAX_REDIRECTS + 1):
         response = requests.request(
             method,
             url,
@@ -39,6 +39,7 @@ def open_public_stream(
 
         target = urljoin(url, response.headers["Location"])
         response.close()
+        security.ensure_public_url(target)
         headers = headers_for_hop(headers, url, target)
         url = target
 
