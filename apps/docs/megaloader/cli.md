@@ -100,7 +100,11 @@ real bytes.
 
 By default the files of a collection go into a subfolder named for the
 collection. Files without a collection go straight into `OUTPUT_DIR`. Folder and
-file names have `< > : " / \ | ? *` replaced by `_`.
+file names have `< > : " / \ | ? *` and control characters replaced by `_`, lose
+trailing dots and spaces, and a name that is empty or only dots becomes
+`unnamed`. A Windows device name such as `CON` gets a leading `_`. When two
+files in one run get the same name, the later ones are saved as `name (2).ext`,
+`name (3).ext`, and so on.
 
 | Option          | Effect                                                         |
 | --------------- | -------------------------------------------------------------- |
@@ -146,10 +150,11 @@ Batch ━━━━━━━━━━━━━━━━━━━━━━━━�
 ✓ Success! Downloaded 2 files.
 ```
 
-The summary counts skipped files. A file that fails to download is deleted, and
-the command prints `Completed with errors.` and exits with status 1. A run you
-interrupt with Ctrl-C leaves its current file partial, and the next run skips
-it. Delete that file to fetch it again.
+The summary counts skipped files. Each file is written to a `.part` file next to
+its destination and renamed when complete. A file that fails to download, or a
+run you interrupt with Ctrl-C, leaves no partial file, so the next run fetches
+it again. A failed download makes the command print `Completed with errors.` and
+exit with status 1.
 
 Each download sends a browser `User-Agent` plus the headers the plugin reports
 for the item, and times out after 60 seconds.
