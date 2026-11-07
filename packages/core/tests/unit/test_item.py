@@ -21,7 +21,8 @@ def test_optional_fields_default_to_empty() -> None:
         ("http://example.com/file", "", "filename cannot be empty"),
         ("http://example.com/file", "folder/file.txt", "leaf name"),
         ("http://example.com/file", "folder\\file.txt", "leaf name"),
-        ("http://example.com/file", "..file.txt", "path traversal"),
+        ("http://example.com/file", "..", "path traversal"),
+        ("http://example.com/file", ".", "path traversal"),
     ],
 )
 def test_rejects_unusable_fields(
@@ -29,3 +30,11 @@ def test_rejects_unusable_fields(
 ) -> None:
     with pytest.raises(ValueError, match=message):
         DownloadItem(download_url=download_url, filename=filename)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("filename", ["..file.txt", "Wait... what.mp4", "a..b"])
+def test_accepts_dots_inside_a_leaf_name(filename: str) -> None:
+    item = DownloadItem(download_url="http://example.com/file", filename=filename)
+
+    assert item.filename == filename

@@ -33,6 +33,6 @@ class DownloadItem:
         if "/" in self.filename or "\\" in self.filename:
             msg = "filename must be a leaf name, not a path"
             raise ValueError(msg)
-        if ".." in self.filename:
+        if self.filename in {".", ".."}:
             msg = "filename cannot contain path traversal"
             raise ValueError(msg)
