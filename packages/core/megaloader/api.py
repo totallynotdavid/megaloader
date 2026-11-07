@@ -58,7 +58,8 @@ def extract(
     url = url.strip()
     parsed = urllib.parse.urlparse(url)
 
-    if not parsed.netloc:
+    domain = parsed.hostname
+    if not domain:
         msg = f"Invalid URL: Could not parse domain from '{url}'"
         raise ValueError(msg)
 
@@ -74,12 +75,12 @@ def extract(
             raise TypeError(msg)
         plugin_class = plugin
     else:
-        plugin_class = get_plugin_for_domain(parsed.netloc)
+        plugin_class = get_plugin_for_domain(domain)
 
     if plugin_class is None:
-        raise UnsupportedDomainError(parsed.netloc)
+        raise UnsupportedDomainError(domain)
 
-    logger.debug("Initializing %s for domain %r", plugin_class.__name__, parsed.netloc)
+    logger.debug("Initializing %s for domain %r", plugin_class.__name__, domain)
 
     try:
         extractor = plugin_class(url, **options)

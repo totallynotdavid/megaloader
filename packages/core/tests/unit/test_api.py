@@ -1,6 +1,7 @@
 from typing import cast
 
 import pytest
+import requests_mock as req_mock
 
 from megaloader import extract
 from megaloader.exceptions import UnsupportedDomainError
@@ -46,3 +47,28 @@ def test_extract_rejects_non_plugin_class_override() -> None:
 def test_extract_raises_for_unknown_domain_without_override() -> None:
     with pytest.raises(UnsupportedDomainError):
         list(extract("https://unknown.example/path"))
+
+
+_PIXELDRAIN_PAGE = (
+    '<script>window.viewer_data = {"type": "file", '
+    '"api_response": {"id": "abc", "name": "a.txt"}};</script>'
+)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://pixeldrain.com:443/u/abc",
+        "https://user@pixeldrain.com/u/abc",
+        "https://PixelDrain.com/u/abc",
+    ],
+)
+def test_extract_resolves_the_plugin_from_the_host_alone(
+    requests_mock: req_mock.Mocker, url: str
+) -> None:
+    requests_mock.get(url, text=_PIXELDRAIN_PAGE)
+
+    items = list(extract(url))
+
+    assert [item.filename for item in items] == ["a.txt"]
