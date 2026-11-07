@@ -11,6 +11,7 @@ import megaloader as mgl
 
 from megaloader.exceptions import MegaloaderError
 from megaloader.plugins import get_plugin_for_domain
+from rich.markup import escape
 from rich.progress import (
     BarColumn,
     DownloadColumn,
@@ -21,7 +22,7 @@ from rich.progress import (
 )
 
 from megaloader_cli.io import download_file
-from megaloader_cli.utils import console, sanitize_for_filesystem
+from megaloader_cli.utils import console, sanitize_for_filesystem, unclaimed_path
 
 
 def _extract_items(url: str, options: dict[str, Any]) -> Iterator[mgl.DownloadItem]:
@@ -62,7 +63,7 @@ def extract_command(url: str, output_json: bool, options: dict[str, Any]) -> Non
             _print_human_readable(items)
 
     except MegaloaderError as e:
-        console.print(f"[red]Error:[/red] {e}")
+        console.print(f"[red]Error:[/red] {escape(str(e))}")
         sys.exit(1)
 
 
@@ -103,7 +104,7 @@ def download_command(
         _download_with_progress(items, Path(output_dir), flat)
 
     except MegaloaderError as e:
-        console.print(f"[red]Error:[/red] {e}")
+        console.print(f"[red]Error:[/red] {escape(str(e))}")
         sys.exit(1)
 
 
@@ -128,6 +129,8 @@ def _download_with_progress(
         console=console,
     )
 
+    claimed: set[Path] = set()
+
     with progress:
         overall = progress.add_task(
             "Overall Progress",
@@ -141,11 +144,13 @@ def _download_with_progress(
             else:
                 dest_dir = base_dir / sanitize_for_filesystem(item.collection_name)
 
-            dest_path = dest_dir / sanitize_for_filesystem(item.filename)
+            dest_path = unclaimed_path(
+                dest_dir / sanitize_for_filesystem(item.filename), claimed
+            )
 
             file_task = progress.add_task(
                 "download",
-                filename=item.filename,
+                filename=escape(item.filename),
                 start=False,
             )
 
@@ -162,7 +167,7 @@ def _download_with_progress(
         console.print(
             f"[bold green]✓ Success![/bold green] Downloaded {success_count} files."
         )
-        console.print(f"[dim]Location: {base_dir.absolute()}[/dim]")
+        console.print(f"[dim]Location: {escape(str(base_dir.absolute()))}[/dim]")
     else:
         console.print(
             f"[bold yellow]⚠ Completed with errors.[/bold yellow] "
@@ -172,7 +177,7 @@ def _download_with_progress(
 
 
 def _get_plugin_name(url: str) -> str | None:
-    domain = urlparse(url).netloc
+    domain = urlparse(url).hostname or ""
     plugin_class = get_plugin_for_domain(domain)
     return plugin_class.__name__ if plugin_class else None
 
@@ -190,10 +195,12 @@ def _print_human_readable(items: list[mgl.DownloadItem]) -> None:
     console.print(f"\n[bold]Found {len(items)} files:[/bold]\n")
 
     for i, item in enumerate(items, 1):
-        console.print(f"  [cyan]{i:02d}.[/cyan] {item.filename}")
+        console.print(f"  [cyan]{i:02d}.[/cyan] {escape(item.filename)}")
 
         if item.collection_name:
-            console.print(f"      [dim]Collection: {item.collection_name}[/dim]")
+            console.print(
+                f"      [dim]Collection: {escape(item.collection_name)}[/dim]"
+            )
 
         if item.size_bytes:
             size_mb = item.size_bytes / (1024 * 1024)
