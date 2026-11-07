@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def parse_viewer_data(page: str, url: str) -> dict[str, Any]:
     """Extract the embedded window.viewer_data JSON blob from a Pixeldrain page."""
-    match = re.search(r"window\.viewer_data\s*=\s*({.*?});", page, re.DOTALL)
+    match = re.search(r"window\.viewer_data\s*=\s*(?={)", page)
     if not match:
         raise_extraction_error(
             "Could not find viewer data on page",
@@ -26,7 +26,8 @@ def parse_viewer_data(page: str, url: str) -> dict[str, Any]:
         )
 
     try:
-        data: dict[str, Any] = json.loads(match.group(1))
+        data: dict[str, Any]
+        data, _ = json.JSONDecoder().raw_decode(page, match.end())
     except ValueError as e:
         raise_extraction_error(
             "Malformed viewer data on page",
