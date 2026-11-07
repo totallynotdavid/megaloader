@@ -153,6 +153,18 @@ class Pixiv(BasePlugin):
                 headers={"Referer": f"{self.SITE_BASE}/artworks/{artwork_id}"},
             )
 
+    def _work_ids(self, all_works: dict[str, Any], kind: str) -> list[str]:
+        """Return the work ids under kind, which Pixiv sends as [] when it is empty."""
+        works = all_works.get(kind) or {}
+        if not isinstance(works, dict):
+            raise_extraction_error(
+                f"Pixiv returned {kind} as {type(works).__name__}, expected an object",
+                source=self.source,
+                url=self.url,
+                category="protocol",
+            )
+        return list(works)
+
     def _extract_user(
         self, fetch: Fetcher, user_id: str
     ) -> Generator[DownloadItem, None, None]:
@@ -180,9 +192,10 @@ class Pixiv(BasePlugin):
             )
 
         all_works = self._api_request(fetch, f"/user/{user_id}/profile/all") or {}
-        work_ids = list(all_works.get("illusts", {}).keys()) + list(
-            all_works.get("manga", {}).keys()
-        )
+        work_ids = [
+            *self._work_ids(all_works, "illusts"),
+            *self._work_ids(all_works, "manga"),
+        ]
 
         for work_id in work_ids:
             items = list(self._extract_artwork(fetch, work_id, collection_name))
