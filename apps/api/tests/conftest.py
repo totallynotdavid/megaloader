@@ -83,7 +83,11 @@ def allow_public_ports(monkeypatch: pytest.MonkeyPatch) -> None:
 
     def guard(url: str) -> None:
         parsed = urlparse(url)
-        if parsed.hostname == "127.0.0.1" and parsed.port in PUBLIC_PORTS:
+        try:
+            port = parsed.port
+        except ValueError:
+            port = None
+        if parsed.hostname == "127.0.0.1" and port in PUBLIC_PORTS:
             return
         if real is not None:
             real(url)

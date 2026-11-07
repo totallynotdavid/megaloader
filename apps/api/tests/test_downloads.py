@@ -260,6 +260,42 @@ class TestBatches:
         assert response.status_code == 200
         assert response.content == b"good"
 
+    def test_redirect_to_an_invalid_port_fails_only_its_own_file(
+        self, load_app, make_client, stub_extraction, serve: Serve
+    ) -> None:
+        host = serve({"/ok": Route(body=b"good")})
+        host.routes["/bad"] = Route(
+            status=302, headers={"Location": f"http://127.0.0.1:99999/{host.port}"}
+        )
+
+        response = download(
+            load_app,
+            make_client,
+            stub_extraction,
+            [item(host, "/bad", "bad.bin"), item(host, "/ok", "ok.bin")],
+        )
+
+        assert response.status_code == 200
+        assert response.content == b"good"
+
+    def test_files_that_share_a_name_are_all_zipped(
+        self, load_app, make_client, stub_extraction, serve: Serve
+    ) -> None:
+        host = serve({"/1": Route(body=b"one"), "/2": Route(body=b"two")})
+
+        response = download(
+            load_app,
+            make_client,
+            stub_extraction,
+            [item(host, "/1", "same.bin"), item(host, "/2", "same.bin")],
+        )
+
+        archive = zipfile.ZipFile(io.BytesIO(response.content))
+        assert {name: archive.read(name) for name in archive.namelist()} == {
+            "same.bin": b"one",
+            "same (2).bin": b"two",
+        }
+
     def test_batch_is_zipped(
         self, load_app, make_client, stub_extraction, serve: Serve
     ) -> None:
