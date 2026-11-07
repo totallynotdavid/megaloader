@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 import tempfile
 
@@ -81,15 +82,34 @@ def write_within_budget(response: requests.Response, path: Path, budget: int) ->
     return written
 
 
-def download_file(item: DownloadItem, output_dir: Path, budget: int) -> Path | None:
+def unique_name(name: str, taken: set[str]) -> str:
+    """Return name, or a numbered variant when an earlier file already took it."""
+    candidate = name
+    number = 1
+    stem, suffix = os.path.splitext(name)
+    while candidate in taken:
+        number += 1
+        candidate = f"{stem} ({number}){suffix}"
+    taken.add(candidate)
+    return candidate
+
+
+def download_file(
+    item: DownloadItem,
+    output_dir: Path,
+    budget: int,
+    *,
+    filename: str | None = None,
+) -> Path | None:
     """
     Download single file with timeout and cleanup on failure.
 
-    Returns file path on success, None on failure. Raises SizeLimitExceededError
-    if the body is larger than budget bytes.
+    The file is written under filename, or under the item's own name. Returns
+    file path on success, None on failure. Raises SizeLimitExceededError if the
+    body is larger than budget bytes.
     """
     try:
-        output_path = output_dir / safe_basename(item.filename)
+        output_path = output_dir / safe_basename(filename or item.filename)
     except UnsafeFilenameError:
         logger.warning("Unsafe filename refused", extra={"file_name": item.filename})
         return None
@@ -132,17 +152,23 @@ def download_items(items: list[DownloadItem], temp_dir: Path) -> list[Path]:
     """
     Download all items to temp directory, within one size budget for the request.
 
-    Raises SizeLimitExceededError if the files together pass MAX_SIZE_BYTES and
-    RuntimeError if no files downloaded successfully.
+    Items that share a name are saved under numbered names, so none overwrites
+    another. Raises SizeLimitExceededError if the files together pass
+    MAX_SIZE_BYTES and RuntimeError if no files downloaded successfully.
     """
     downloaded: list[Path] = []
     failed = []
     remaining = MAX_SIZE_BYTES
+    taken: set[str] = set()
 
     logger.info("Downloading items", extra={"count": len(items)})
 
     for item in items:
-        file_path = download_file(item, temp_dir, remaining)
+        try:
+            filename = unique_name(safe_basename(item.filename), taken)
+        except UnsafeFilenameError:
+            filename = None
+        file_path = download_file(item, temp_dir, remaining, filename=filename)
 
         if file_path:
             downloaded.append(file_path)
