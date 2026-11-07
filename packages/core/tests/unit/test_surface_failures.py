@@ -352,6 +352,17 @@ def test_pixeldrain_changed_viewer_data_raises(viewer_data: str) -> None:
 
 
 @pytest.mark.unit
+def test_pixeldrain_filename_may_contain_the_viewer_data_terminator() -> None:
+    routes = _pixeldrain_page(
+        '{"type": "list", "api_response": {"files": [{"id": "a", "name": "x};y.txt"}]}}'
+    )
+
+    items = list(PixelDrain(_PIXELDRAIN).extract(fake_fetcher(routes)))
+
+    assert [item.filename for item in items] == ["x};y.txt"]
+
+
+@pytest.mark.unit
 def test_pixeldrain_empty_list_is_an_empty_album() -> None:
     routes = _pixeldrain_page('{"type": "list", "api_response": {"files": []}}')
 
@@ -401,6 +412,39 @@ def test_pixiv_user_gallery_skips_unavailable_artwork() -> None:
     items = list(Pixiv("https://www.pixiv.net/users/9").extract(fake_fetcher(routes)))
 
     assert [item.filename for item in items] == ["avatar.jpg"]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("empty", ["[]", "{}"])
+def test_pixiv_user_with_an_empty_work_kind_is_read_like_any_other(
+    empty: str,
+) -> None:
+    routes = {
+        f"{_PIXIV}/user/9": '{"error": false, "body": {"name": "artist"}}',
+        f"{_PIXIV}/user/9/profile/all": (
+            f'{{"error": false, "body": {{"illusts": {{"123": null}}, "manga": {empty}}}}}'
+        ),
+        **_NO_IMAGE_ROUTES,
+    }
+
+    assert (
+        list(Pixiv("https://www.pixiv.net/users/9").extract(fake_fetcher(routes))) == []
+    )
+
+
+@pytest.mark.unit
+def test_pixiv_work_list_that_is_not_an_object_raises() -> None:
+    routes = {
+        f"{_PIXIV}/user/9": '{"error": false, "body": {"name": "artist"}}',
+        f"{_PIXIV}/user/9/profile/all": (
+            '{"error": false, "body": {"illusts": ["123"], "manga": {}}}'
+        ),
+    }
+
+    with pytest.raises(ExtractionError) as excinfo:
+        _run(Pixiv("https://www.pixiv.net/users/9"), routes)
+
+    assert excinfo.value.category == "protocol"
 
 
 _NOT_TEXT = [7, ["x"]]
