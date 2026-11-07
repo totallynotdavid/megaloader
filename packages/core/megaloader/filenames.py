@@ -2,6 +2,11 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 
+def leaf_name(text: str) -> str:
+    """Replace path separators so free text, such as a video title, can name a file."""
+    return text.replace("/", "_").replace("\\", "_")
+
+
 def filename_from_url(url: str, fallback: str = "") -> str:
     """
     Derive a leaf filename from a URL path, decoding percent-encoding.

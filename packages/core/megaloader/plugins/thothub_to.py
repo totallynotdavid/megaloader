@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from megaloader.error_policy import raise_extraction_error
 from megaloader.exceptions import ExtractionError
 from megaloader.fetcher import Fetcher, Request
-from megaloader.filenames import filename_from_url
+from megaloader.filenames import filename_from_url, leaf_name
 from megaloader.item import DownloadItem
 from megaloader.plugin import BasePlugin
 
@@ -168,7 +168,7 @@ class ThothubTO(BasePlugin):
 
         return DownloadItem(
             download_url=final_url,
-            filename=f"{title}.mp4",
+            filename=leaf_name(f"{title}.mp4"),
             collection_name=collection_name,
             headers={"Referer": url},
         )
