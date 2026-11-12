@@ -2,7 +2,7 @@ name: security report
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
     paths:
       - "**/*.py"
       - "**/pyproject.toml"

@@ -2,12 +2,12 @@ name: CodeQL
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
     paths:
       - "**/*.py"
       - "**/pyproject.toml"
   pull_request:
-    branches: ["main"]
+    branches: ["master"]
     paths:
       - "**/*.py"
       - "**/pyproject.toml"

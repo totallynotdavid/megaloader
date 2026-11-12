@@ -2,7 +2,7 @@ name: deploy docs (gh-pages)
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths: ["apps/docs/**"]
 
   workflow_dispatch:
