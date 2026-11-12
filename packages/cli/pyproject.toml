@@ -12,8 +12,8 @@ authors = [
 
 dependencies = [
     "megaloader>=0.3.0",
-    "click>=8.1.0",
-    "rich>=13.7.0",
+    "click>=8.5.1",
+    "rich>=15.0.0",
     "requests>=2.34.2",
 ]
 
